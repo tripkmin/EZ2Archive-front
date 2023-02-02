@@ -29,7 +29,7 @@ function RankOrderList(props){
     }
     /** 유저가 선택한 키 모드에 따라 AJAX 요청을 하기 위해 사용하는 함수 */
     function getUrl(key){
-      return `http://ec2-3-34-144-236.ap-northeast-2.compute.amazonaws.com:54856/rank/list/${key}`
+      return `http://ec2-15-165-162-69.ap-northeast-2.compute.amazonaws.com:54856/rank/list/${key}`
     }
 
     /** 유저가 RankOrderSelector에서 선택한 키 모드와 세부 난이도를 받아 서열 난이도 내림차순으로 걸러줌.*/
