@@ -1,0 +1,507 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.6/dist/web/static/pretendard.css");
+@import "./reset.css";
+
+body {
+  margin :0;
+}
+
+p,
+span,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+div {
+  font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+  line-height: 140%;
+}
+
+h1 {
+  font-size: 60px;
+  font-weight: 1000;
+}
+
+h2 {
+  font-size: 48px;
+  font-weight: 1000;
+}
+
+h3 {
+  font-size : 36px;
+  font-weight: 1000;
+}
+
+h4 {
+  font-size : 22px;
+  font-weight: 1000;
+}
+
+h5 {
+  font-size : 18px;
+  font-weight: 1000;
+}
+
+h6 {
+  font-size : 16px;
+  font-weight: 1000;
+}
+
+span {
+  font-size: 18px;
+}
+
+div {
+  box-sizing: border-box;
+}
+
+strong {
+  font-weight: 800;
+}
+
+
+
+/****************************** Navbar 관련 옵션 ******************************/
+.navbar {
+  position:fixed;
+  width:100%;
+}
+
+.pp-navbar {
+  /* background: linear-gradient(-180deg, rgb(19, 12, 47), rgb(33, 22, 74)); */
+  box-shadow: 0px 10px 15px rgba(113, 75, 255, 0.15);
+  background-image: url(./../public/navbar/pp_navbar.svg);
+  background-size: cover;
+}
+
+.test {
+  width:150px;
+  margin: 0px 20px;
+}
+
+
+/****************************** 임시 유틸 CSS ******************************/
+
+.d-inline {
+  display: inline;
+}
+
+.d-inline-block { 
+  display:inline-block;
+}
+
+.margin-left-1 {
+  margin-left : 20px;
+}
+
+.bold {
+  font-weight: 800;
+}
+
+.flex-box {
+  display:flex;
+}
+
+.flex-wrap {
+  flex-wrap : wrap;
+}
+
+.flex-grow-1 {
+  flex-grow: 1;
+}
+
+.w100 {
+  width:100%;
+}
+
+.z-index-10 {
+  z-index: 10;
+}
+
+.link {
+  cursor:pointer;
+  transition: all 0.2s;
+}
+
+.link:hover {
+  font-weight: 800;
+  transition: all 0.2s;
+}
+
+.align-center {
+  text-align: center;
+}
+
+.margin-0 {
+  margin:0;
+}
+
+.border-right {
+  border-right : 3px solid #e3dbff;
+}
+
+/* 임시로 막 갖다 붙이는 거*/
+
+.p30 {
+  padding:30px;
+}
+
+
+
+/****************************** 티어표 상단 컴포넌트 관련 ******************************/
+
+/* 임시인거임! 지우고 새로 하셈 */
+
+.tierimg{
+  position:relative;
+  padding:28px;
+}
+
+.tierimg img{
+  width:100%;
+  animation-name:glow;
+  animation-duration: 1.5s;
+}
+
+.testbox {
+  position: absolute;
+  top:0;
+  left:0;
+  background-color: #ff2f2f;
+  width:100%;
+  height:100%;
+  z-index: -1;
+}
+
+/* 임시 끝 */
+
+.tier-wrap {
+  width: 33.3%;
+  padding: 0px 30px;
+}
+
+.tier-box-items {
+  width: calc(100% / 3);
+  display: flex;
+  flex-direction: column;
+/*      text-align: center;*/
+}
+
+.tier-title {
+  display :flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.current-tier {
+  margin: 15px 0px;
+}
+
+.current-tier-title {
+  line-height: 100%;
+}
+
+.current-tier-subtitle {
+  line-height: 30%;
+}
+
+.tier-key {
+  display :flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.flex-keymode {
+  display: flex;
+  justify-content: space-evenly;
+  padding:0px 30px;
+}
+
+tr>td {
+  line-height: 150%;
+  font-size:20px;
+}
+
+tr>td:nth-child(1){
+  font-weight: 1000;
+}
+
+
+
+/****************************** 서열표 키/난이도 선택 컴포넌트 관련 ******************************/
+
+.rank-order-selector-wrapper {
+  position: relative;
+  max-width: 1100px;
+  height: 280px;
+  border: 3px solid #e3dbff;
+  border-radius: 40px;
+  box-shadow: 0px 10px 15px rgba(113, 75, 255, 0.15);
+  margin: 0px auto 100px auto;
+  padding: 40px 0px 10px 0px;
+}
+
+.rank-order-selector {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  height: 100%;
+  padding: 35px 0px;
+}
+
+.single-key-level-selector {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 50%;
+  height: 50%;
+  padding: 20px 80px;
+}
+
+.option-box {
+  position: absolute;
+  bottom: -25px;
+  left: 50%;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  padding: 15px 60px;
+  color: white;
+  background-color: #473395;
+  border-radius: 15px;
+  transform: translate(-50%, 0);
+}
+
+/** 곡 제목 표시 스위치 관련 */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 45px;
+  height: 15px;
+  margin-right: 15px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch-margin {
+  margin-left : 40px;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 30px;
+  width: 30px;
+  left: 0px;
+  bottom: -7px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #614dab;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(15px);
+  -ms-transform: translateX(15px);
+  transform: translateX(15px);
+}
+
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+
+/****************************** 서열표 컴포넌트 관련 ******************************/
+.rank-orderlist-wrapper {
+  display : flex;
+  width: 92.5%;
+}
+
+.header {
+  position:sticky;
+  top:70px;
+  height: 100px;
+  min-width:175px;
+  margin-top: 10px;
+}
+
+.header h1 {
+  display : inline;
+}
+
+.order-box {
+  display : flex;
+}
+
+.order-grade {
+  position:sticky;
+  font-size : 30px;
+  width: 75px;
+  height:110px;
+  font-weight: 1000;
+  line-height: 125px;
+  margin-left: 5px;
+  top: 58px;
+}
+
+.order-list {
+  display : flex;
+  flex-wrap : wrap;
+  width: 100%;
+  border-bottom: 3px solid #e3dbff;
+}
+
+.song-wrapper {
+  display:flex;
+  max-height: 240px;
+  width: 130px;
+  align-items: flex-start;
+  margin: 10px 0px;
+  flex-wrap: wrap;
+  text-align: center;
+}
+
+.song-infobox {
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width:120px;
+  margin:15px 30px 10px 30px;
+}
+
+.imgbox {
+  position : relative;
+  width: 120px;
+  height: 120px;
+  margin: 5px;
+  transition: all 0.5s;
+  text-align: center;
+}
+
+.imgbox img {
+  width: 95%;
+  height: 95%;
+  transition: all 0.5s;
+}
+
+.shadowbox {
+  position: absolute;
+  width: 90%;
+  height: 90%;
+  top:3px;
+  left:6px;
+  border-radius: 50%;
+  transition: all 0.5s;
+  z-index:-999;
+}
+
+/** 이미지 애니메이션 관련 속성들 */
+.imgbox:hover {
+  transform: scale(110%);
+  transition: all 0.2s;
+}
+
+.imgbox:hover img {
+  animation-name: disk-rotation;
+  animation-duration: 10s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.imgbox:hover .shadowbox {
+  box-shadow: 0px 25px 40px -10px rgba(71, 51, 149, 0.6);
+  transition: all 0.2s;
+}
+
+.song-title {
+  font-weight: 500;
+  font-size:14px;
+  margin-top: 15px;
+}
+
+/** EZ ~ SHD 뱃지 관련 */
+.level-badge {
+  width:50px;
+  text-align: center;
+  position:absolute;
+  /* bottom값 체크 */
+  bottom:0px;
+  right:0;
+  color:white;
+  /* 기울임 효과로 인한 착시효과 때문에 좌측대비 우측 패딩 3px 추가.*/
+  padding: 1px 3px 1px 0px;
+  border-radius:4px;
+  font-weight: 1000;
+  font-size:18px;
+  font-style:italic;
+}
+
+.SHD {
+  background-color:#ff2f2f;
+}
+
+.HD {
+  background-color:#ffb82f;
+}
+
+.NM {
+  background-color : #7ad522;
+}
+
+.EZ {
+  background-color : #1e8aef;
+}
+
+/****************************** 테마 색상 관련 ******************************/
+.theme-pp {
+  color: #473395;
+}
+
+/****************************** 푸터 ******************************/
+
+.footer {
+  margin: 50px 0px;
+  line-height: 150%;
+}
+
+/****************************** 애니메이션 효과 관련 ******************************/
+
+@keyframes disk-rotation {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes glow {
+  0% {
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    filter: hue-rotate(360deg);
+  }
+}
