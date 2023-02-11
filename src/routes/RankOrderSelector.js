@@ -29,7 +29,7 @@ function RankOrderSelector(){
     dispatch(setCleanKeyAndDifficulty())
   }
  }, [state.rankUserSelected.selectedKey, state.rankUserSelected.selectedDifficulty])
- 
+
   return (
     <div className="rank-order-selector-wrapper">
       <div className="rank-order-selector">
@@ -41,9 +41,9 @@ function RankOrderSelector(){
                 <h1 className="theme-pp">{SinglekeyAndDifficulty.key.toUpperCase()}</h1>
                   {
                   SinglekeyAndDifficulty.difficulty.map((singleDifficulty, index)=>{
-                  return <span key={index} className={`link ${SinglekeyAndDifficulty.class[index]}`} onClick={()=>{
+                  return <div key={index}><span className={`link ${SinglekeyAndDifficulty.class[index]}`} onClick={()=>{
                     goToPage(SinglekeyAndDifficulty.key, singleDifficulty)
-                  }}>Lv. {singleDifficulty}</span>
+                  }}>Lv. {singleDifficulty}</span></div>
                   })
                 }
               </div>
@@ -67,7 +67,14 @@ function RankOrderSelector(){
         </label>
         <span className="bold">
           내림차순
-          </span>
+        </span>
+        {/* <label className="switch switch-margin">
+          <input type="checkbox" onClick={(e)=>{
+            dispatch(setTitleView(e.target.checked))
+          }} defaultChecked></input>
+          <span className="slider round"></span>
+        </label>
+        <span className="bold">호버 애니메이션 켜기</span> */}
       </div>
     </div>
   )

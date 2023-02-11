@@ -127,4 +127,89 @@ let a = [
     }
 ]
 
+let b = {
+    "data": {
+      "message": "success",
+      "data": {
+        "type": null,
+        "accessToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0MDEiLCJpYXQiOjE2NzU5OTQ1NDQsImV4cCI6MTY3NjU5OTM0NH0.vVvGwfYO7w6NCfdE18eB0zBK7UA8-hd6AU076EqarSIvFyhC5-J5ZY5-I23C_3v4SJxCvJ8vugqA3qEaBHtT1g",
+        "refreshToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0MDEiLCJpYXQiOjE2NzU5OTQ1NDQsImV4cCI6MTY3NzIwNDE0NH0.RVLMPRQMwGIeFaiT20gzSef4ugsa8GsJPgel3EHYjyBf4BpMm2saf4pO1W-wFf5u5x31pf1uvR7qOp6VKuwpkw"
+      }
+    },
+    "status": 200,
+    "statusText": "",
+    "headers": {
+      "content-type": "application/json;charset=UTF-8"
+    },
+    "config": {
+      "transitional": {
+        "silentJSONParsing": true,
+        "forcedJSONParsing": true,
+        "clarifyTimeoutError": false
+      },
+      "adapter": [
+        "xhr",
+        "http"
+      ],
+      "transformRequest": [
+        null
+      ],
+      "transformResponse": [
+        null
+      ],
+      "timeout": 0,
+      "xsrfCookieName": "XSRF-TOKEN",
+      "xsrfHeaderName": "X-XSRF-TOKEN",
+      "maxContentLength": -1,
+      "maxBodyLength": -1,
+      "env": {},
+      "headers": {
+        "Accept": "application/json, text/plain, */*",
+        "Content-Type": "application/json"
+      },
+      "method": "post",
+      "url": "http://ez2archive.kr:54856/login",
+      "data": "{\"password\":\"test01\",\"userId\":\"test01\"}"
+    },
+    "request": {}
+  }
+
+let c = {
+    "message": "Request failed with status code 401",
+    "name": "AxiosError",
+    "stack": "AxiosError: Request failed with status code 401\n    at settle (http://localhost:3000/static/js/bundle.js:71806:12)\n    at XMLHttpRequest.onloadend (http://localhost:3000/static/js/bundle.js:70504:66)",
+    "config": {
+      "transitional": {
+        "silentJSONParsing": true,
+        "forcedJSONParsing": true,
+        "clarifyTimeoutError": false
+      },
+      "adapter": [
+        "xhr",
+        "http"
+      ],
+      "transformRequest": [
+        null
+      ],
+      "transformResponse": [
+        null
+      ],
+      "timeout": 0,
+      "xsrfCookieName": "XSRF-TOKEN",
+      "xsrfHeaderName": "X-XSRF-TOKEN",
+      "maxContentLength": -1,
+      "maxBodyLength": -1,
+      "env": {},
+      "headers": {
+        "Accept": "application/json, text/plain, */*",
+        "Content-Type": "application/json"
+      },
+      "method": "post",
+      "url": "http://ez2archive.kr:54856/login",
+      "data": "{\"password\":\"asdf\",\"userId\":\"asdf\"}"
+    },
+    "code": "ERR_BAD_REQUEST",
+    "status": 401
+  }
+  
 export default a
