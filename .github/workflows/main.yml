@@ -19,13 +19,16 @@ jobs:
 
       - name: Build
         run: npm run build
+        
+      - name: Change directory
+        run: cd build
 
       - name: Deploy
-        uses: srueda99/scp-action@v12
+        uses: garygrossgarten/github-action-scp@v0.8.0
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.KEY }}
-          origin: "build/*"
-          destination: "/var/www/ez2archive/"
+          privateKey: ${{ secrets.KEY }}
+          origin: "./"
+          remote: "/var/www/ez2archive/"
         
