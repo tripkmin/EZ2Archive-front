@@ -19,16 +19,20 @@ jobs:
 
       - name: Build
         run: npm run build
-        
-      - name: Change directory
-        run: cd build
 
-      - name: Deploy
+      - name: Copy files to server
         uses: appleboy/scp-action@v0.1.3
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
-          source: "./"
-          target: "/var/www/ez2archive/"
-        
+          source: "build/"
+          target: "/home/ec2-user/"
+          
+      - name: Deploy
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          script: /home/ec2-user/copy_files.sh
