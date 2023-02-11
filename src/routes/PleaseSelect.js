@@ -1,3 +1,5 @@
+/*eslint-disable*/
+
 function PleaseSelect(){
   return (
     <div className="pleaseSelectBox">

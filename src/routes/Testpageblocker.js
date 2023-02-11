@@ -1,3 +1,5 @@
+/*eslint-disable*/
+
 function Testpageblocker(){
   return (
     <div className="testpage-blocker">

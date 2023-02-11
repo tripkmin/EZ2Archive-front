@@ -1,4 +1,5 @@
-// import 'bootstrap/dist/css/bootstrap.min.css';
+/*eslint-disable*/
+
 import './App.css';
 import { Routes, Route, Outlet } from "react-router-dom"
 import { useSelector, useDispatch } from "react-redux";

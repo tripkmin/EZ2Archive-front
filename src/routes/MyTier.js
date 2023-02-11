@@ -1,3 +1,5 @@
+/*eslint-disable*/
+
 function MyTier(){
   return (
     <div className="rank-order-selector-wrapper">

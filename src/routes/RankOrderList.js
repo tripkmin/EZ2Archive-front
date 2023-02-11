@@ -1,3 +1,5 @@
+/*eslint-disable*/
+
 import { useSelector, useDispatch } from "react-redux";
 import axios from 'axios'
 import { useEffect, useState } from 'react'
@@ -156,8 +158,29 @@ const handleImgError = (e) => {
                           </div>
                           <div className="testing no-drag">
                             <div className="testing-contents">
-                              <h5>{filteredElement.name}</h5>
-                              <span>{filteredElement.artist}</span>
+                            {
+                              filteredElement.name.length > 17
+                              ? 
+                                <div className="testing-title" style={{width:`${filteredElement.name.length*25}px`}}>
+                                  <h5 className="width-50">{filteredElement.name}</h5>
+                                  <h5 className="width-50">{filteredElement.name}</h5>
+                                </div>
+                              : 
+                                <div className="testing-title">
+                                  <h5 className="animation-paused">{filteredElement.name}</h5>
+                                </div>
+                            }
+                            {
+                              filteredElement.artist.length > 28
+                              ? <div className="testing-artist" style={{width:`${filteredElement.artist.length*15}px`}}>
+                                  <span className="width-50">{filteredElement.artist}</span>
+                                  <span className="width-50">{filteredElement.artist}</span>
+                                </div>
+                              : <div className="testing-artist">
+                                  <span className="animation-paused">{filteredElement.artist}</span>
+                                </div>
+                            }
+                            {/* <span>{filteredElement.artist}</span> */}
                               <table>
                                 <tbody>
                                   <tr>
