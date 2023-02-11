@@ -173,6 +173,26 @@ body {
   background-color: white;
 }
 
+/* 반응형 미지원 관련 */
+.no-support {
+  position:fixed;
+  bottom:0;
+  width:100%;
+  background-color: #383838;
+  /* background-color: #2f171a; */
+  color:white;
+  text-align: center;
+  padding: 5px 0px;
+  visibility: hidden;
+}
+
+.no-support button {
+  margin-left : 10px;
+  padding: 0;
+  background-color: transparent;
+  color:white;
+}
+
 /****************************** 로그인 관련 ******************************/
 
 .login-modal {
@@ -392,8 +412,12 @@ html, body, #root {
   flex-grow: 1;
 }
 
-.w100 {
+.width-100 {
   width:100%;
+}
+
+.width-50 {
+  width:50%;
 }
 
 .z-index-10 {
@@ -434,6 +458,10 @@ html, body, #root {
 
 .hidden {
   visibility: hidden;
+}
+
+.animation-paused { 
+  animation-play-state: paused;
 }
 
 /****************************** 메인 컴포넌트 관련 ******************************/
@@ -983,11 +1011,13 @@ input:checked + .slider:before {
 
 .testing-contents {
   opacity:0;
+  overflow: hidden;
 }
 
 .imgbox:hover+.testing {
   width: 365px;
   padding-left: 145px;
+  padding-right: 40px;
   visibility: visible;
   z-index: 500;
   transition: all 0.15s;
@@ -1001,7 +1031,26 @@ input:checked + .slider:before {
   transition-delay: 0.15s;
 }
 
-.testing-contents h5 {
+/* .imgbox:hover+.testing>h5{ */
+.imgbox:hover+.testing h5,
+.imgbox:hover+.testing span {
+  animation-name: marquee;
+  animation-duration: 5s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-delay: 1s;
+}
+
+
+.testing-title {
+  display:flex;
+}
+
+.testing-artist {
+  display:flex;
+}
+
+.testing-title h5 {
   line-height: 100%;
   color:#473395;
 }
@@ -1107,32 +1156,13 @@ input:checked + .slider:before {
   }
 }
 
-@keyframes glow {
-  0% {
-    filter: hue-rotate(0deg);
+@keyframes marquee {
+  from {
+    transform: translateX(0%);
   }
-  100% {
-    filter: hue-rotate(360deg);
+  to {
+    transform: translateX(-100%);
   }
-}
-
-.no-support {
-  position:fixed;
-  bottom:0;
-  width:100%;
-  background-color: #383838;
-  /* background-color: #2f171a; */
-  color:white;
-  text-align: center;
-  padding: 5px 0px;
-  visibility: hidden;
-}
-
-.no-support button {
-  margin-left : 10px;
-  padding: 0;
-  background-color: transparent;
-  color:white;
 }
 
 @media screen and (max-width : 568px) { 
