@@ -26,6 +26,6 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
-          source: "build/"
-          target: "/home/ec2-user/"
+          source: "build/*"
+          target: "/var/www/ez2archive/"
         
