@@ -8,6 +8,8 @@ import { setKeyAndDifficulty } from './../store.js'
 // import Skeleton from 'react-loading-skeleton'
 // import 'react-loading-skeleton/dist/skeleton.css'
 import defaultProfile from './../imagenone.webp'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExclamation } from "@fortawesome/free-solid-svg-icons";
 
 // 컴포넌트 로드 시 선택된 키, 난이도에 해당하는 자료들을 서버에서 가져와 list 변수에 할당.
 function RankOrderList(props){
@@ -154,14 +156,15 @@ const handleImgError = (e) => {
                           <div className="imgbox no-drag">
                             <img src={process.env.PUBLIC_URL + '/musicdisk/'+ renamed + '.webp'} alt={filteredElement.name} onError={handleImgError}></img>
                             <div className="shadowbox"></div>
+                            {/* <span className="rating-badge HD"><FontAwesomeIcon icon={faExclamation}/></span> */}
                             <span className={`level-badge ${filteredElement.difficulty}`}>{filteredElement.difficulty}</span>
                           </div>
                           <div className="testing no-drag">
                             <div className="testing-contents">
                             {
-                              filteredElement.name.length > 17
+                              filteredElement.name.length > 13
                               ? 
-                                <div className="testing-title" style={{width:`${filteredElement.name.length*25}px`}}>
+                                <div className="testing-title" style={{width:`${filteredElement.name.length*30}px`}}>
                                   <h5 className="width-50">{filteredElement.name}</h5>
                                   <h5 className="width-50">{filteredElement.name}</h5>
                                 </div>
@@ -171,8 +174,8 @@ const handleImgError = (e) => {
                                 </div>
                             }
                             {
-                              filteredElement.artist.length > 28
-                              ? <div className="testing-artist" style={{width:`${filteredElement.artist.length*15}px`}}>
+                              filteredElement.artist.length > 24
+                              ? <div className="testing-artist" style={{width:`${filteredElement.artist.length*20}px`}}>
                                   <span className="width-50">{filteredElement.artist}</span>
                                   <span className="width-50">{filteredElement.artist}</span>
                                 </div>
@@ -192,7 +195,7 @@ const handleImgError = (e) => {
                                     <td>{filteredElement.bpm}</td>
                                   </tr>
                                   <tr>
-                                    <td>DLC</td>
+                                    <td>CATEGORY</td>
                                     <td>{filteredElement.category}</td>
                                   </tr>
                                 </tbody>

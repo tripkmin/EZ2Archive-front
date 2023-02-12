@@ -16,7 +16,7 @@ import Preparing from './routes/Preparing.js'
 import Navbar from './routes/Navbar.js'
 import Login from './routes/Login.js'
 import SignIn from './routes/SignIn';
-import Testpageblocker from './routes/Testpageblocker';
+// import Testpageblocker from './routes/Testpageblocker';
 
 import { useEffect } from 'react';
 import { setUserName } from './store';
@@ -33,8 +33,7 @@ function App() {
       3. 만약 쿠키가 유효하다면 안녕하세요 누구 님~처럼 파싱한 쿠키의 데이터의 이름을 로그인 쪽 에다가 이름을 적도록 한다.   
     */ 
 
-
-  // 파싱한 것들에 대해서 어떤 것들을 할 지 체크를 좀 해봐야 할 거 같은데... 이거 어떻게 해야 할 지 모르겠음.
+  // 파싱한 것들을 갖고 어떻게 할 지 체크를 좀 해봐야 할 거 같은데
 
     if (typeof cookies.accessToken !== 'undefined'){
       var accessToken = cookies.accessToken
