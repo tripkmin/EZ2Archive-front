@@ -34,7 +34,8 @@ function RankOrderList(props){
     }
     /** 유저가 선택한 키 모드에 따라 AJAX 요청을 하기 위해 사용 */
     const getUrl = (key) => {
-      return `http://ec2-15-165-162-69.ap-northeast-2.compute.amazonaws.com:54856/rank/list/${key}`
+      
+      return `http://api.ez2archive.kr/rank/list/${key}`
     }
 
     const getAndSetData = (data) => {

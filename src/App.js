@@ -15,8 +15,7 @@ import PleaseSelect from './routes/PleaseSelect';
 import Preparing from './routes/Preparing.js'
 import Navbar from './routes/Navbar.js'
 import Login from './routes/Login.js'
-import SignIn from './routes/SignIn';
-// import Testpageblocker from './routes/Testpageblocker';
+import Testpage from './routes/Testpage';
 
 import { useEffect } from 'react';
 import { setUserName } from './store';
@@ -57,7 +56,7 @@ function App() {
           {/* 라우트 영역 */}
             <Routes>
               <Route path="/" element={ <Main/> }></Route>
-              <Route path="/signin" element={ <SignIn/> }></Route>
+              {/* <Route path="/signin" element={ <SignIn/> }></Route> */}
               {/* <Route path="/tier" element={ <><MyTier></MyTier></> }></Route> */}
               <Route path="/tier" element={ <><MyTier></MyTier><Preparing></Preparing></> }></Route>
               <Route path="/rank" element={ <><RankOrderSelector/> <Outlet></Outlet></> }>
@@ -67,6 +66,7 @@ function App() {
                 <Route path="6k/:selectedDifficulty" element={ <><RankOrderList selectedKey="6k"/></> }></Route>
                 <Route path="8k/:selectedDifficulty" element={ <><RankOrderList selectedKey="8k"/></> }></Route>
               </Route>
+              <Route path="/testpage6220" element={ <Testpage/> }></Route>
             </Routes>
           </div>
         <Footer/>

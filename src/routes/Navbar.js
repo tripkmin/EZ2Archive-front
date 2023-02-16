@@ -1,14 +1,49 @@
 /*eslint-disable*/
 
+import axios from "axios"
+import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom"
-import { switchLoginModal } from "../store"
+import { switchModalOpen, setModalStep, setUserName } from "../store"
 
 function Navbar(){
 
   let navigate = useNavigate()
   let state = useSelector( (state) => state )
   let dispatch = useDispatch()
+  const [user, setUser] = useState("")
+  // const isVaildAT = () => {
+  //   const AT = localStorage.getItem("AccessToken")
+  //   const base64Payload = AT.split('.')[1];
+  //   const payload = decodeURIComponent(window.atob(base64Payload)); 
+  //   const ATParse = JSON.parse(payload) 
+  //   setUser(ATParse.sub)
+  // }
+
+  // useEffect(()=>{
+  //   const AT = localStorage.getItem("AccessToken")
+  //   const base64Payload = AT.split('.')[1]; // .을 기준으로 나누고 거기서 2번째 요소를 고름
+  //   const payload = decodeURIComponent(window.atob(base64Payload)); // JSON화 된 거라 한 번 파싱을 해줘야 함.
+  //   const ATParse = JSON.parse(payload) // {"typ": "access", "sub": "frontadmin", "iss": "ez2archive-api", "jti": "7f58c08d-3152-41b8-9f10-708149d159e3", "iat": 1676369245, "exp": 1676369845}
+  //   setUser(ATParse.sub)
+  // }, [])
+
+  // 개발 진행중
+  // useEffect(() => {
+  //   const AT = localStorage.getItem("accessToken") 
+  //   if (AT !== null) {
+  //     axios.get('http://api.ez2archive.kr/members/myInfo', {
+  //       headers: {
+  //         Authorization: `Bearer ${AT}`
+  //       }
+  //     })
+  //     .then( (res) => {
+  //       dispatch(setUserName(res.data.data.name))
+  //     })
+  //     .catch( console.log("토큰이 만료되었거나 요청이 잘못되었습니다.") )
+  //     }
+  // }, [])
+
   return (
     <header>
       <nav className="nav-wrapper theme-pp-shadow">
@@ -23,8 +58,16 @@ function Navbar(){
             </div>
             <img className="pp-navbar-pattern" src={process.env.PUBLIC_URL + '/navbar/Asset 1.svg'} alt="logo" onClick={()=>{ navigate('/') }}></img>
             <div>
-              <span className="category-link" onClick={()=>{ dispatch(switchLoginModal()) }}>로그인</span>
-              <span className="category-link" onClick={()=>{ navigate('/signin') }}>회원가입</span>
+              
+              {/* { user !== "" && ? */}
+              {/* {
+                state.userinfo.userName !== "" 
+                ? <span className="category-link">{state.userinfo.userName}</span>
+                : <span className="category-link" onClick={()=>{ dispatch(switchModalOpen()); dispatch(setModalStep(0)) }}>로그인</span>
+              } */}
+              <span className="category-link" onClick={()=>{ dispatch(switchModalOpen()); dispatch(setModalStep(0)) }}>로그인</span>
+              <span className="category-link" onClick={()=>{ dispatch(switchModalOpen()); dispatch(setModalStep(1)) }}>회원가입</span>
+              {/* <span className="category-link" onClick={()=>{ navigate('/signin') }}>회원가입</span> */}
             </div>
           </div>
         </div>

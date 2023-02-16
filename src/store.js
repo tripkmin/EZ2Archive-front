@@ -2,23 +2,50 @@ import { createSlice, configureStore } from '@reduxjs/toolkit'
 
 let userinfo = createSlice({
   name : "userinfo",
-  initialState : {username : ""},
+  initialState : {userName : "", userId : "", userAuth: "", userAddTime: ""},
   reducers : {
     setUserName(state, action){
-      state.username = action.payload
+      state.userName = action.payload
+    },
+    setUserId(state, action){
+      state.userId = action.payload
+    },
+    setUserAuth(state, action){
+      state.userAuth = action.payload
+    },
+    setUserAddTime(state, action){
+      state.userAddTime = action.payload
+    },
+  }
+})
+
+// setMyName(res.data.data.name)
+// setMyId(res.data.data.userId)
+// setMyAuth(res.data.data.authority)
+// setMyAddTime(res.data.data.addTime)
+
+let memberModal = createSlice({
+  name : "memberModal",
+  initialState : {isModalOpen : false, modalStep : 0 },
+  reducers : {
+    switchModalOpen(state){
+      state.isModalOpen = !state.isModalOpen
+    },
+    setModalStep(state, action){
+      state.modalStep = action.payload
     }
   }
 })
 
-let userLogin = createSlice({
-  name : "userLogin",
-  initialState : {isLoginModalOpen : false},
-  reducers : {
-    switchLoginModal(state){
-      state.isLoginModalOpen = !state.isLoginModalOpen
-    }
-  }
-})
+// let userLogin = createSlice({
+//   name : "userLogin",
+//   initialState : {isLoginModalOpen : false},
+//   reducers : {
+//     switchLoginModal(state){
+//       state.isLoginModalOpen = !state.isLoginModalOpen
+//     }
+//   }
+// })
 
 let rankUserSelected = createSlice({
   name : "rankUserSelected",
@@ -66,13 +93,15 @@ let selectIndex = createSlice({
 export default configureStore({
   reducer: { 
     userinfo : userinfo.reducer,
-    userLogin : userLogin.reducer,
+    memberModal : memberModal.reducer,
+    // userLogin : userLogin.reducer,
     rankUserSelected : rankUserSelected.reducer,
     selectIndex : selectIndex.reducer,
    }
 }) 
 
-export let { setUserName } = userinfo.actions
-export let { switchLoginModal } = userLogin.actions
+export let { setUserName, setUserId, setUserAuth, setUserAddTime } = userinfo.actions
+export let { switchModalOpen, setModalStep } = memberModal.actions
+// export let { switchLoginModal } = userLogin.actions
 export let { setTitleView, setKeyAndDifficulty, setDescending, setCleanKeyAndDifficulty } = rankUserSelected.actions
 export let { setClass, cleanClass } = selectIndex.actions
