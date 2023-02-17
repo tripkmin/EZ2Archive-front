@@ -32,7 +32,7 @@ function Navbar(){
   // useEffect(() => {
   //   const AT = localStorage.getItem("accessToken") 
   //   if (AT !== null) {
-  //     axios.get('http://api.ez2archive.kr/members/myInfo', {
+  //     axios.get('https://api.ez2archive.kr/members/myInfo', {
   //       headers: {
   //         Authorization: `Bearer ${AT}`
   //       }

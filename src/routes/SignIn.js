@@ -34,7 +34,7 @@ function SignIn(){
     setEmail(e.target.value)
   }
   const idChecker = (e) => {
-    axios.get(`http://api.ez2archive.kr/idCheck?userId=${e.target.value}`)
+    axios.get(`https://api.ez2archive.kr/idCheck?userId=${e.target.value}`)
     .then((res)=>{
       // 아이디 중복이 있으면 true로 반환됨. → idOnly는 false로.
       if (res.data.data){setIdOnly(!res.data.data)} 

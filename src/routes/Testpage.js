@@ -22,7 +22,7 @@ function Testpage(){
   }}
 
   const myInfo = () => {
-    axios.get('http://api.ez2archive.kr/members/myInfo', {
+    axios.get('https://api.ez2archive.kr/members/myInfo', {
       headers: {
         Authorization: `Bearer ${AT}`
       }
@@ -36,12 +36,12 @@ function Testpage(){
   }
 
   const newAccess = () => {
-    axios.post('http://api.ez2archive.kr/reIssue')
+    axios.post('https://api.ez2archive.kr/reIssue')
     .then(res => console.log(res))
   }
 
   const login = () => {
-    axios.post('http://api.ez2archive.kr/login', {
+    axios.post('https://api.ez2archive.kr/login', {
       "password": "test04",
       "userId": "test04"
     })

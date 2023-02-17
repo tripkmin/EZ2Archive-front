@@ -40,7 +40,7 @@ function Login(props){
 
   const login = (event) => {
     event.preventDefault();
-    axios.post('http://api.ez2archive.kr/login', {
+    axios.post('https://api.ez2archive.kr/login', {
       "password": password,
       "userId": id
     })
@@ -99,7 +99,7 @@ function Login(props){
     setIsEmailChecked(false)
   }
   const idChecker = (e) => {
-    axios.get(`http://api.ez2archive.kr/idCheck?userId=${e.target.value}`)
+    axios.get(`https://api.ez2archive.kr/idCheck?userId=${e.target.value}`)
     .then((res) => {
       // 아이디 중복이 있으면 true로 반환됨. → idOnly는 false로.
       if (res.data.data){setIdOnly(!res.data.data)} 
@@ -107,7 +107,7 @@ function Login(props){
     })
   }
   const emailChecker = (e) => {
-    axios.get(`http://api.ez2archive.kr/emailCheck?email=${e.target.value}`)
+    axios.get(`https://api.ez2archive.kr/emailCheck?email=${e.target.value}`)
     .then((res) => {
       // 이메일 중복이 있으면 true로 반환됨. → emailOnly는 false로.
       if (res.data.data){setEmailOnly(!res.data.data)}
@@ -287,7 +287,7 @@ function Login(props){
                   </div>
                   <div className="sign-button">
                     <button disabled={notAllow} className="theme-pp-button" onClick={()=>{
-                      axios.post('http://api.ez2archive.kr/signUp', {
+                      axios.post('https://api.ez2archive.kr/signUp', {
                         "email": signEmail,
                         "name": signNickname,
                         "password": signPassword,
