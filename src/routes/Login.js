@@ -48,18 +48,18 @@ const LoginAndSignin = (props) => {
     .then((res) => {
       const AT = localStorage.getItem("accessToken")
       localStorage.setItem("accessToken", res.data.data.accessToken);
-      axios
-        .get('http://ez2archive.kr:54856/members/myInfo', {
-          headers: {
-            Authorization: `Bearer ${AT}`
-          }
-        })
-        .then((res) => {
-          dispatch(setUserName(res.data.data.name))
-          dispatch(setUserId(res.data.data.userId))
-          dispatch(setUserAuth(res.data.data.authority))
-          dispatch(setUserAddTime(res.data.data.addTime))
-        })
+      // axios
+      //   .get('https://api.ez2archive.kr/login', {
+      //     headers: {
+      //       Authorization: `Bearer ${AT}`
+      //     }
+      //   })
+      //   .then((res) => {
+      //     dispatch(setUserName(res.data.data.name))
+      //     dispatch(setUserId(res.data.data.userId))
+      //     dispatch(setUserAuth(res.data.data.authority))
+      //     dispatch(setUserAddTime(res.data.data.addTime))
+      //   })
       window.location.reload();
     })
     .catch((error) => {
