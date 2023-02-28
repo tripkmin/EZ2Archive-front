@@ -1,6 +1,6 @@
 /*eslint-disable*/
 
-function PleaseSelect(){
+const PleaseSelect = () => {
   return (
     <div className="pleaseSelectBox">
       <img src={process.env.PUBLIC_URL + '/source/pleaseSelect.png'} alt="PleaseSelect"></img>

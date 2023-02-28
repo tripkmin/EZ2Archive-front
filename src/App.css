@@ -12,14 +12,11 @@ input[type="password"] {
 2. 로그인 배경 (900)
 3. Navbar (800)
 
-
 -1. Disk Shadow 박스 (-1000)
 -1. Navbar 패턴 (-1000)
 */
 
 /* 폰트 안티앨리어싱 관련 */
-
-
 p,
 span,
 h1,
@@ -275,12 +272,8 @@ body {
 }
 
 .modal-step-0 {
-  /* 임시 height임! 나중에 auto로 변경할 것. */
   width:400px;
-  height:400px;
-  /* 임시 끝 */
-
-  /* height:auto; */
+  height:450px;
   border-radius: 10px;
   background-color: white;
   z-index: 1000;
@@ -292,19 +285,13 @@ body {
 }
 
 .modal-step-1 {
-  /* 임시 height임! 나중에 auto로 변경할 것. */
   width:400px;
   height:800px;
-  /* 임시 끝 */
-
-  /* height:auto; */
   border-radius: 10px;
   background-color: white;
   z-index: 1000;
   padding:10px;
   transition: all 0.3s;
-
-  /* 임시 */
   display:flex;
   flex-direction: column;
   overflow: hidden;
@@ -332,14 +319,25 @@ body {
 }
 
 .login-body {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
   padding: 30px 20px;
 }
 
 .login-body-header{
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   text-align: center;
-  /* margin-bottom: 30px; 
-  테스트 부제 없애면 수정하기*/
   margin-bottom: 15px;
+  flex-grow: 1;
+}
+
+.login-error {
+  color:#885be0;
+  font-weight: 700;
 }
 
 .login-bg {
@@ -429,6 +427,8 @@ body {
 .input-warning {
   color:#885be0;
   line-height: 0;
+  font-weight: 500;
+
 }
 
 .sign-check {
@@ -930,6 +930,32 @@ tr>td {
 tr>td:nth-child(1){
   font-weight: 1000;
 }
+
+.notfound {
+  display : flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  margin-top: 50px;
+  background-color: #eee;
+  border-radius: 20px;
+  /* border-top-left-radius: 20px;
+  border-top-right-radius : 20px; */
+}
+
+.notfound img {
+  width: 300px;
+  margin : 20px 0px;
+  border-radius: 30px;
+  border : 7px solid #623138;
+}
+
+.notfound h5 {
+  color : #a8a8a8;
+  font-weight: 600;
+}
+
 
 /****************************** 서열표 키/난이도 선택 컴포넌트 관련 ******************************/
 

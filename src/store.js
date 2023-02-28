@@ -1,6 +1,6 @@
 import { createSlice, configureStore } from '@reduxjs/toolkit'
 
-let userinfo = createSlice({
+const userinfo = createSlice({
   name : "userinfo",
   initialState : {userName : "", userId : "", userAuth: "", userAddTime: ""},
   reducers : {
@@ -19,12 +19,7 @@ let userinfo = createSlice({
   }
 })
 
-// setMyName(res.data.data.name)
-// setMyId(res.data.data.userId)
-// setMyAuth(res.data.data.authority)
-// setMyAddTime(res.data.data.addTime)
-
-let memberModal = createSlice({
+const memberModal = createSlice({
   name : "memberModal",
   initialState : {isModalOpen : false, modalStep : 0 },
   reducers : {
@@ -37,7 +32,7 @@ let memberModal = createSlice({
   }
 })
 
-// let userLogin = createSlice({
+// const userLogin = createSlice({
 //   name : "userLogin",
 //   initialState : {isLoginModalOpen : false},
 //   reducers : {
@@ -47,7 +42,7 @@ let memberModal = createSlice({
 //   }
 // })
 
-let rankUserSelected = createSlice({
+const rankUserSelected = createSlice({
   name : "rankUserSelected",
   initialState : {selectedKey : "", selectedDifficulty : 0, songTitleView : true, isDescending : true},
   reducers : {
@@ -69,7 +64,7 @@ let rankUserSelected = createSlice({
   }
 })
 
-let selectIndex = createSlice({
+const selectIndex = createSlice({
   name : "selectIndex",
   initialState : [
     {key: '4k', difficulty : [20, 19, 18, 17, 16], class: ["", "", "", "", ""]}, 
@@ -100,8 +95,8 @@ export default configureStore({
    }
 }) 
 
-export let { setUserName, setUserId, setUserAuth, setUserAddTime } = userinfo.actions
-export let { switchModalOpen, setModalStep } = memberModal.actions
-// export let { switchLoginModal } = userLogin.actions
-export let { setTitleView, setKeyAndDifficulty, setDescending, setCleanKeyAndDifficulty } = rankUserSelected.actions
-export let { setClass, cleanClass } = selectIndex.actions
+export const { setUserName, setUserId, setUserAuth, setUserAddTime } = userinfo.actions
+export const { switchModalOpen, setModalStep } = memberModal.actions
+// export const { switchLoginModal } = userLogin.actions
+export const { setTitleView, setKeyAndDifficulty, setDescending, setCleanKeyAndDifficulty } = rankUserSelected.actions
+export const { setClass, cleanClass } = selectIndex.actions

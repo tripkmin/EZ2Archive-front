@@ -2,61 +2,67 @@
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faArrowLeft, faArrowRight, faXmark } from "@fortawesome/free-solid-svg-icons"
-
 import { useSelector, useDispatch } from "react-redux";
 import { switchModalOpen, setModalStep } from "../store";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
-import { useCookies } from "react-cookie";
 
-function Login(props){
-  let dispatch = useDispatch()
-  let state = useSelector( (state) => state )
-  let navigate = useNavigate()
-  // const [cookies, setCookie, removeCookie] = useCookies(['accessToken', 'refreshToken']);
+const LoginAndSignin = (props) => {
+  const dispatch = useDispatch()
+  const state = useSelector( (state) => state )
   
   // 공통 기능
-  let [isOpen, setIsOpen] = useState("")
-  // const [step, setStep] = useState(0)
+  const [isModalOpen, setIsModalOpen] = useState("")
   const [modalClass, setModalClass] = useState(0)
-  // step → 0 : 로그인 창 / 1 : 회원가입 창 / 2 : 이메일 인증 창
+  const [errorMsg, setErrorMsg] = useState("")
+  
   useEffect(()=>{
-    if(state.memberModal.isModalOpen){setIsOpen("member-modal-open")} else {setIsOpen("")}
-  }, [state.memberModal.isModalOpen])
+    if(state.memberModal.isModalOpen){setIsModalOpen("member-modal-open")}
+    else {setIsModalOpen("")}
+  }, [state.memberModal.isModalOpen]) 
 
+  // step → 0 : 로그인 창 / 1 : 회원가입 창 / 2 : 이메일 인증 창
   useEffect(()=>{
     switch(state.memberModal.modalStep){
       case 0: setModalClass('modal-step-0'); break
       case 1: setModalClass('modal-step-1'); break
-      case 2: setModalClass('modal-step-0'); break
+      case 2: setModalClass('modal-step-2'); break
       default: setModalClass('modal-step-0')
     }
   }, [state.memberModal.modalStep])
 
   // 로그인 기능
-  let [id, setId] = useState("")
-  let [password, setPassword] = useState("")
+  const [id, setId] = useState("")
+  const [password, setPassword] = useState("")
 
-  const login = (event) => {
-    event.preventDefault();
+  const onSubmit = (e) => {
+    e.preventDefault();
     axios.post('https://api.ez2archive.kr/login', {
       "password": password,
       "userId": id
+    }, {
+      withCredentials: true
+      /* 현재 CORS 에러 이슈로 잠시 막아둠
+      Default값으로 withCredentials : true를 줘야 할수도 있음. */
     })
     .then((res) => {
-      // 엑세스 토큰은 로컬 스토리지, 리프레쉬 토큰은 http only 쿠키에 저장하기로.
-      // localStorage.setItem('accessToken', res.data.data.accessToken)
-      console.log(res)
-      // localStorage.setItem("AccessToken", res.data.data.accessToken)
+      localStorage.setItem("accessToken", res.data.data.accessToken);
+      // window.location.reload();
+      /* 체크 용도로 새로고침 해제 */
     })
-    // .catch(()=>{console.log('로그인 실패')})
-  }
+    .catch((error) => {
+      if (error.response.status >= 400 && error.response.status < 500) {
+        setErrorMsg(error.response.data.message)
+        console.log(errorMsg)
+      } else if (error.response.status === 500){
+        setErrorMsg("서버 오류입니다. 관리자에게 문의하십시오.")
+        console.log(errorMsg)
+      }
+    });
+  };
 
-  // console.log(localStorage.getItem("AccessToken"))
   // 회원가입 기능
   const [isCapsLockOn, setIsCapsLockOn] = useState(false)
-  const [capsLockClass, setCapsLockClass] = useState("")
 
   const [signId, setSignId] = useState("")
   const [signPassword, setSignPassword] = useState("")
@@ -74,57 +80,56 @@ function Login(props){
   const [agree, setAgree] = useState(false)
   const [isIdChecked, setIsIdChecked] = useState(false)
   const [isEmailChecked, setIsEmailChecked] = useState(false)
-
   const [notAllow, setNotAllow] = useState(true)
 
-  const idHandler = (e) => {
+  
+  const idHandler = useCallback((e) => {
     setSignId(e.target.value)
     setIdOnly(true)
     setIsIdChecked(false)
-  }
-  const passwordHandler = (e) => {
+  })
+  const passwordHandler = useCallback((e) => {
     setSignPassword(e.target.value)
     setPasswordSame(false)
-  }
-  const passwordCheckHandler = (e) => {
+  })
+  const passwordCheckHandler = useCallback((e) => {
     setSignPasswordCheck(e.target.value)
     setPasswordSame(false)
-  }
-  const nicknameHandler = (e) => {
+  })
+  const nicknameHandler = useCallback((e) => {
     setSignNickname(e.target.value)
-  }
-  const emailHandler = (e) => {
+  })
+  const emailHandler = useCallback((e) => {
     setSignEmail(e.target.value)
     setEmailOnly(true)
     setIsEmailChecked(false)
-  }
-  const idChecker = (e) => {
+  })
+  const idChecker = useCallback((e) => {
     axios.get(`https://api.ez2archive.kr/idCheck?userId=${e.target.value}`)
     .then((res) => {
-      // 아이디 중복이 있으면 true로 반환됨. → idOnly는 false로.
-      if (res.data.data){setIdOnly(!res.data.data)} 
-      else {setIdOnly(!res.data.data); setIsIdChecked(true)}      
+      if (res.data.data){setIdOnly(!res.data.data);} 
+      else {setIdOnly(!res.data.data); setIsIdChecked(true);}      
     })
-  }
-  const emailChecker = (e) => {
+  })
+  const emailChecker = useCallback((e) => {
     axios.get(`https://api.ez2archive.kr/emailCheck?email=${e.target.value}`)
     .then((res) => {
       // 이메일 중복이 있으면 true로 반환됨. → emailOnly는 false로.
       if (res.data.data){setEmailOnly(!res.data.data)}
       else {setEmailOnly(!res.data.data); setIsEmailChecked(true)}
     })
-  }
-  const passwordSameChecker = () => {
+  })
+  const passwordSameChecker = useCallback(() => {
     if (signPassword === signPasswordCheck) {setPasswordSame(true)}
-    else { setPasswordSame(false) }
-  }
-  const capslockChecker = (e) => {
+    else {setPasswordSame(false)}
+  })
+  const capslockChecker = useCallback((e) => {
     if (e.getModifierState("CapsLock")){setIsCapsLockOn(true)} 
     else {setIsCapsLockOn(false)}
-  }
+  })
 
   /** 모달창 닫으면 인풋 내용 초기화 되도록 함 */
-  const closeAndInputClean = () => {
+  const closeAndInputClean = useCallback(() => {
     dispatch(switchModalOpen())
     setSignId("")
     setSignPassword("")
@@ -142,7 +147,8 @@ function Login(props){
     setIsIdChecked(false)
     setIsEmailChecked(false)
     setNotAllow(true)
-  }
+    setModalClass('modal-step-0')
+  })
 
   // 유효한 인풋 검증
   useEffect(()=>{
@@ -152,13 +158,13 @@ function Login(props){
   }, [signId])
 
   useEffect(()=>{
-    if (signPassword.length > 4 && signPassword.length < 500 ) {setPasswordValid(true)}
+    if (signPassword.length > 7 && signPassword.length < 500 ) {setPasswordValid(true)}
     else {setPasswordValid(false)}
   }, [signPassword])
 
   useEffect(()=>{
     const nicknameRegex = /^[a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ]*$/; 
-    if (nicknameRegex.test(signNickname) ) {setNicknameValid(true)}
+    if (nicknameRegex.test(signNickname) && signNickname.length > 0 && signNickname.length < 16) {setNicknameValid(true)}
     else {setNicknameValid(false)}
   }, [signNickname])
 
@@ -170,41 +176,65 @@ function Login(props){
 
   // 버튼 비활성화 관련
   useEffect(()=>{
-    if (idValid && idOnly && passwordValid && passwordSame && nicknameValid && emailValid && emailOnly && agree && signId !== "" && signEmail !== "" && isIdChecked && isEmailChecked){
+    if (idValid 
+      && idOnly 
+      && passwordValid 
+      && passwordSame 
+      && nicknameValid 
+      && emailValid 
+      && emailOnly 
+      && agree 
+      && signId !== "" 
+      && signEmail !== "" 
+      && isIdChecked 
+      && isEmailChecked){
       setNotAllow(false)
       return;
     } 
     setNotAllow(true)
-  }, [idValid, idOnly, passwordValid, passwordSame, nicknameValid, emailValid, emailOnly, agree, signId, signEmail, isIdChecked, isEmailChecked, signPassword, signNickname])
+  }, [idValid, 
+    idOnly, 
+    passwordValid, 
+    passwordSame, 
+    nicknameValid, 
+    emailValid, 
+    emailOnly, 
+    agree, 
+    signId, 
+    signEmail, 
+    isIdChecked, 
+    isEmailChecked, 
+    signPassword, 
+    signNickname])
 
     return (
-      <div className={`member-modal ${isOpen}`}>
+      <div className={`member-modal ${isModalOpen}`}>
         <div className={`${modalClass}`}>
           <div className="member-header">
             <FontAwesomeIcon icon={faXmark} onClick={closeAndInputClean} style={{cursor:'pointer' }}></FontAwesomeIcon>
-            {
-              // state.memberModal.modalStep === 0 || state.memberModal.modalStep === 1
-              // ? 
-              // <FontAwesomeIcon icon={faArrowRight} onClick={()=>{dispatch(setModalStep(state.memberModal.modalStep + 1))}} style={{cursor:'pointer'}}></FontAwesomeIcon>
-              // : null
+            { 
+              // 스텝 테스트용, 평소에는 비활성화 해야함!
+              state.memberModal.modalStep === 0 || state.memberModal.modalStep === 1
+              ? <FontAwesomeIcon icon={faArrowRight} onClick={()=>{dispatch(setModalStep(state.memberModal.modalStep + 1))}} style={{cursor:'pointer'}}></FontAwesomeIcon>
+              : null
             }
             { state.memberModal.modalStep === 1
             ? <FontAwesomeIcon icon={faArrowLeft} onClick={()=>{dispatch(setModalStep(state.memberModal.modalStep - 1))}} style={{cursor:'pointer'}}></FontAwesomeIcon>
             : null
             }
           </div>
+          {/* modalStep === 0 : 로그인 창 / 1 : 회원가입 창 / 2 : 이메일 발송 창 */}
           { state.memberModal.modalStep === 0 && 
             <div className="login-body">
               <div className="login-body-header">
                 <h3 className="theme-pp">로그인</h3>
-                <small>로그인은 구현 진행 중입니다.</small>
+                {
+                  <small className="login-error">{errorMsg}</small>
+                }
               </div>
-              <form>
+              <form onSubmit={onSubmit}>
                 <fieldset>
                   <div className="login-input-warning">
-                    {/* { isCapsLockOn ? 
-                    <small className="input-warning-badge">CapsLock ON</small>
-                    : null } */}
                   </div>
                   <div className="login-input-wrapper">
                     <input id="id" type="text" name="user_id" required placeholder="아이디" tabIndex="1" onKeyDown={capslockChecker} onChange={(e)=>{
@@ -216,14 +246,10 @@ function Login(props){
                       setPassword(e.target.value)
                       }}></input>
                   </div>
-                  <button className="theme-pp-button" 
-                  onClick={(e)=>{e.preventDefault()}}
-                  // onClick={(e)=>{login(e)}}
-                  >로그인</button>
+                  <button type="submit" className="theme-pp-button">로그인</button>
                 </fieldset>
               </form>
               <div className="login-body-sub">
-                {/* <p onClick={()=>{navigate('/signin'); dispatch(switchLoginModal())}}>회원가입 하기</p> */}
                 <p onClick={()=>{dispatch(setModalStep(1))}}>회원가입</p>
                 <p>ID/PW 찾기</p>
               </div>
@@ -233,16 +259,10 @@ function Login(props){
             <div className="sign-in-wrapper">
               <div className="sign-in-header">
               <h3 className="theme-pp">회원가입</h3>
-              {/* <h3 className="theme-pp">회원가입을 시작합니다</h3> */}
-              {/* <span>계정을 만들고 EZ2ARCHIVE의 <br/>개인화 서비스를 사용해보세요.</span> */}
               </div>
               <form>
                 <fieldset>
                   <div className="sign-input-wrapper">
-                    {/* <div className="warning-test">
-                      <small className="input-description">아이디</small>
-                      <small className="">아이디는 숫자, 영문을 사용해 5~12자 사이어야 합니다.</small>
-                    </div> */}
                     <small className="input-description">아이디</small>
                     <input type="text" placeholder="숫자, 영문 대/소문자 포함 5~12자 사이" value={signId} onChange={idHandler} onBlur={idValid ? idChecker : null}></input>
                     {/* 조건에 일단 부합하는지 먼저 체크 → 그 다음 중복인지 아닌지 체크 */}
@@ -255,8 +275,8 @@ function Login(props){
                     <small className="input-warning-badge">CapsLock ON</small>
                     : null }
                     </small>
-                    <input type="password" placeholder="5자 이상" value={signPassword} onChange={passwordHandler} onBlur={passwordSameChecker} onKeyDown={capslockChecker}></input>
-                    { !passwordValid && signPassword.length > 0 && signPassword.length < 500 && <small className="input-warning">비밀번호는 5자 이상이어야 합니다.</small> }
+                    <input type="password" placeholder="8자 이상" value={signPassword} onChange={passwordHandler} onBlur={passwordSameChecker} onKeyDown={capslockChecker}></input>
+                    { !passwordValid && signPassword.length > 0 && signPassword.length < 500 && <small className="input-warning">비밀번호는 8자 이상이어야 합니다.</small> }
                     { !passwordValid && signPassword.length > 500 && <small className="input-warning">비밀번호는 500자 이하 이여야 합니다.</small>}
                   </div>
                   <div className="sign-input-wrapper">
@@ -265,13 +285,13 @@ function Login(props){
                     <small className="input-warning-badge">CapsLock ON</small>
                     : null }
                     </small>
-                    <input type="password" placeholder="5자 이상" value={signPasswordCheck} onChange={passwordCheckHandler} onBlur={passwordSameChecker} onKeyDown={capslockChecker}></input>
+                    <input type="password" placeholder="8자 이상" value={signPasswordCheck} onChange={passwordCheckHandler} onBlur={passwordSameChecker} onKeyDown={capslockChecker}></input>
                     { signPassword.length > 0 && signPassword.length < 500 && signPasswordCheck !== "" && !passwordSame && <small className="input-warning">비밀번호가 다릅니다.</small> }
                   </div>
                   <div className="sign-input-wrapper">
                     <small className="input-description">닉네임</small>
-                    <input type="text" placeholder="공백과 특수문자를 제외한 문자" value={signNickname} onChange={nicknameHandler}></input>
-                    { !nicknameValid && signNickname.length > 0 && <small className="input-warning">닉네임에는 공백과 특수문자가 들어갈 수 없습니다.</small> }
+                    <input type="text" placeholder="한글, 영문, 숫자를 사용하여 15자 이하" value={signNickname} onChange={nicknameHandler}></input>
+                    { !nicknameValid && signNickname.length > 0 && <small className="input-warning">닉네임에는 한글, 영문, 숫자만 사용할 수 있습니다.</small> }
                   </div>
                   <div className="sign-input-wrapper">
                     <small className="input-description">이메일</small>
@@ -304,13 +324,12 @@ function Login(props){
               <div className="sign-complete">
                 <h3 className="theme-pp">이메일을 확인해주세요.</h3>
                 <span><strong>{signEmail}</strong><br/>위의 주소로 인증 요청 메일을 보냈습니다.<br/>혹시 이메일이 오지 않았다면 스팸함을 확인해보세요.</span>
-                {/* <div className="sign-button"> */}
                   <button onClick={closeAndInputClean}>닫기</button>
-                {/* </div> */}
               </div>
           }
         </div>
         <div className="login-bg" onClick={
+          // 로그인, 이메일 발송 모달창에서만 배경 클릭시 모달창이 닫히도록 설정함.
           state.memberModal.modalStep === 0 || state.memberModal.modalStep === 2 
           ? closeAndInputClean
           : null}></div>
@@ -318,4 +337,4 @@ function Login(props){
     )
   }
  
-export default Login
+export default LoginAndSignin

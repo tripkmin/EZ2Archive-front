@@ -8,41 +8,59 @@ import { switchModalOpen, setModalStep, setUserName } from "../store"
 
 function Navbar(){
 
-  let navigate = useNavigate()
-  let state = useSelector( (state) => state )
-  let dispatch = useDispatch()
+  const navigate = useNavigate()
+  const state = useSelector( (state) => state )
+  const dispatch = useDispatch()
   const [user, setUser] = useState("")
-  // const isVaildAT = () => {
-  //   const AT = localStorage.getItem("AccessToken")
-  //   const base64Payload = AT.split('.')[1];
-  //   const payload = decodeURIComponent(window.atob(base64Payload)); 
-  //   const ATParse = JSON.parse(payload) 
-  //   setUser(ATParse.sub)
-  // }
+  const AT = localStorage.getItem("accessToken");
+  const [errorMsg, setErrorMsg] = useState("")
 
-  // useEffect(()=>{
-  //   const AT = localStorage.getItem("AccessToken")
-  //   const base64Payload = AT.split('.')[1]; // .을 기준으로 나누고 거기서 2번째 요소를 고름
-  //   const payload = decodeURIComponent(window.atob(base64Payload)); // JSON화 된 거라 한 번 파싱을 해줘야 함.
-  //   const ATParse = JSON.parse(payload) // {"typ": "access", "sub": "frontadmin", "iss": "ez2archive-api", "jti": "7f58c08d-3152-41b8-9f10-708149d159e3", "iat": 1676369245, "exp": 1676369845}
-  //   setUser(ATParse.sub)
-  // }, [])
+  useEffect(()=>{
+    if (AT) {
+      axios
+        .get('https://api.ez2archive.kr/members/myInfo' , {
+          headers: {
+            Authorization: `Bearer ${AT}`
+          }
+        })
+        .then((res) => {
+          setUser(res.data.data.name);
+        })
+        .catch((error) => {
+          if (error.response.status === 401) {
+            localStorage.removeItem("accessToken");
+            setUser("");
+            window.location.reload();
+          } else {
+            console.error(error);
+          }
+        });
+    }
+  }, [])
 
-  // 개발 진행중
-  // useEffect(() => {
-  //   const AT = localStorage.getItem("accessToken") 
-  //   if (AT !== null) {
-  //     axios.get('https://api.ez2archive.kr/members/myInfo', {
-  //       headers: {
-  //         Authorization: `Bearer ${AT}`
-  //       }
-  //     })
-  //     .then( (res) => {
-  //       dispatch(setUserName(res.data.data.name))
-  //     })
-  //     .catch( console.log("토큰이 만료되었거나 요청이 잘못되었습니다.") )
-  //     }
-  // }, [])
+  const logout = () => {
+    axios
+      .post('https://api.ez2archive.kr/logout', 
+      // {
+      //   headers: {
+          // Authorization: `Bearer ${AT}`
+      //   }
+      // }
+      )
+      .then((res) => {
+        localStorage.removeItem("accessToken");
+        setUser("");
+        window.location.reload();
+      })
+      .catch((error) => {
+        if (error.response.status === 401 || error.response.status === 402 || error.response.status === 403) {
+          setErrorMsg(error.response.data.message)
+        } else if (error.response.status === 500){
+          setErrorMsg("서버 오류입니다. 관리자에게 문의하십시오.")
+        }
+        console.log(error)
+      });
+  };
 
   return (
     <header>
@@ -60,13 +78,17 @@ function Navbar(){
             <div>
               
               {/* { user !== "" && ? */}
-              {/* {
-                state.userinfo.userName !== "" 
-                ? <span className="category-link">{state.userinfo.userName}</span>
+              {
+                user !== ""
+                ? <span className="category-link">{user}님</span>
                 : <span className="category-link" onClick={()=>{ dispatch(switchModalOpen()); dispatch(setModalStep(0)) }}>로그인</span>
-              } */}
-              <span className="category-link" onClick={()=>{ dispatch(switchModalOpen()); dispatch(setModalStep(0)) }}>로그인</span>
-              <span className="category-link" onClick={()=>{ dispatch(switchModalOpen()); dispatch(setModalStep(1)) }}>회원가입</span>
+              }
+              {/* <span className="category-link" onClick={()=>{ dispatch(switchModalOpen()); dispatch(setModalStep(0)) }}>로그인</span> */}
+              {
+                user !== ""
+                ? <span className="category-link" onClick={logout}>로그아웃</span>
+                : <span className="category-link" onClick={()=>{ dispatch(switchModalOpen()); dispatch(setModalStep(1)) }}>회원가입</span>
+              }
               {/* <span className="category-link" onClick={()=>{ navigate('/signin') }}>회원가입</span> */}
             </div>
           </div>

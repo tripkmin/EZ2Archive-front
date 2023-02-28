@@ -5,11 +5,6 @@ import { useState } from "react"
 
 function Testpage(){
 
-  const [blockerPassword, setBlockerPassword] = useState("")
-  const blockerPWHandler = (e) => {
-    setBlockerPassword(e.target.value)
-  }  
-
   const [AT, setAT] = useState("")
   const [myName, setMyName] = useState("")
   const [myId, setMyId] = useState("")

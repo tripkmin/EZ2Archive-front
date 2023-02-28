@@ -1,9 +1,8 @@
 /*eslint-disable*/
 
-function Main(){
+const Main = () => {
   return (
     <>
-
       <div className="main-title">
         <div className="main-title-background"></div>
         <div>

@@ -1,6 +1,6 @@
 /*eslint-disable*/
 
-function MyTier(){
+const MyTier = () => {
   return (
     <div className="rank-order-selector-wrapper">
       <div className="rank-order-selector">

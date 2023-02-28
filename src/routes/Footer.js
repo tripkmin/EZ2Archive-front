@@ -2,12 +2,11 @@
 
 import { useState } from "react"
 
-function Footer(){
+const Footer = () => {
 
-  const [닫기, set닫기] = useState(false)  
-
-  let date = new Date()
-  let year = date.getFullYear()
+  const [close, setClose] = useState(false)  
+  const date = new Date()
+  const year = date.getFullYear()
 
   return(
     <footer>
@@ -23,9 +22,12 @@ function Footer(){
         </div>
       </div>
       {
-        닫기 === true 
+        close === true 
         ? null 
-        : <div className="no-support">본 사이트는 반응형 페이지를 지원하지 않습니다. <button onClick={()=>{set닫기(true)}}>[닫기]</button></div>
+        : <div className="no-support">
+            <span>본 사이트는 반응형 페이지를 지원하지 않습니다.</span>
+            <button onClick={()=>{setClose(true)}}>[닫기]</button>
+          </div>
       }
     </footer>
   )
