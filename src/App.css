@@ -251,6 +251,12 @@ body {
   color:white;
 }
 
+/****************************** 관리자 페이지 관련 ******************************/
+
+.page-block {
+  background-color: #1e8aef;
+}
+
 /****************************** 로그인 관련 ******************************/
 
 .member-modal {
@@ -714,6 +720,10 @@ html, body, #root {
 
 .border-right {
   border-right : 3px solid #e3dbff;
+}
+
+.display-none {
+  display: none;
 }
 
 /* 임시로 막 갖다 붙이는 거*/

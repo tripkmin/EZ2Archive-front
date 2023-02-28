@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { setTitleView, setKeyAndDifficulty, setCleanKeyAndDifficulty, setDescending, setClass, cleanClass } from "./../store.js"
+import { setTitleView, setKeyAndDifficulty, setCleanKeyAndDifficulty, setDescending, setClass, cleanClass } from "./../store"
 
 const RankOrderSelector = () => {
 

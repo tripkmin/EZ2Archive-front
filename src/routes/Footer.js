@@ -1,15 +1,22 @@
 /*eslint-disable*/
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { useSelector, useDispatch } from "react-redux";
+
 
 const Footer = () => {
 
+  const state = useSelector( (state) => state )
+  const dispatch = useDispatch()
   const [close, setClose] = useState(false)  
   const date = new Date()
   const year = date.getFullYear()
 
+  
   return(
-    <footer>
+    <footer 
+    // className={`${disabled}`}
+    >
       <div className="container">
         <div className="footer">
           <div>
