@@ -2,20 +2,30 @@ import { createSlice, configureStore } from '@reduxjs/toolkit'
 
 const userinfo = createSlice({
   name : "userinfo",
-  initialState : {userName : "", userId : "", userAuth: "", userAddTime: ""},
+  initialState : {userName : "", userId : "", userAuth: "", userAddTime: "", manageMode: false},
   reducers : {
     setUserName(state, action){
-      state.userName = action.payload
+      state.userName = action.payload;
     },
     setUserId(state, action){
-      state.userId = action.payload
+      state.userId = action.payload;
     },
     setUserAuth(state, action){
-      state.userAuth = action.payload
+      state.userAuth = action.payload;
     },
     setUserAddTime(state, action){
-      state.userAddTime = action.payload
+      state.userAddTime = action.payload;
     },
+    setManageMode(state, action){
+      state.manageMode = action.payload;
+    },
+    setDefault(state, action){
+      state.userName = "";
+      state.userId = "";
+      state.userAuth = "";
+      state.userAddTime = "";
+      state.manageMode = false;
+    }
   }
 })
 
@@ -31,16 +41,6 @@ const memberModal = createSlice({
     }
   }
 })
-
-// const userLogin = createSlice({
-//   name : "userLogin",
-//   initialState : {isLoginModalOpen : false},
-//   reducers : {
-//     switchLoginModal(state){
-//       state.isLoginModalOpen = !state.isLoginModalOpen
-//     }
-//   }
-// })
 
 const rankUserSelected = createSlice({
   name : "rankUserSelected",
@@ -95,7 +95,7 @@ export default configureStore({
    }
 }) 
 
-export const { setUserName, setUserId, setUserAuth, setUserAddTime } = userinfo.actions
+export const { setUserName, setUserId, setUserAuth, setUserAddTime, setManageMode, setDefault } = userinfo.actions
 export const { switchModalOpen, setModalStep } = memberModal.actions
 // export const { switchLoginModal } = userLogin.actions
 export const { setTitleView, setKeyAndDifficulty, setDescending, setCleanKeyAndDifficulty } = rankUserSelected.actions

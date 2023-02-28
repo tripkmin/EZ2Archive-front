@@ -3,7 +3,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faArrowLeft, faArrowRight, faXmark } from "@fortawesome/free-solid-svg-icons"
 import { useSelector, useDispatch } from "react-redux";
-import { switchModalOpen, setModalStep } from "../store";
+import { switchModalOpen, setModalStep, setUserName, setUserId, setUserAuth, setUserAddTime } from "./../store";
 import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 
@@ -46,9 +46,21 @@ const LoginAndSignin = (props) => {
       Default값으로 withCredentials : true를 줘야 할수도 있음. */
     })
     .then((res) => {
+      const AT = localStorage.getItem("accessToken")
       localStorage.setItem("accessToken", res.data.data.accessToken);
-      // window.location.reload();
-      /* 체크 용도로 새로고침 해제 */
+      axios
+        .get('http://ez2archive.kr:54856/members/myInfo', {
+          headers: {
+            Authorization: `Bearer ${AT}`
+          }
+        })
+        .then((res) => {
+          dispatch(setUserName(res.data.data.name))
+          dispatch(setUserId(res.data.data.userId))
+          dispatch(setUserAuth(res.data.data.authority))
+          dispatch(setUserAddTime(res.data.data.addTime))
+        })
+      window.location.reload();
     })
     .catch((error) => {
       if (error.response.status >= 400 && error.response.status < 500) {
@@ -81,7 +93,6 @@ const LoginAndSignin = (props) => {
   const [isIdChecked, setIsIdChecked] = useState(false)
   const [isEmailChecked, setIsEmailChecked] = useState(false)
   const [notAllow, setNotAllow] = useState(true)
-
   
   const idHandler = useCallback((e) => {
     setSignId(e.target.value)
