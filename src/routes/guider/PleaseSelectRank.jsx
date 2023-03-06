@@ -10,7 +10,6 @@ const PleaseSelectRank = () => {
     dispatch(setRankCleanKeyAndDifficulty())
   }, [])
   
-
   return (
     <div className="pleaseSelectBox">
       <img src={process.env.PUBLIC_URL + '/source/pleaseSelect.png'} alt="PleaseSelect"></img>
