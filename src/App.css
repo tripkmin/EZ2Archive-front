@@ -1094,7 +1094,7 @@ tr>td:nth-child(1){
   width:250px;
   text-align: center;
 }
- 
+
 .achievement-filter-key {
   display:flex;
   justify-content: space-evenly;
@@ -1117,8 +1117,6 @@ tr>td:nth-child(1){
   padding: 35px 50px;
   background-color: #eee;
   border-radius: 20px;
-  /* 임시 230306 */
-  margin-bottom:50px;
   /* border-top-left-radius: 20px;
   border-top-right-radius : 20px; */
 }
