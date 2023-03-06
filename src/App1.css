@@ -1,0 +1,1640 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.6/dist/web/static/pretendard.css");
+@import "./reset.css";
+
+/* 추가 리셋 */
+input[type="text"],
+input[type="password"] {
+  all: unset;
+}
+
+/** Z-index 순위 
+1. 로그인 화면 (1000)
+2. 로그인 배경 (900)
+3. Navbar (800)
+
+-1. Disk Shadow 박스 (-1000)
+-1. Navbar 패턴 (-1000)
+*/
+
+/* 폰트 안티앨리어싱 관련 */
+p,
+span,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+small {
+  transform: rotate(0.04deg);
+}
+
+p,
+span,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+div,
+button,
+small {
+  font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+  line-height: 140%;
+}
+
+h1 {
+  font-size: 60px;
+  font-weight: 1000;
+}
+
+h2 {
+  font-size: 48px;
+  font-weight: 1000;
+}
+
+h3 {
+  font-size : 36px;
+  font-weight: 1000;
+}
+
+h4 {
+  font-size : 22px;
+  font-weight: 1000;
+}
+
+h5 {
+  font-size : 18px;
+  font-weight: 1000;
+}
+
+h6 {
+  font-size : 16px;
+  font-weight: 1000;
+}
+
+span,
+p,
+li,
+ul,
+ol {
+  font-size: 18px;
+}
+
+small {
+  font-size: 12px;
+}
+
+div {
+  box-sizing: border-box;
+}
+
+strong {
+  font-weight: 600;
+}
+
+a { text-decoration: none; color: black; }
+a:visited { text-decoration: none; }
+a:hover { text-decoration: none; }
+a:focus { text-decoration: none; }
+
+button {
+  border: none;
+  /* background-color: #473395; */
+  border-radius: 10px;
+  padding: 10px 20px;
+  /* color : white; */
+  transition : all 0.2s;
+  font-size: inherit;
+  cursor: pointer;
+}
+
+button:disabled {
+  background-color: #ccc;
+  box-shadow: none;
+  cursor:not-allowed
+}
+
+button:disabled:hover {
+  background-color: #ccc;
+}
+
+input[type="text"],
+input[type="password"] {
+  box-sizing: border-box;
+  border: none;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding:10px;
+  width:100%;
+  transition: all 0.3s;
+  font-size: 13px;
+  /* background-color: white; */
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+  border: 1px solid #911eef;
+  transition: all 0.3s;
+  font-size: 13px;
+  box-shadow: 0px 10px 15px rgba(113, 75, 255, 0.15);
+}
+
+
+/* input[type="text"],
+input[type="password"] {
+  box-sizing: border-box;
+  border: none;
+  border-bottom: 1px solid black;
+  padding:10px;
+  width:100%;
+  transition: all 0.3s;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+  border-bottom: 1px solid #911eef;
+  transition: all 0.3s;
+} */
+
+/*** 드래그 관련 옵션 ***/
+
+/* 드래그 전체 막고싶을 때 사용할 것
+body {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-use-select: none;
+  user-select: none;
+ } 
+
+.draggable{
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-use-select: text;
+  user-select: text;
+ }
+*/
+
+.no-drag {
+  -ms-user-select: none; 
+  -moz-user-select: -moz-none; 
+  -webkit-user-select: none; 
+  -khtml-user-select: none; 
+  user-select:none;
+}
+/****************************** 임시 영역 관련 ******************************/
+
+.preparing {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 200px 0px;
+  background-color: #eee;
+  border-radius: 30px;
+  color:#383838
+}
+
+.testpage-blocker {
+  width:100%;
+  height:100%;
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  /* position: absolute; */
+  /* z-index: 999; */
+  /* background-color: white; */
+}
+
+.testpage-blocker h2{
+  margin-bottom: 30px;
+}
+
+.testpage-blocker input[type="text"] {
+  width:30%;
+}
+
+.testpage-wrapper {
+  width:100%;
+  height:100%;
+  padding:100px;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+
+.testpage-wrapper button {
+  margin : 5px 0px;
+}
+
+/* 반응형 미지원 관련 */
+.no-support {
+  position:fixed;
+  bottom:0;
+  width:100%;
+  background-color: #383838;
+  /* background-color: #2f171a; */
+  color:white;
+  text-align: center;
+  padding: 5px 0px;
+  visibility: hidden;
+}
+
+.no-support button {
+  margin-left : 10px;
+  padding: 0;
+  background-color: transparent;
+  color:white;
+}
+
+/****************************** 관리자 페이지 관련 ******************************/
+
+.page-block {
+  background-color: #1e8aef;
+}
+
+/****************************** 로그인 관련 ******************************/
+
+.member-modal {
+  width:100%;
+  height:100%;
+  position:fixed;
+  z-index: 1000;  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  visibility: hidden;
+  opacity: 0;
+  transition : all 0.1s;
+}
+
+.member-modal-open {
+  visibility: visible;
+  opacity: 1;
+}
+
+.modal-step-0 {
+  width:400px;
+  height:450px;
+  border-radius: 10px;
+  background-color: white;
+  z-index: 1000;
+  padding:10px;
+  transition: all 0.3s;
+  display:flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-step-1 {
+  width:400px;
+  height:800px;
+  border-radius: 10px;
+  background-color: white;
+  z-index: 1000;
+  padding:10px;
+  transition: all 0.3s;
+  display:flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-step-2 {
+  width:400px;
+  height:400px;
+  border-radius: 10px;
+  background-color: white;
+  z-index: 1000;
+  padding:10px;
+  transition: all 0.3s;
+  display:flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.member-header {
+  display:flex;
+  justify-content: space-between;
+  flex-direction: row-reverse;
+  padding: 5px 10px 10px 10px;
+  border-bottom : 1px solid #eee;
+}
+
+.login-body {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding: 30px 20px;
+}
+
+.login-body-header{
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 15px;
+  flex-grow: 1;
+}
+
+.login-error {
+  color:#885be0;
+  font-weight: 700;
+}
+
+.login-bg {
+  width:100%;
+  height:100%;
+  background-color: #2020205b;
+  position:absolute;
+  z-index: 900;
+}
+
+.login-body-sub {
+  display:flex;
+  justify-content: space-between;
+}
+
+.login-body-sub p {
+  font-size: 14px;
+  cursor:pointer;
+}
+
+.login-input-warning {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 5px;
+}
+
+.login-input-wrapper {
+  margin-bottom:5px;
+}
+
+.login-body button {
+  width:100%;
+  margin: 25px 0px 15px 0px;
+}
+
+/* 임시 */
+
+.warning-test{
+  display:flex;
+  justify-content: space-between;
+}
+
+.input-warning-badge {
+  border-radius: 8px;
+  padding: 0px 7px;
+  background-color: #885be0;
+  color: white;
+}
+/* 임시 */
+
+.sign-in-wrapper {
+  flex-grow: 1;
+  /* display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center; */
+  padding:20px 20px;
+}
+
+.sign-in-header {
+  padding: 20px 0px 40px 0px;
+  text-align: center;
+  /* margin-bottom: 10px; */
+}
+
+.sign-input-wrapper{
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+  width:100%;
+}
+
+.sign-input-wrapper small:first-child {
+  font-weight: 500;
+}
+
+.sign-input-wrapper input {
+  margin-bottom: 15px;
+}
+
+.input-description {
+  margin-bottom: 5px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.input-warning {
+  color:#885be0;
+  line-height: 0;
+  font-weight: 500;
+
+}
+
+.sign-check {
+  margin-top: 20px;
+  position:relative;
+}
+
+.sign-check input[type="checkbox"] {
+  display: none;
+}
+
+.sign-check input[type="checkbox"] + label {
+  display:inline-block;
+  width:18px;
+  height:18px;
+  border:1px solid #999;
+  border-radius: 5px;
+  cursor:pointer;
+  margin-right: 5px;
+}
+
+.sign-check input[type="checkbox"]:checked + label {
+	background-color: #885be0;
+  color:white;
+}
+.sign-check input[type="checkbox"]:checked + label::after{
+  /* background: url('./check.svg'); */
+  content: '✓';
+  color:white;
+  font-size: 14px;
+  width: 18px;
+  height: 18px;
+  text-align: center;
+  position: absolute;
+  left:0;
+  top:-1px;
+  /* z-index: 12; */
+}
+
+.sign-check a {
+  /* color:#1e8aef; */
+  text-decoration: underline;
+}
+
+.sign-text {
+  position: relative;
+  bottom: 6px;
+  font-size: 14px;
+}
+
+.sign-button {
+  margin-top: 20px;
+  /* width:50%; */
+  padding: 0px 75px;
+}
+
+.sign-button button {
+  width:100%;
+  font-size:14px;
+  /* text-align: center; */
+}
+
+
+/****************************** 회원가입 관련 ******************************/
+
+/* .sign-in-wrapper {
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  width:100%;
+  height:100%;
+} */
+
+/* .sign-test {
+  width:400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.sign-in-title {
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom : 30px;
+} */
+
+/* .sign-in-wrapper h6 {
+  color: #999;
+  font-weight: 500;
+} */
+
+
+.sign-complete {
+  text-align: center;
+  display:flex;
+  justify-content: space-between;
+  flex-direction: column;
+  padding:10px 20px;
+  flex-grow: 1;
+}
+
+.sign-complete h3 {
+  margin-top: 20px;
+}
+
+.sign-complete span {
+  font-size: 16px;
+}
+
+.sign-complete button {
+  font-size:14px;
+  margin: 0px 80px 20px 80px;
+}
+
+
+/****************************** 푸터 관련 ******************************/
+
+.container {
+  width: 1100px;
+  margin: 0 auto;
+}
+
+html, body, #root {
+  height: 100%
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+}
+
+.main-wrapper {
+  /* 반응형 구현시 width 삭제할 것 */
+  width: 1100px;
+  /*  */
+  flex-grow: 1;
+  margin: 60px auto 0px auto;
+  display:flex;
+  flex-direction: column;
+  margin-bottom:50px
+}
+
+.footer {
+  padding: 15px 30px;
+  border-top: 3px solid #e3dbff;
+}
+
+.footer>div {
+  padding: 10px 0px;
+}
+
+
+/****************************** Navbar 관련 옵션 ******************************/
+
+.nav-wrapper {
+  width: 100%;
+  height: 60px;
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  color: white;
+  background: linear-gradient(-180deg, rgb(19, 12, 47), rgb(33, 22, 74));
+  background-position: center;
+  z-index: 800;
+}
+
+.nav {
+  /* 반응형 구현 시 뗄 것 */
+  width:1100px;
+  /*  */
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  overflow:hidden;
+}
+
+.logo {
+    width:150px;
+    margin: 0px 20px;
+    padding: 23px 0px;
+    cursor:pointer;
+}
+
+.pp-navbar-pattern {
+  position:absolute;
+  z-index: -1000;
+  height: 100%;
+  transform:translateX(250%)
+}
+
+.category-box {
+  margin : 0px 10px;
+  flex-grow: 1;
+}
+
+.nav span { 
+  margin : 0px 10px;
+  font-size: 16px;
+}
+
+.theme-pp-shadow {
+  box-shadow: 0px 10px 15px rgba(113, 75, 255, 0.15);
+}
+
+.category-link {
+  cursor:pointer;
+  transition: all 0.1s;
+  color:#c2bed0
+}
+
+.category-link:hover {
+  color:#e3def6;
+  transition: all 0.1s;
+}
+
+/****************************** 임시 유틸 CSS ******************************/
+
+.d-inline {
+  display: inline;
+}
+
+.d-inline-block { 
+  display:inline-block;
+}
+
+.margin-left-1 {
+  margin-left : 20px;
+}
+
+.bold {
+  font-weight: 800;
+}
+
+.flex-box {
+  display:flex;
+}
+
+.flex-wrap {
+  flex-wrap : wrap;
+}
+
+.flex-grow-1 {
+  flex-grow: 1;
+}
+
+.width-100 {
+  width:100%;
+}
+
+.width-50 {
+  width:50%;
+}
+
+.z-index-10 {
+  z-index: 10;
+}
+
+.link {
+  cursor:pointer;
+  transition: all 0.1s;
+}
+
+.link:hover {
+  font-weight: 800;
+  transition: all 0.1s;
+}
+
+.link-2 {
+  cursor:pointer;
+}
+
+.align-center {
+  text-align: center;
+}
+
+.margin-0 {
+  margin:0;
+}
+
+.border-right {
+  border-right : 3px solid #e3dbff;
+}
+
+.display-none {
+  display: none;
+}
+
+/* 임시로 막 갖다 붙이는 거*/
+
+.p30 {
+  padding:30px;
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+.animation-paused { 
+  animation-play-state: paused;
+}
+
+/****************************** 메인 컴포넌트 관련 ******************************/
+
+/* 임시 영역 */
+
+.temp-box {
+  width:100%;
+  border : 3px solid #e3dbff;
+  border-radius: 30px;
+  padding: 100px 0px;
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 임시 영역 끝*/
+
+.main-title {
+  position:relative;
+  /* width:1400px; */
+  padding: 70px 0px 70px 0px;
+  text-align: center;
+  /* background-image: url(./../public/Untitled-1.png);
+  background-position: 100px bottom; */
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  /* margin-bottom:40px; */
+  /* color:white; */
+  overflow: hidden;
+}
+
+/* .main-title-background {
+  position:absolute;
+  top:0;
+  width:100%;
+  height:100%;
+  background-image: url(./../public/Untitled-1.png);
+  background-position: 100px bottom;
+  filter: blur(5px);
+  -webkit-filter: blur(5px);
+
+} */
+
+
+.main-title h3 {
+  font-weight: 700;
+  line-height: 100%;
+}
+
+.main-title h1 {
+  line-height: 120%;
+}
+
+.main-box {
+  display: flex;
+}
+
+.main-left-box {
+  width: 60%;
+  /* margin-right: 20px; */
+}
+
+.main-right-box {
+  display : flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  width: 40%;
+  border : 3px solid #e3dbff;
+  border-radius: 30px;
+  box-shadow: 0px 10px 15px rgba(113, 75, 255, 0.15);
+  padding : 20px;
+  text-align: center;
+  margin-left: 10px;
+}
+
+.main-notice {
+  /* 임시, 나중에 컨텐츠 영역만큼 주기 */
+  min-height:300px;
+  /* 임시 끝 */
+
+  border : 3px solid #e3dbff;
+  border-radius: 30px;
+  box-shadow: 0px 10px 15px rgba(113, 75, 255, 0.15);
+  padding : 20px;
+  margin-bottom: 20px;
+  margin-right: 10px;
+
+}
+
+.main-notice h4,
+.main-right-box h4,
+.sub-notice h4 {
+  margin-bottom : 10px;
+}
+
+.main-notice li {
+  line-height: 180%;
+}
+
+.sub-notice {
+  display: flex;
+}
+
+.sub-notice-element {
+  width: 50%;
+  border : 3px solid #e3dbff;
+  border-radius: 30px;
+  box-shadow: 0px 10px 15px rgba(113, 75, 255, 0.15);
+  padding : 20px;
+  text-align: center;
+}
+
+.main-right-box img {
+  margin-top:20px;
+  width:100%;
+  height:100%;
+}
+
+.sub-notice-element:nth-child(2) {
+  margin-right:10px;
+  margin-left:20px;
+}
+
+.sub-notice-element>p,
+.main-right-box>p {
+  padding : 20px 0px;
+}
+
+.main-box button {
+  width: 200px;
+}
+
+/****************************** 티어표 상단 컴포넌트 관련 ******************************/
+
+
+.tierimg{
+  padding:28px;
+}
+
+.tierimg img{
+  width:100%;
+}
+
+/* 임시 끝 */
+
+.tier-wrap {
+  width: 33.3%;
+  padding: 0px 30px;
+}
+
+.tier-box-items {
+  width: calc(100% / 3);
+  display: flex;
+  flex-direction: column;
+/*      text-align: center;*/
+}
+
+.tier-title {
+  display :flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.current-tier {
+  margin: 15px 0px;
+}
+
+.current-tier-title {
+  line-height: 100%;
+}
+
+.current-tier-subtitle {
+  line-height: 30%;
+}
+
+.tier-key {
+  display :flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.key-mode {
+  display: flex;
+  justify-content: space-evenly;
+  padding : 0 10px;
+}
+
+.key-mode div {
+  width: 15%;
+}
+
+tr>td {
+  line-height: 150%;
+  font-size:20px;
+}
+
+tr>td:nth-child(1){
+  font-weight: 1000;
+}
+
+.notfound {
+  display : flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  margin-top: 50px;
+  background-color: #eee;
+  border-radius: 20px;
+  /* border-top-left-radius: 20px;
+  border-top-right-radius : 20px; */
+}
+
+.notfound img {
+  width: 300px;
+  margin : 20px 0px;
+  border-radius: 30px;
+  border : 7px solid #623138;
+}
+
+.notfound h5 {
+  color : #a8a8a8;
+  font-weight: 600;
+}
+
+/****************************** 성과표 키/난이도 선택 컴포넌트 관련 ******************************/
+
+.achievement-selector-wrapper {
+  position: relative;
+  bottom:55px;
+  width:100%;
+  height: 440px;
+  border: 3px solid #e3dbff;
+  border-radius: 40px;
+  box-shadow: 0px 10px 15px rgba(113, 75, 255, 0.15);
+  margin: 0px auto;
+  padding: 40px 0px 10px 0px;
+}
+
+.achievement-selector {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  padding: 30px 45px;
+}
+
+.achievement-userinfo>h4 {
+  line-height:25%;
+}
+
+.achievement-key-level h1,
+.achievement-key-level h3 {
+  display: inline;
+}
+
+.achievement-key-level h1 {
+  font-size:90px;
+  margin-right:10px;
+}
+
+.ach
+
+
+.achievement-key-level h1 {
+  margin-right : 5px;
+}
+
+.achievement-detail {
+  /* 임시 해제 */
+  /* flex-grow: 1; */
+}
+
+.achievement-detail table {
+  margin: auto;
+}
+
+.achievement-detail h3,
+.achievement-filter h3 {
+  /* 임시 해제 */
+  /* text-align: center; */
+  margin-bottom: 30px;
+  margin-top: 10px;
+}
+
+.achievement-detail td {
+  font-size: 16px;
+  line-height: 250%;
+}
+
+.achievement-detail td:nth-child(1){
+  padding: 0px 2px;
+  /* text-align: center; */
+  min-width: 50px;
+} 
+
+.achievement-detail td:nth-child(1){
+  padding-right: 40px;
+}
+
+.achievement-detail td:nth-child(2){
+  width:200px;
+  height:20px;
+  position: relative;
+  vertical-align: middle;
+}
+
+.behind-bar {
+  width:500px;
+  height:20px;
+  background-color: #e3dbff;
+  border-radius: 40px;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  /* position: relative; */
+}
+
+.behind-bar span {
+  font-weight: 1000;
+  font-size: 16px;
+  color: white;
+  text-shadow:
+  -2px -2px 0 #473395,
+   0   -2px 0 #473395,
+   2px -2px 0 #473395,
+   2px  0   0 #473395,
+   2px  2px 0 #473395,
+   0    2px 0 #473395,
+  -2px  2px 0 #473395,
+  -2px  0   0 #473395;
+  /* -webkit-text-stroke: 1px #473395;
+  paint-order: stroke fill; */
+  letter-spacing: -0.5px;
+}
+
+.bar {
+  position: absolute;
+  left:0;
+  width: 0px;
+  height: 20px;
+  background-color: #7b68c2;
+  border-radius: 40px;
+  transition: all 1s;
+  overflow: hidden;
+}
+
+.achievement-filter div {
+  margin-bottom:10px;
+}
+
+.achievement-filter-key {
+  padding-bottom:10px;
+}
+
+.achievement-filter {
+  width:250px;
+  text-align: center;
+}
+
+.achievement-filter-key {
+  display:flex;
+  justify-content: space-evenly;
+}
+
+.achievement-filter-level {
+  display:flex;
+  justify-content: space-evenly;
+  /* flex-wrap: wrap; */
+}
+
+/****************************** 서열표 키/난이도 선택 컴포넌트 관련 ******************************/
+
+.pleaseSelectBox {
+  display : flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  padding: 35px 50px;
+  background-color: #eee;
+  border-radius: 20px;
+  /* border-top-left-radius: 20px;
+  border-top-right-radius : 20px; */
+}
+
+.pleaseSelectBox img {
+  width: 300px;
+  margin : 20px 0px;
+  border-radius: 30px;
+  border : 7px solid #623138;
+}
+
+.pleaseSelectBox h5 {
+  color : #a8a8a8;
+  font-weight: 600;
+}
+
+.rank-order-selector-wrapper {
+  position: relative;
+  bottom:55px;
+  width:100%;
+  height: 280px;
+  border: 3px solid #e3dbff;
+  border-radius: 40px;
+  box-shadow: 0px 10px 15px rgba(113, 75, 255, 0.15);
+  margin: 0px auto;
+  padding: 40px 0px 10px 0px;
+}
+
+.rank-order-selector {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  height: 100%;
+  padding: 35px 0px;
+}
+
+.single-key-level-selector {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 50%;
+  height: 50%;
+  padding: 20px 60px;
+}
+
+.single-key-level-selector h1 {
+  margin-right: 10px;
+}
+
+.single-key-level-selector div {
+  width: 55px;
+  text-align: center;
+}
+
+.option-box {
+  /* width:65%; */
+  position: absolute;
+  bottom: -25px;
+  left: 50%;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  padding: 15px 60px;
+  color: white;
+  background-color: #473395;
+  border-radius: 15px;
+  transform: translate(-50%, 0);
+}
+
+/** 곡 제목 표시 스위치 관련 */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 45px;
+  height: 15px;
+  margin-right: 15px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch-margin {
+  margin-left : 40px;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* background-color: #ccc; */
+  background-color: #614dab;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 30px;
+  width: 30px;
+  left: 0px;
+  bottom: -7px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+
+input:checked + .slider {
+  background-color:#b8a7ff;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(15px);
+  -ms-transform: translateX(15px);
+  transform: translateX(15px);  
+}
+
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+
+/****************************** 서열표 리스트 컴포넌트 관련 ******************************/
+
+/* 임시 관련 */
+
+.pleaseWait {
+  background-color: #e3dbff;
+  border-radius: 10px;
+  padding: 15px;
+  font-weight: 300;
+  margin-bottom:20px;
+}
+
+/* 임시 관련 끝*/
+
+
+.rank-orderlist-wrapper {
+  display : flex;
+  /* width: 92.5%; */
+}
+
+.header {
+  position:sticky;
+  top:70px;
+  height: 100px;
+  min-width:175px;
+  margin-top: 10px;
+}
+
+.header h1 {
+  display : inline;
+}
+
+.order-box {
+  display : flex;
+  /* margin : 10px 0px; */
+}
+
+.order-grade {
+  position:sticky;
+  font-size : 30px;
+  width: 75px;
+  height:110px;
+  font-weight: 1000;
+  line-height: 125px;
+  margin: 0px 5px;
+  top: 58px;
+}
+
+.order-list {
+  display : flex;
+  flex-wrap : wrap;
+  width: 100%;
+  border-bottom: 3px solid #e3dbff;
+  padding : 20px 0px 15px 0px;
+}
+
+.order-box:nth-last-child(1) .order-list {
+  border-bottom: none;
+}
+
+.song-wrapper {
+  display:flex;
+  max-height: 240px;
+  width: 120px;
+  align-items: flex-start;
+  margin: 10px 0px;
+  flex-wrap: wrap;
+  justify-content: center;
+  text-align: center;
+}
+
+.song-infobox {
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  /*      NEW*/
+  position: relative;
+  /*      NEW*/
+}
+
+.imgbox {
+  position : relative;
+  /* width: 105px;
+  height: 105px; */
+  width: 120px;
+  height: 120px;
+  /* padding:10px; */
+  transition: all 0.5s;
+  text-align: center;
+  /*      NEW*/
+  transition: all 0.1s;
+  padding: 0px;
+  /*      NEW*/
+}
+
+.imgbox img {
+  width: 90%;
+  height: 90%;
+  /* animation-name: disk-rotation-default;
+  animation-duration: 0.5s; */
+  /* transition: all 1s;
+  transform:rotate(0deg); */
+  /* transition-delay: 0.3s; */
+}
+
+.shadowbox {
+  position: absolute;
+  width: 80%;
+  height: 80%;
+  top:5px;
+  left:10px;
+  border-radius: 50%;
+  transition: all 0.5s;
+  z-index:-1000;
+}
+
+/** 이미지 애니메이션 관련 속성들 */
+.imgbox:hover {
+  transform: scale(110%);
+  transition: all 0.2s;
+  /*      NEW*/
+  transition: all 0.1s;
+  z-index: 600;
+  /*      NEW*/
+}
+
+.imgbox:hover img {
+  animation-name: disk-rotation;
+  animation-duration: 10s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.imgbox:hover .shadowbox {
+  box-shadow: 0px 25px 40px -10px rgba(71, 51, 149, 0.6);
+  transition: all 0.2s;
+}
+
+.song-title {
+  font-weight: 500;
+  font-size:14px;
+  margin-top: 20px;
+  /* margin: 20px 10px 0px 10px; */
+}
+
+/** EZ ~ SHD 뱃지 관련 */
+.level-badge {
+  width:50px;
+  text-align: center;
+  position:absolute;
+  /* bottom값 체크 */
+  bottom:11px;
+  right:0;
+  color:white;
+  /* 기울임 효과로 인한 착시효과 때문에 좌측대비 우측 패딩 3px 추가.*/
+  padding: 1px 3px 1px 0px;
+  border-radius:8px;
+  font-weight: 1000;
+  font-size:18px;
+  font-style:italic;
+}
+
+.rating-badge {
+  width:20px;
+  /* text-align: center;   */
+  position:absolute;
+  /* bottom값 체크 */
+  top:0px;
+  left:10px;
+  color:white;
+  /* 기울임 효과로 인한 착시효과 때문에 좌측대비 우측 패딩 3px 추가.*/
+  /* padding: 1px 3px 1px 0px; */
+  border-radius:8px;
+  font-weight: 1000;
+  font-size:18px;
+  font-style:italic;
+}
+
+
+.SHD {
+  background-color:#ff2f2f;
+}
+
+.HD {
+  background-color:#ffb82f;
+}
+
+.NM {
+  background-color : #7ad522;
+}
+
+.EZ {
+  background-color : #1e8aef;
+}
+
+/** 호버 시 나오는 디스크 백그라운드 관련 */
+
+.testing {
+  width: 150px;
+  height: 150px;
+  background: #f9f8ff;
+  border-radius: 100px;
+  margin:0;
+  position: absolute;
+  top:-21px;
+  left:-17px;
+  border: 1px solid #e6dfff;
+  visibility: hidden;
+  text-align: left;
+  padding:10px;
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  /* opacity: 0; */
+}
+
+.testing-contents {
+  opacity:0;
+  overflow: hidden;
+}
+
+.imgbox:hover+.testing {
+  width: 380px;
+  padding-left: 160px;
+  padding-right: 50px;
+  visibility: visible;
+  z-index: 500;
+  transition: all 0.15s;
+  box-shadow: 0px 25px 30px -30px rgba(71, 51, 149, 0.6);
+}
+
+.imgbox:hover+.testing>.testing-contents {
+  opacity: 1;
+  transition:all 0.3s;
+  transition-timing-function: ease-out;
+  transition-delay: 0.15s;
+}
+
+/* .imgbox:hover+.testing>h5{ */
+.imgbox:hover+.testing h5,
+.imgbox:hover+.testing span {
+  animation-name: marquee;
+  animation-duration: 5s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-delay: 1s;
+}
+
+
+.testing-title {
+  /* width:100%; */
+  display:flex;
+  white-space: nowrap;
+}
+
+.testing-artist {
+  display:flex;
+}
+
+.testing-title h5 {
+  line-height: 100%;
+  color:#473395;
+  font-size: 22px;
+}
+
+.testing-contents span,
+.testing-contents td {
+  line-height: 150%;
+  font-size: 14px;
+}
+
+.testing-contents table {
+  margin-top : 10px;
+}
+
+.testing-contents td:nth-child(1) {
+  color:#473395;
+  width:30%;
+  font-weight: 700;
+  padding-right: 15px;
+}
+
+/****************************** 테마 색상 관련 ******************************/
+
+.theme-pp {
+  color: #473395;
+}
+
+.theme-tt {
+  color: #35aa7b;
+}
+
+.theme-pp-button {
+  background-color: #473395;
+  color : white;
+  box-shadow: 0px 10px 15px rgba(113, 75, 255, 0.15);
+}
+
+.theme-pp-button:hover {
+  background-color: #6d58c2;
+}
+
+/****************************** 커스터마이즈 버튼 관련 ******************************/
+
+.customize-wrapper {
+  width: 175px;
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+}
+
+.customize-list {
+  border-radius: 10px;
+  background-color: white;
+  /* transition: all 0.1s; */
+  box-shadow: 0px 10px 15px rgba(113, 75, 255, 0.15);
+  overflow: hidden;
+  border : 3px solid #e3dbff;
+}
+
+.customize-btn {
+  width: 100%;
+  line-height: 150%;
+}
+
+.customize-close {
+  opacity: 0;
+  transition: all 0.1s;
+  pointer-events : none;
+}
+
+.customize-show {
+  transform: translateY(-20px);
+  opacity: 1;
+  transition: all 0.1s;
+}
+
+.customize-list button {
+  width:100%;
+  background-color: white;
+  /* color:inherit; */
+  text-align: center;
+  line-height: 150%;
+  transition: all 0.5s;
+  border-radius: 0;
+}
+
+.customize-list button:hover {
+  background-color: #eee;
+}
+
+
+/****************************** 애니메이션 효과 관련 ******************************/
+
+@keyframes disk-rotation {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes disk-rotation-default {
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0%);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@media screen and (max-width : 568px) { 
+  .no-support {
+    visibility: visible;
+  }
+} 
+

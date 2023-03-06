@@ -42,22 +42,45 @@ const memberModal = createSlice({
   }
 })
 
+const achievementUserSelected = createSlice({
+  name : "achievementUserSelected",
+  initialState : {selectedKey : "", selectedDifficulty : 0, songTitleView : true, isDescending : true},
+  reducers : {
+    // setTitleView(state, action){
+    //   state.songTitleView = action.payload
+    // },
+    // setDescending(state, action){
+    //   state.isDescending = action.payload
+    // },
+    setAchievementKey(state, action){
+      state.selectedKey = action.payload;
+    },
+    setAchievementDifficulty(state, action){
+      state.selectedDifficulty = action.payload;
+    },
+    setAchievementClean(state){
+      state.selectedKey = "";
+      state.selectedDifficulty = 0;
+    }
+  }
+})
+
 const rankUserSelected = createSlice({
   name : "rankUserSelected",
   initialState : {selectedKey : "", selectedDifficulty : 0, songTitleView : true, isDescending : true},
   reducers : {
-    setTitleView(state, action){
+    setRankTitleView(state, action){
       state.songTitleView = action.payload
     },
-    setDescending(state, action){
+    setRankDescending(state, action){
       state.isDescending = action.payload
     },
-    setKeyAndDifficulty(state, action){
+    setRankKeyAndDifficulty(state, action){
       state.selectedKey = action.payload.key;
       state.selectedDifficulty = action.payload.difficulty;
       // RankOrderSelector에서 특정 키, 난이도 선택했을 때 실행 되도록 함.
     },
-    setCleanKeyAndDifficulty(state){
+    setRankCleanKeyAndDifficulty(state){
       state.selectedKey = "";
       state.selectedDifficulty = 0;
     }
@@ -89,7 +112,7 @@ export default configureStore({
   reducer: { 
     userinfo : userinfo.reducer,
     memberModal : memberModal.reducer,
-    // userLogin : userLogin.reducer,
+    achievementUserSelected : achievementUserSelected.reducer,
     rankUserSelected : rankUserSelected.reducer,
     selectIndex : selectIndex.reducer,
    }
@@ -98,5 +121,7 @@ export default configureStore({
 export const { setUserName, setUserId, setUserAuth, setUserAddTime, setManageMode, setDefault } = userinfo.actions
 export const { switchModalOpen, setModalStep } = memberModal.actions
 // export const { switchLoginModal } = userLogin.actions
-export const { setTitleView, setKeyAndDifficulty, setDescending, setCleanKeyAndDifficulty } = rankUserSelected.actions
+export const { setAchievementKey, setAchievementDifficulty, setAchievementClean} = achievementUserSelected.actions
+export const { setRankTitleView, setRankKeyAndDifficulty, setRankDescending, setRankCleanKeyAndDifficulty } = rankUserSelected.actions
 export const { setClass, cleanClass } = selectIndex.actions
+

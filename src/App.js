@@ -13,43 +13,59 @@ import RankOrderList from './routes/RankOrderList';
 import Footer from './routes/Footer'
 import MyTier from './routes/MyTier'
 import CustomizeBtn from './routes/CustomizeBtn'
-import PleaseSelect from './routes/PleaseSelect';
-import Preparing from './routes/Preparing'
+import PleaseSelectAchievement from './routes/guider/PleaseSelectAchievement'
+import PleaseSelectRank from './routes/guider/PleaseSelectRank';
+import PleaseWaiting from './routes/guider/PleaseWaiting'
 import Navbar from './routes/Navbar'
 import Login from './routes/Login'
-import Testpage from './routes/Testpage';
-import NotFound from './routes/404';
+import NotFound from './routes/Announce/404';
 import Manage from './routes/Manage';
+import AchievementSelector from './routes/AchievementSelector';
 
 function App() {
   let state = useSelector( (state) => state )
   let dispatch = useDispatch()
 
   return (
+    // <>
+    //   <Navbar/>
+    //     <Login/>
+    //       <div className="main-wrapper">
+    //       {/* 라우트 영역 */}
+    //         <Routes>
+    //           <Route path="/" element={ <Main/> }></Route>
+    //           <Route path="/achievement" element={ <><AchievementSelector/><Outlet/></> }>
+    //             <Route index element={ <PleaseSelectAchievement/> }></Route>
+    //           </Route>
+    //           <Route path="/tier" element={ <><MyTier></MyTier><PleaseWaiting></PleaseWaiting></> }></Route>
+    //           <Route path="/rank" element={ <><RankOrderSelector/> <Outlet></Outlet></> }>
+    //             <Route index element={ <PleaseSelectRank/> }></Route>
+    //             <Route path="4k/:selectedDifficulty" element={ <><RankOrderList selectedKey="4k"/></> }></Route>
+    //             <Route path="5k/:selectedDifficulty" element={ <><RankOrderList selectedKey="5k"/></> }></Route>
+    //             <Route path="6k/:selectedDifficulty" element={ <><RankOrderList selectedKey="6k"/></> }></Route>
+    //             <Route path="8k/:selectedDifficulty" element={ <><RankOrderList selectedKey="8k"/></> }></Route>
+    //           </Route>
+    //           <Route path="/manage" element={ <Manage/> }></Route>
+    //           <Route path="*" element={ <NotFound/> }/>
+    //         </Routes>
+    //       </div>
+    //     <Footer/>
+    //   <CustomizeBtn/>
+    // </>
     <>
-      <Navbar/>
-        <Login/>
-          <div className="main-wrapper">
-          {/* 라우트 영역 */}
-            <Routes>
-              <Route path="/" element={ <Main/> }></Route>
-              {/* <Route path="/signin" element={ <SignIn/> }></Route> */}
-              {/* <Route path="/tier" element={ <><MyTier></MyTier></> }></Route> */}
-              <Route path="/tier" element={ <><MyTier></MyTier><Preparing></Preparing></> }></Route>
-              <Route path="/rank" element={ <><RankOrderSelector/> <Outlet></Outlet></> }>
-                <Route index element={ <PleaseSelect/> }></Route>
-                <Route path="4k/:selectedDifficulty" element={ <><RankOrderList selectedKey="4k"/></> }></Route>
-                <Route path="5k/:selectedDifficulty" element={ <><RankOrderList selectedKey="5k"/></> }></Route>
-                <Route path="6k/:selectedDifficulty" element={ <><RankOrderList selectedKey="6k"/></> }></Route>
-                <Route path="8k/:selectedDifficulty" element={ <><RankOrderList selectedKey="8k"/></> }></Route>
-              </Route>
-              <Route path="/manage" element={ <Manage/> }></Route>
-              <Route path="/testpage6220" element={ <Testpage/> }></Route>
-              <Route path="*" element={ <NotFound/> }/>
-            </Routes>
-          </div>
-        <Footer/>
-      <CustomizeBtn/>
+      <div className="main-wrapper">
+        <Routes>
+          <Route path="/" element={ <><RankOrderSelector/> <Outlet></Outlet></> }>
+            <Route index element={ <PleaseSelectRank/> }></Route>
+            <Route path="4k/:selectedDifficulty" element={ <><RankOrderList selectedKey="4k"/></> }></Route>
+            <Route path="5k/:selectedDifficulty" element={ <><RankOrderList selectedKey="5k"/></> }></Route>
+            <Route path="6k/:selectedDifficulty" element={ <><RankOrderList selectedKey="6k"/></> }></Route>
+            <Route path="8k/:selectedDifficulty" element={ <><RankOrderList selectedKey="8k"/></> }></Route>
+          </Route>
+          <Route path="*" element={ <NotFound/> }/>
+        </Routes>
+      </div>
+
     </>
   );
 }
