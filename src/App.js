@@ -53,6 +53,7 @@ function App() {
     //   <CustomizeBtn/>
     // </>
     <>
+      <Navbar/>
       <div className="main-wrapper">
         <Routes>
           <Route path="/" element={ <><RankOrderSelector/> <Outlet></Outlet></> }>
@@ -64,8 +65,8 @@ function App() {
           </Route>
           <Route path="*" element={ <NotFound/> }/>
         </Routes>
+      <Footer/>
       </div>
-
     </>
   );
 }

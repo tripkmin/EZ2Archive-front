@@ -77,14 +77,14 @@ function Navbar(){
         <div className="container">
           <div className="nav">
             <img className="logo" src={process.env.PUBLIC_URL + '/navbar/ez2archive_logo.svg'} alt="logo" onClick={()=>{ navigate('/') }}></img>
-            <div className="category-box">
+            {/* <div className="category-box">
               <span className="category-link" onClick={()=>{ navigate('/achievement') }}>성과표</span>
               <span className="category-link" onClick={()=>{ navigate('/rank') }}>서열표</span>
               <span className="category-link" onClick={()=>{ navigate('/tier') }}>티어표</span>
               <span className="category-link" onClick={()=>{ alert('준비 중입니다') }}>안내</span>
-            </div>
+            </div> */}
             <img className="pp-navbar-pattern" src={process.env.PUBLIC_URL + '/navbar/Asset 1.svg'} alt="logo" onClick={()=>{ navigate('/') }}></img>
-            <div>
+            {/* <div>
               {
                 state.userinfo.userName !== ""
                 ? <span className="category-link">{state.userinfo.userName}님</span>
@@ -100,7 +100,7 @@ function Navbar(){
                 ? <span className="category-link" onClick={()=>{ navigate('/manage')}}>관리</span>
                 : null
               }
-            </div>
+            </div> */}
           </div>
         </div>
       </nav>

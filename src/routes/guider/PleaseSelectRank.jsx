@@ -1,6 +1,16 @@
 /*eslint-disable*/
+import { useEffect } from "react"
+import { useDispatch } from "react-redux"
+import { setRankCleanKeyAndDifficulty, cleanClass } from "./../../store"
 
 const PleaseSelectRank = () => {
+  const dispatch = useDispatch()
+  useEffect(() => {
+    dispatch(cleanClass())
+    dispatch(setRankCleanKeyAndDifficulty())
+  }, [])
+  
+
   return (
     <div className="pleaseSelectBox">
       <img src={process.env.PUBLIC_URL + '/source/pleaseSelect.png'} alt="PleaseSelect"></img>

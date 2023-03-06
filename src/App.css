@@ -574,8 +574,9 @@ html, body, #root {
   /*  */
   flex-grow: 1;
   /* 230306 임시 */
-  /* margin: 60px auto 0px auto; 원본 */
-  margin: 0px auto;
+  /* 원본 */
+  margin: 60px auto 0px auto; 
+  /* margin: 0px auto; */
   /* 230306 임시 끝 */
   display:flex;
   flex-direction: column;
@@ -1116,6 +1117,8 @@ tr>td:nth-child(1){
   padding: 35px 50px;
   background-color: #eee;
   border-radius: 20px;
+  /* 임시 230306 */
+  margin-bottom:50px;
   /* border-top-left-radius: 20px;
   border-top-right-radius : 20px; */
 }
@@ -1272,8 +1275,8 @@ input:checked + .slider:before {
 .header {
   position:sticky;
   /* 230306 임시 변경 */
-  top: 10px;
-  /* top:70px; */
+  /* top: 10px; */
+  top:70px;
   /* 230306 임시 변경 끝*/
   height: 100px;
   min-width:175px;
@@ -1298,8 +1301,8 @@ input:checked + .slider:before {
   line-height: 125px;
   margin: 0px 5px;
   /* 230306 임시 변경 */
-  top: 0px;
-  /* top: 58px; */
+  /* top: 0px; */
+  top: 58px;
   /* 230306 임시 변경 끝 */
 }
 
