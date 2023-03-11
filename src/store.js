@@ -169,7 +169,7 @@ export const { setUserName, setUserId, setUserAuth, setUserAddTime, setManageMod
 export const { switchModalOpen, setModalStep } = memberModal.actions
 // export const { switchLoginModal } = userLogin.actions
 export const { setTitleView, setDescending, setAchievementKey, setAchievementDifficulty, setAchievementRank, setAchievementClean, setSelectedRankView } = achievementUserSelected.actions
-export const {  } = achievementSelectIndex.actions
+// export const {  } = achievementSelectIndex.actions
 export const { setRankTitleView, setRankKeyAndDifficulty, setRankDescending, setRankCleanKeyAndDifficulty } = rankUserSelected.actions
 export const { setClass, cleanClass } = selectIndex.actions
 
