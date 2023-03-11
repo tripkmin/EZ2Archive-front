@@ -12,7 +12,6 @@ import { API_URL } from "../services/temp";
 
 // 컴포넌트 로드 시 선택된 키, 난이도에 해당하는 자료들을 서버에서 가져와 list 변수에 할당.
 const RankOrderList = (props) => {
-  // const API_URL = "https://api.ez2archive.kr"
   const state = useSelector( (state) => state )
   const dispatch = useDispatch()
   const {selectedDifficulty} = useParams()
@@ -72,7 +71,7 @@ const RankOrderList = (props) => {
       <div className="pleaseWait">
         <p><strong>5, 6, 8키</strong>의 <strong>레벨 16</strong>곡들은 서열 투표를 진행할 예정입니다.</p>
       </div>
-      <div className="rank-orderlist-wrapper">
+      <div className="orderlist-wrapper">
         <div className="header">
           <h1 className="theme-pp">{props.selectedKey.toUpperCase()} </h1>
           <h1>{selectedDifficulty}</h1>
@@ -116,31 +115,34 @@ const RankOrderList = (props) => {
                       <div className="song-wrapper" key={index}>
                         <div className="song-infobox">
                           <div className="imgbox no-drag">
-                            <img src={process.env.PUBLIC_URL + '/musicdisk/'+ renamed + '.webp'} alt={filteredElement.name} onError={handleImgError}></img>
+                            <img 
+                              src={process.env.PUBLIC_URL + '/musicdiskResize/'+ renamed + '.webp'} 
+                              alt={filteredElement.name} 
+                              onError={handleImgError}></img>
                             <div className="shadowbox"></div>
                             <span className={`level-badge ${filteredElement.difficulty}`}>{filteredElement.difficulty}</span>
                           </div>
-                          <div className="testing no-drag">
-                            <div className="testing-contents">
+                          <div className="hoverbox no-drag">
+                            <div className="hoverbox-contents">
                             {
                               filteredElement.name.length > 13
                               ? 
-                                <div className="testing-title" style={{width:`${filteredElement.name.length*30}px`}}>
+                                <div className="hoverbox-title" style={{width:`${filteredElement.name.length*30}px`}}>
                                   <h5 className="width-50">{filteredElement.name}</h5>
                                   <h5 className="width-50">{filteredElement.name}</h5>
                                 </div>
                               : 
-                                <div className="testing-title">
+                                <div className="hoverbox-title">
                                   <h5 className="animation-paused">{filteredElement.name}</h5>
                                 </div>
                             }
                             {
                               filteredElement.artist.length > 24
-                              ? <div className="testing-artist" style={{width:`${filteredElement.artist.length*20}px`}}>
+                              ? <div className="hoverbox-subtitle" style={{width:`${filteredElement.artist.length*20}px`}}>
                                   <span className="width-50">{filteredElement.artist}</span>
                                   <span className="width-50">{filteredElement.artist}</span>
                                 </div>
-                              : <div className="testing-artist">
+                              : <div className="hoverbox-subtitle">
                                   <span className="animation-paused">{filteredElement.artist}</span>
                                 </div>
                             }

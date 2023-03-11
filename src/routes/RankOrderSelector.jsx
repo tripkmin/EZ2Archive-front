@@ -14,8 +14,8 @@ const RankOrderSelector = () => {
   /** RankOrderSelector에서 특정 레벨(ex: lv.17)을 선택할 때 실행됨 */
   const goToPage = (key, difficulty) => {
     // 원본
-    // navigate(`/rank/${key}/${difficulty}`)
-    navigate(`/${key}/${difficulty}`)
+    navigate(`/rank/${key}/${difficulty}`)
+    // navigate(`/${key}/${difficulty}`)
     dispatch(setRankKeyAndDifficulty({key: key, difficulty: difficulty}))
   }
 
@@ -30,7 +30,6 @@ const RankOrderSelector = () => {
     // 아래 코드는 index에 0이 들어올 경우 false로 간주되어 클래스 부착이 안되는 문제가 있음. 그래서 위처럼 조건문으로 작성.
     // getKeyIndex && getDifficultyIndex && dispatch(setClass({step1 : getKeyIndex, step2 : getDifficultyIndex}))
   return () => {
-    // 컴포넌트가 언마운트/업데이트 될 때 현재 선택된 키와 난이도 clean up함
     dispatch(cleanClass())
     dispatch(setRankCleanKeyAndDifficulty())
   }

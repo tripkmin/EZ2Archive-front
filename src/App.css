@@ -16,6 +16,40 @@ input[type="password"] {
 -1. Navbar 패턴 (-1000)
 */
 
+/* 스크롤바 관련 */
+
+html {
+  overflow: -moz-scrollbars-vertical;
+  overflow-y: scroll;
+}
+
+body {
+  --sb-track-color: #eee;
+  --sb-thumb-color: #787878;
+  /* --sb-track-color: #787878;
+  --sb-thumb-color: #eeeeee; */
+  --sb-size: 5px;
+
+  scrollbar-color: var(--sb-thumb-color) 
+                   var(--sb-track-color);
+}
+
+body::-webkit-scrollbar {
+  width: var(--sb-size);
+  height: var(--sb-size);
+}
+
+body::-webkit-scrollbar-track {
+  background: var(--sb-track-color);
+  border-radius: 0px;
+}
+
+body::-webkit-scrollbar-thumb {
+  background: var(--sb-thumb-color);
+  border-radius: 0px;
+  
+  }
+
 /* 폰트 안티앨리어싱 관련 */
 p,
 span,
@@ -42,6 +76,7 @@ button,
 small {
   font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
   line-height: 140%;
+  letter-spacing: -0.75px;
 }
 
 h1 {
@@ -571,16 +606,10 @@ html, body, #root {
 .main-wrapper {
   /* 반응형 구현시 width 삭제할 것 */
   width: 1100px;
-  /*  */
   flex-grow: 1;
-  /* 230306 임시 */
-  /* 원본 */
-  margin: 60px auto 0px auto; 
-  /* margin: 0px auto; */
-  /* 230306 임시 끝 */
+  margin: auto; 
   display:flex;
   flex-direction: column;
-  margin-bottom:50px
 }
 
 .footer {
@@ -611,7 +640,6 @@ html, body, #root {
   /* 반응형 구현 시 뗄 것 */
   width:1100px;
   /*  */
-
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -647,6 +675,10 @@ html, body, #root {
   box-shadow: 0px 10px 15px rgba(113, 75, 255, 0.15);
 }
 
+.theme-pp-shadow-thin {
+  box-shadow: 0px 3px 15px rgba(113, 75, 255, 0.15);
+}
+
 .category-link {
   cursor:pointer;
   transition: all 0.1s;
@@ -656,6 +688,10 @@ html, body, #root {
 .category-link:hover {
   color:#e3def6;
   transition: all 0.1s;
+}
+
+.nav-blocker {
+  height:60px;
 }
 
 /****************************** 임시 유틸 CSS ******************************/
@@ -973,23 +1009,25 @@ tr>td:nth-child(1){
 /****************************** 성과표 키/난이도 선택 컴포넌트 관련 ******************************/
 
 .achievement-selector-wrapper {
-  position: relative;
-  bottom:55px;
   width:100%;
-  height: 440px;
-  border: 3px solid #e3dbff;
-  border-radius: 40px;
+  height: 390px;
+  border-right: 3px solid #e3dbff;
+  border-bottom: 3px solid #e3dbff;
+  border-left: 3px solid #e3dbff;
+  border-radius: 0px 0px 40px 40px;
   box-shadow: 0px 10px 15px rgba(113, 75, 255, 0.15);
   margin: 0px auto;
-  padding: 40px 0px 10px 0px;
+  z-index: 100;
 }
 
 .achievement-selector {
   display: flex;
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; */
+  justify-content: space-between;
   width: 100%;
   height: 100%;
-  padding: 30px 45px;
+  padding: 20px 45px;
+  position:relative;
 }
 
 .achievement-userinfo>h4 {
@@ -1005,13 +1043,13 @@ tr>td:nth-child(1){
   margin-right : 5px;
 }
 
-.achievement-detail {
+/* .achievement-detail {
   flex-grow: 1;
-}
-
+} */
+/* 
 .achievement-detail table {
   margin: auto;
-}
+} */
 
 .achievement-detail h3,
 .achievement-filter h3 {
@@ -1043,14 +1081,15 @@ tr>td:nth-child(1){
 }
 
 .behind-bar {
-  width:300px;
-  height:20px;
+  width:700px;
+  height:25px;
   background-color: #e3dbff;
   border-radius: 40px;
   display:flex;
   justify-content: center;
   align-items: center;
-  /* position: relative; */
+  overflow:hidden;
+  position: relative;
 }
 
 .behind-bar span {
@@ -1074,12 +1113,20 @@ tr>td:nth-child(1){
 .bar {
   position: absolute;
   left:0;
-  width: 0px;
-  height: 20px;
+  width: 700px;
+  height: 25px;
   background-color: #7b68c2;
   border-radius: 40px;
-  transition: all 1s;
-  overflow: hidden;
+  transition: all 0.4s;
+  transform: translateX(-700px);
+  /* box-shadow: 0px 10px 15px rgba(113, 75, 255, 0.15); */
+}
+
+.bar-shadow {
+  box-shadow: 0px 3px 15px rgba(113, 75, 255, 0.15);
+  /* transform: translateX(-700px); */
+  /* width: 700px; */
+
 }
 
 .achievement-filter div {
@@ -1106,6 +1153,100 @@ tr>td:nth-child(1){
   /* flex-wrap: wrap; */
 }
 
+.achievement-filter-enabler{
+  width:300px;
+  position:absolute;
+  bottom: 0%;
+  left: 50%;
+  transform: translate(-50%, 0%);
+  /* line-height: 0; */
+  text-align: center;
+  z-index: 100;
+  color:white;
+  background-color: #7b68c2;
+  padding: 20px 30px;
+  border-radius: 10px;
+}
+
+.achievement-filter-wrapper {
+  height: 300px;
+  width: 90%;
+  margin: 0 auto;
+  border-right: 3px solid #e3dbff;
+  border-bottom: 3px solid #e3dbff;
+  border-left: 3px solid #e3dbff;
+  border-radius: 0px 0px 40px 40px;
+  display:flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding:40px;
+  transition: all 0.1s;
+  transform: translateY();
+  background-color: #f9f8ff;
+  box-shadow: 0px 10px 15px rgba(113, 75, 255, 0.15);
+  opacity: 1;
+  overflow: hidden;
+}
+
+.achievement-filter-deactivate {
+  opacity: 0;
+  height: 0;
+  padding: 0 40px;
+}
+
+
+.achievement-filter-wrapper h4,
+.achievement-filter-wrapper li {
+  display:inline-block;
+}
+
+.achievement-filter-wrapper h4:nth-child(1) {
+  width:100px;
+}
+
+.achievement-filter-element {
+  /* width: 25px; */
+  padding: 3px 8px;
+  margin: 0px 2px;
+  cursor: pointer;
+}
+
+.achievement-filter-element:hover {
+  font-weight: 1000;
+}
+
+.achievement-filter-element-active {
+  border-radius: 10px;
+  background-color: #473395;
+  color: white;
+  font-weight: 1000;
+}
+
+/* .achievement-filter-test1 {
+  padding: 3px 10px;
+  color:white;
+  background-color: #383838;
+  border-radius: 7.5px;
+  cursor:pointer;
+}
+
+.achievement-filter-test2 {
+  padding: 3px 7.5px;
+  color:white;
+  background-color: #777;
+  border-radius: 7.5px;
+  cursor:pointer;
+
+}
+
+.achievement-filter-test3 {
+  padding: 3px 7.5px;
+  color:#383838;
+  background-color: #ddd;
+  border-radius: 7.5px;
+  cursor:pointer;
+} */
+
 /****************************** 서열표 키/난이도 선택 컴포넌트 관련 ******************************/
 
 .pleaseSelectBox {
@@ -1114,11 +1255,10 @@ tr>td:nth-child(1){
   justify-content: center;
   align-items: center;
   flex-grow: 1;
+  margin: 50px 0px;
   padding: 35px 50px;
   background-color: #eee;
   border-radius: 20px;
-  /* border-top-left-radius: 20px;
-  border-top-right-radius : 20px; */
 }
 
 .pleaseSelectBox img {
@@ -1134,15 +1274,15 @@ tr>td:nth-child(1){
 }
 
 .rank-order-selector-wrapper {
-  position: relative;
-  bottom:55px;
   width:100%;
-  height: 280px;
-  border: 3px solid #e3dbff;
-  border-radius: 40px;
+  height: 230px;
+  border-right: 3px solid #e3dbff;
+  border-bottom: 3px solid #e3dbff;
+  border-left: 3px solid #e3dbff;
+  border-radius: 0px 0px 40px 40px;
   box-shadow: 0px 10px 15px rgba(113, 75, 255, 0.15);
   margin: 0px auto;
-  padding: 40px 0px 10px 0px;
+  position:relative;
 }
 
 .rank-order-selector {
@@ -1214,8 +1354,8 @@ tr>td:nth-child(1){
   bottom: 0;
   /* background-color: #ccc; */
   background-color: #614dab;
-  -webkit-transition: .4s;
-  transition: .4s;
+  -webkit-transition: .1s;
+  transition: .1s;
 }
 
 .slider:before {
@@ -1226,8 +1366,8 @@ tr>td:nth-child(1){
   left: 0px;
   bottom: -7px;
   background-color: white;
-  -webkit-transition: .4s;
-  transition: .4s;
+  -webkit-transition: .1s;
+  transition: .1s;
 }
 
 
@@ -1259,15 +1399,14 @@ input:checked + .slider:before {
   border-radius: 10px;
   padding: 15px;
   font-weight: 300;
-  margin-bottom:20px;
+  margin-top:35px;
 }
 
 /* 임시 관련 끝*/
 
-
-.rank-orderlist-wrapper {
-  display : flex;
-  /* width: 92.5%; */
+.orderlist-wrapper {
+  display: flex;
+  margin-top: 25px;
 }
 
 .header {
@@ -1352,7 +1491,7 @@ input:checked + .slider:before {
   /*      NEW*/
 }
 
-.imgbox img {
+.imgbox>img {
   width: 90%;
   height: 90%;
   /* animation-name: disk-rotation-default;
@@ -1383,7 +1522,7 @@ input:checked + .slider:before {
   /*      NEW*/
 }
 
-.imgbox:hover img {
+.imgbox:hover>img {
   animation-name: disk-rotation;
   animation-duration: 10s;
   animation-timing-function: linear;
@@ -1396,7 +1535,7 @@ input:checked + .slider:before {
 }
 
 .song-title {
-  font-weight: 500;
+  font-weight: 400;
   font-size:14px;
   margin-top: 20px;
   /* margin: 20px 10px 0px 10px; */
@@ -1408,7 +1547,7 @@ input:checked + .slider:before {
   text-align: center;
   position:absolute;
   /* bottom값 체크 */
-  bottom:11px;
+  bottom:7px;
   right:0;
   color:white;
   /* 기울임 효과로 인한 착시효과 때문에 좌측대비 우측 패딩 3px 추가.*/
@@ -1452,9 +1591,105 @@ input:checked + .slider:before {
   background-color : #1e8aef;
 }
 
-/** 호버 시 나오는 디스크 백그라운드 관련 */
 
 .testing {
+  width:50px;
+  height:50px;
+  position:absolute;
+  bottom:0px;
+  left:10px;
+}
+
+.test2 {
+  position:absolute;
+  bottom:0;
+  left:0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.test3 {
+  height:50px;
+
+}
+
+.test4 {
+  /* color:white; */
+  color:black;
+  font-size:14px;
+  font-weight: 600;
+  text-shadow:
+  /* -1.5px -1.5px 0 black,
+   0   -1.5px 0 black,
+   1.5px -1.5px 0 black,
+   1.5px  0   0 black,
+   1.5px  1.5px 0 black,
+   0    1.5px 0 black,
+  -1.5px  1.5px 0 black,
+  -1.5px  0   0 black; */
+  -1px -1px 0 white,
+  0   -1px 0 white,
+  1px -1px 0 white,
+  1px  0   0 white,
+  1px  1px 0 white,
+  0    1px 0 white,
+ -1px  1px 0 white,
+ -1px  0   0 white;
+}
+
+.disabled {
+  opacity: 0.25;
+}
+
+.all-cool {
+  border: 2px solid transparent;
+  border-radius: 50%;
+  /* background: rgb(252,101,87); */
+  background-image: linear-gradient(90deg, rgba(252,101,87,1) 0%, rgba(255,232,4,1) 51%, rgba(50,255,232,1) 100%);
+  /* background-image:  linear-gradient(90deg, rgba(255,131,120,1) 0%, rgba(255,244,135,1) 50%, rgba(157,255,251,1) 100%); */
+
+  /* background-image: linear-gradient(#fff, #fff),  */
+  /* linear-gradient(to right, red 0%,  orange 100%); */
+  background-origin: border-box;
+  background-clip: border-box;
+
+  /* border: 3px solid transparent;
+  border-radius: 50%;
+  background-origin: content-box;
+  background-clip: content-box;
+  background: rgb(252,101,87);
+  background-image: linear-gradient(90deg, rgba(252,101,87,1) 0%, rgba(255,232,4,1) 51%, rgba(50,255,232,1) 100%); */
+}
+
+.all-combo {
+  border: 2px solid transparent;
+  border-radius: 50%;
+  background-image: linear-gradient(90deg, rgba(250,213,13,1) 0%, rgba(252,203,0,1) 50%, rgba(255,215,4,1) 100%);
+  background-origin: border-box;
+  background-clip: border-box;
+}
+
+.clear {
+  border: 2px solid transparent;
+  border-radius: 50%;
+  background-image: linear-gradient(90deg, rgba(2,223,252,1) 0%, rgba(64,227,254,1) 50%, rgba(0,225,255,1) 100%);
+  background-origin: border-box;
+  background-clip: border-box;
+}
+/** 호버 시 나오는 디스크 백그라운드 관련 */
+
+.no-play {
+  border: 2px solid transparent;
+  border-radius: 50%;
+  background-color: #ddd;
+  /* background-image: linear-gradient(90deg, rgba(52,52,52,1) 0%, rgba(103,103,103,1) 50%, rgba(52,52,52,1) 100%); */
+  background-origin: border-box;
+  background-clip: border-box;
+}
+
+.hoverbox {
   width: 150px;
   height: 150px;
   background: #f9f8ff;
@@ -1473,12 +1708,12 @@ input:checked + .slider:before {
   /* opacity: 0; */
 }
 
-.testing-contents {
+.hoverbox-contents {
   opacity:0;
   overflow: hidden;
 }
 
-.imgbox:hover+.testing {
+.imgbox:hover+.hoverbox {
   width: 380px;
   padding-left: 160px;
   padding-right: 50px;
@@ -1488,7 +1723,7 @@ input:checked + .slider:before {
   box-shadow: 0px 25px 30px -30px rgba(71, 51, 149, 0.6);
 }
 
-.imgbox:hover+.testing>.testing-contents {
+.imgbox:hover+.hoverbox>.hoverbox-contents {
   opacity: 1;
   transition:all 0.3s;
   transition-timing-function: ease-out;
@@ -1496,8 +1731,8 @@ input:checked + .slider:before {
 }
 
 /* .imgbox:hover+.testing>h5{ */
-.imgbox:hover+.testing h5,
-.imgbox:hover+.testing span {
+.imgbox:hover+.hoverbox h5,
+.imgbox:hover+.hoverbox span {
   animation-name: marquee;
   animation-duration: 5s;
   animation-iteration-count: infinite;
@@ -1506,33 +1741,33 @@ input:checked + .slider:before {
 }
 
 
-.testing-title {
+.hoverbox-title {
   /* width:100%; */
   display:flex;
   white-space: nowrap;
 }
 
-.testing-artist {
+.hoverbox-subtitle {
   display:flex;
 }
 
-.testing-title h5 {
+.hoverbox-title h5 {
   line-height: 100%;
   color:#473395;
   font-size: 22px;
 }
 
-.testing-contents span,
-.testing-contents td {
+.hoverbox-contents span,
+.hoverbox-contents td {
   line-height: 150%;
   font-size: 14px;
 }
 
-.testing-contents table {
+.hoverbox-contents table {
   margin-top : 10px;
 }
 
-.testing-contents td:nth-child(1) {
+.hoverbox-contents td:nth-child(1) {
   color:#473395;
   width:30%;
   font-weight: 700;

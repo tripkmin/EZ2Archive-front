@@ -44,25 +44,71 @@ const memberModal = createSlice({
 
 const achievementUserSelected = createSlice({
   name : "achievementUserSelected",
-  initialState : {selectedKey : "", selectedDifficulty : 0, songTitleView : true, isDescending : true},
+  // selectedKey는 4k, selectedKeyCaps는 FOUR와 같이 저장됨.
+  initialState : {selectedKey : "", selectedKeyCaps: "", selectedDifficulty : 0, selectedRank : "", selectedRankView : "", songTitleView : true, isDescending : true, },
   reducers : {
-    // setTitleView(state, action){
-    //   state.songTitleView = action.payload
-    // },
-    // setDescending(state, action){
-    //   state.isDescending = action.payload
-    // },
+    setTitleView(state, action){
+      state.songTitleView = action.payload
+    },
+    setDescending(state, action){
+      state.isDescending = action.payload
+    },
     setAchievementKey(state, action){
       state.selectedKey = action.payload;
+      switch(action.payload) {
+        case '4k' : state.selectedKeyCaps = "FOUR"; break;
+        case '5k' : state.selectedKeyCaps = "FIVE"; break;
+        case '6k' : state.selectedKeyCaps = "SIX"; break;
+        case '8k' : state.selectedKeyCaps = "EIGHT"; break;
+        default: // nothing
+      }
     },
     setAchievementDifficulty(state, action){
       state.selectedDifficulty = action.payload;
     },
+    setAchievementRank(state, action){
+      state.selectedRank = action.payload;
+    },
+    setSelectedRankView(state, action){
+      state.selectedRankView = action.payload;
+    }
+    ,
     setAchievementClean(state){
       state.selectedKey = "";
+      state.selectedKeyCaps = "";
       state.selectedDifficulty = 0;
+      state.selectedRank = "";
     }
   }
+})
+
+const achievementSelectIndex = createSlice({
+  name : "achievementSelectIndex",
+  initialState : [
+    {
+      key: '4k', 
+      difficulty : Array.from({length: 20}, (_, i) => i + 1), 
+      dbRank : ["SPPP","SPP","SP","S","AP","A","B","C","D","E","F",],
+      convertName : ["S⁺⁺⁺","S⁺⁺","S⁺","S","A⁺","A","B","C","D","E","F",],
+      class: ["", "", "", "", ""]}, 
+    {
+      key: '5k', 
+      difficulty : Array.from({length: 20}, (_, i) => i + 1), 
+      dbRank : ["SPPP","SPP","SP","S","AP","A","B","C","D","E","F",],
+      convertName : ["S⁺⁺⁺","S⁺⁺","S⁺","S","A⁺","A","B","C","D","E","F",],
+      class: ["", "", "", "", ""]}, 
+    {
+      key: '6k', 
+      difficulty : Array.from({length: 20}, (_, i) => i + 1), 
+      dbRank : ["SPPP","SPP","SP","S","AP","A","B","C","D","E","F",],
+      convertName : ["S⁺⁺⁺","S⁺⁺","S⁺","S","A⁺","A","B","C","D","E","F",],
+      class: ["", "", "", "", ""]}, 
+    {
+      key: '8k', 
+      difficulty : Array.from({length: 20}, (_, i) => i + 1), 
+      dbRank : ["SPPP","SPP","SP","S","AP","A","B","C","D","E","F",],
+      convertName : ["S⁺⁺⁺","S⁺⁺","S⁺","S","A⁺","A","B","C","D","E","F",],
+      class: ["", "", "", "", ""]}],
 })
 
 const rankUserSelected = createSlice({
@@ -113,6 +159,7 @@ export default configureStore({
     userinfo : userinfo.reducer,
     memberModal : memberModal.reducer,
     achievementUserSelected : achievementUserSelected.reducer,
+    achievementSelectIndex : achievementSelectIndex.reducer,
     rankUserSelected : rankUserSelected.reducer,
     selectIndex : selectIndex.reducer,
    }
@@ -121,7 +168,8 @@ export default configureStore({
 export const { setUserName, setUserId, setUserAuth, setUserAddTime, setManageMode, setDefault } = userinfo.actions
 export const { switchModalOpen, setModalStep } = memberModal.actions
 // export const { switchLoginModal } = userLogin.actions
-export const { setAchievementKey, setAchievementDifficulty, setAchievementClean} = achievementUserSelected.actions
+export const { setTitleView, setDescending, setAchievementKey, setAchievementDifficulty, setAchievementRank, setAchievementClean, setSelectedRankView } = achievementUserSelected.actions
+export const {  } = achievementSelectIndex.actions
 export const { setRankTitleView, setRankKeyAndDifficulty, setRankDescending, setRankCleanKeyAndDifficulty } = rankUserSelected.actions
 export const { setClass, cleanClass } = selectIndex.actions
 
