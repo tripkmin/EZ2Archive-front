@@ -89,21 +89,14 @@ const achievementUserSelected = createSlice({
 
 const achievementSongInfo = createSlice({
   name : "achievementSongInfo",
-  initialState : {songName : "", songDifficulty : 0, songId : 0, imgFindName: ""},
+  initialState : {songInfo: {}, imgFindName: ""},
   reducers : {
-    setAchievementSongName(state, action){
-      state.songName = action.payload
-    },
-    setSongDifficulty(state, action){
-      state.songDifficulty = action.payload
-    },
-    setAchievementSongInfoId(state, action){
-      state.songId = action.payload
+    setSongInfo(state, action){
+      state.songInfo = action.payload
     },
     setImgFindName(state, action){
       state.imgFindName = action.payload
-    }
-
+    },
   }
 })
 
@@ -195,7 +188,7 @@ export const { setUserName, setUserId, setUserAuth, setUserAddTime, setManageMod
 export const { switchModalOpen, setModalStep, setModalDefault } = modal.actions
 // export const { switchLoginModal } = userLogin.actions
 export const { setTitleView, setDescending, setAchievementKey, setAchievementDifficulty, setAchievementRank, setAchievementClean, setSelectedRankView } = achievementUserSelected.actions
-export const { setAchievementSongName, setSongDifficulty, setAchievementSongInfoId, setImgFindName } = achievementSongInfo.actions
+export const { setImgFindName, setSongInfo } = achievementSongInfo.actions
 // export const {  } = achievementSelectIndex.actions
 export const { setRankTitleView, setRankKeyAndDifficulty, setRankDescending, setRankCleanKeyAndDifficulty } = rankUserSelected.actions
 export const { setClass, cleanClass } = selectIndex.actions

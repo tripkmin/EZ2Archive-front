@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react"
 import { API_URL } from "../services/temp";
-import { setAchievementKey, setAchievementDifficulty, switchModalOpen, setModalStep, setModalDefault, setAchievementSongInfoId, setAchievementSongName, setSongDifficulty, setImgFindName  } from "../store"
+import { setAchievementKey, setAchievementDifficulty, switchModalOpen, setModalStep, setImgFindName, setSongInfo  } from "../store"
 import defaultProfile from './../imagenone.webp'
 
 const AchievementList = () => {
@@ -17,8 +17,8 @@ const AchievementList = () => {
   const AT = localStorage.getItem("accessToken")
   
   let levelIndex 
-  if (isDescending){levelIndex = [[9,8],[7,6],[5,4],[3,2],[1,0]];}
-  else {levelIndex = [[1,0],[3,2],[5,4],[7,6],[9,8]];}
+  if (isDescending){levelIndex = [[9,8],[7,6],[5,4],[3,2],[1,0],[-99]];}
+  else {levelIndex = [[1,0],[3,2],[5,4],[7,6],[9,8],[-99]];}
 
   // URL 직접 접근 시 해당 키/난이도를 바로 조회하도록 설정
   useEffect(()=>{
@@ -26,21 +26,79 @@ const AchievementList = () => {
     dispatch(setAchievementDifficulty(urlDifficulty))  
   }, [])
 
-  // AchievementSelector에서 선택 완료 시
   useEffect(()=>{
-    if (selectedKey && selectedDifficulty) {
-      axios
-        .get(`${API_URL}/achievement/${selectedKeyCaps}/${selectedDifficulty}/list`,
-        {
+    const fetchData = async () => {
+      try {
+        let 그냥곡리스트 = await axios.get(`${API_URL}/musicInfo/${selectedKeyCaps}/${selectedDifficulty}/list`)
+        let 성과리스트 = await axios.get(`${API_URL}/musicInfo/${selectedKeyCaps}/${selectedDifficulty}/record`, {
           headers: {
             Authorization: `Bearer ${AT}`
           }
         })
-      .then((res) => setList(res.data.data))
-      // .then(console.log(list))
-      .catch((err) => { console.log(err) })
+        let 최종적으로넣을거 = []
+  
+        그냥곡리스트 = 그냥곡리스트.data.data;
+        성과리스트 = 성과리스트.data.data
+        // 이런 테크닉도 있었구나...
+        그냥곡리스트.forEach((곡) => {
+          let 성과곡매치되는거 = 성과리스트.find(성과곡 => 성과곡.musicInfoId === 곡.id)
+          if(성과곡매치되는거){
+            let 리스트에넣을거 = {...곡, ...성과곡매치되는거}
+            최종적으로넣을거.push(리스트에넣을거)
+          } else {
+            let mergeList = {...곡}
+            최종적으로넣을거.push(mergeList)
+          }
+        })
+        setList(최종적으로넣을거); 
+      } catch (err) {
+        console.log(err)
+      }
+    }
+  
+    if (selectedKey && selectedDifficulty) {
+      fetchData();
     }
   }, [selectedKey, selectedDifficulty])
+
+
+  // AchievementSelector에서 선택 완료 시
+  // useEffect(()=>{
+  //   if (selectedKey && selectedDifficulty) {
+  //     let 그냥곡리스트
+  //     axios
+  //       .get(`${API_URL}/musicInfo/${selectedKeyCaps}/${selectedDifficulty}/list`)
+  //       .then((res) => {
+  //         그냥곡리스트 = res.data.data; 
+  //       })
+  //       .then(
+  //       axios
+  //         .get(`${API_URL}/musicInfo/${selectedKeyCaps}/${selectedDifficulty}/record`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${AT}`
+  //         }
+  //       })
+  //       .then((res)=>{
+  //         const {data} = res.data
+  //         let 최종적으로넣을거 = []
+
+  //         그냥곡리스트.forEach((단일곡) => {
+  //           let 아이디동일한거 = data.find(성과곡 => 성과곡.musicInfoId === 단일곡.id)
+  //           if(아이디동일한거){
+  //             let 리스트에넣을거 = {...단일곡, ...아이디동일한거}
+  //             최종적으로넣을거.push(리스트에넣을거)
+  //           } else {
+  //             let mergeList = {...단일곡}
+  //             최종적으로넣을거.push(mergeList)
+  //           }
+  //         })
+  //         setList(최종적으로넣을거); 
+  //       })
+  //     )
+  //     .catch((err) => {console.log(err)})
+  //   }
+  // }, [selectedKey, selectedDifficulty])
 
   const detailDifficultyFilter = (detailDifficulty) => {
     switch(detailDifficulty){
@@ -59,15 +117,17 @@ const AchievementList = () => {
       case 8:
       case 9:
         return '최상';
+      case -99:
+        return '미분류';
       default: 
         // nothing
     }
   }
 
   const returnClass = (songinfo) => {
-    const { allCool, noMiss } = songinfo
-    if (allCool) { return "all-cool" }
-    else if (noMiss) { return "all-combo" }
+    const { isAllCool, isNoMiss } = songinfo
+    if (isAllCool) { return "all-cool" }
+    else if (isNoMiss) { return "all-combo" }
     else if (isPlayed(songinfo)) { return "clear" }
     else { return "no-play" }
   }
@@ -100,12 +160,9 @@ const AchievementList = () => {
 
   // 여기서 이제 songinfo를 dispatch해라고 코드 짜야함.
   const achievementModalOpen = (filteredElement, renamed) => {
-    const {name, difficulty, grade, percentage, score, musicInfoId, allCool, noMiss} = filteredElement
     dispatch(switchModalOpen())
     dispatch(setModalStep(4))
-    dispatch(setAchievementSongName(name))
-    dispatch(setSongDifficulty(difficulty))
-    dispatch(setAchievementSongInfoId(musicInfoId))
+    dispatch(setSongInfo(filteredElement))
     dispatch(setImgFindName(renamed))
   }
 
@@ -150,7 +207,9 @@ const AchievementList = () => {
                         if (x.slice(x.length-1, x.length) > y.slice(y.length-1, y.length)) return -1;
                       }
                     }).map((filteredElement, index)=>{
-                      const {name, difficulty, grade, percentage, score, musicInfoId, allCool, noMiss} = filteredElement
+                      const {id, name, artist, keyType, difficulty, category, level, rank, bestScore, totalNote, bpm, addTime, description, recordId, grade, isAllCool, isNoMiss, score, percentage
+                        // grade, percentage, score, musicInfoId, allCool, noMiss
+                      } = filteredElement
                       const renamed = name.toLowerCase().replace(/ /g, "").replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/ ]/g, "");
                       return (
                         <div className="song-wrapper" key={index}>
@@ -165,7 +224,7 @@ const AchievementList = () => {
                                 // 아래는 에러 테스트용.
                                 // src={process.env.PUBLIC_URL + '/musicdiskResize/'+ renamed + '.web'} 
                                 alt={name}
-                                onLoad={()=>{console.log("로드완료")}}
+                                // onLoad={()=>{console.log("로드완료")}}
                                 onError={handleImgError}
                                 className={`${returnClass(filteredElement)} ${matchFilter(filteredElement)}`}
                               ></img>
@@ -208,21 +267,17 @@ const AchievementList = () => {
                                       <td>SCORE</td>
                                       <td>{score}</td>
                                     </tr>
-                                    {/* <tr>
-                                      <td>RATE</td>
-                                      <td>{Math.round(percentage * 10) / 10}</td>
-                                    </tr> */}
                                     <tr>
                                       <td>곡 코드</td>
-                                      <td>{musicInfoId}</td>
+                                      <td>{id}</td>
                                     </tr>
                                     <tr>
-                                      <td>곡 랭크</td>
-                                      <td>{grade} </td>
+                                      <td>노트 수</td>
+                                      <td>{totalNote} </td>
                                     </tr>
                                     <tr>
                                       <td>ALL</td>
-                                      <td>{allCool ? "Y" : "N"}/{noMiss ? "Y" : "N"}</td>
+                                      <td>{isAllCool ? "Y" : "N"}/{isNoMiss ? "Y" : "N"}</td>
                                     </tr>
                                   </tbody>
                                 </table>

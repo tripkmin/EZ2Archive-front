@@ -11,20 +11,34 @@ import Login from "./ModalComponent/Login"
 import Signin from "./ModalComponent/Signin"
 import AchievementDetail from "./ModalComponent/AchievementDetail";
 
-const Modal = (props) => {
+const Modal = () => {
   const dispatch = useDispatch()
   const state = useSelector( (state) => state )
 
-  // 공통 기능
   const [modalOpenClass, setModalOpenClass] = useState("")
   const [modalStepClass, setModalStepClass] = useState(0)
   const {isModalOpen, modalStep} = state.modal
+
+  // 개발중
+  const escFunction = useCallback((e) => {
+    if (modalOpenClass && e.key === "Escape"){
+      console.log('esc 누름')
+    }
+  }, [])
+
   useEffect(()=>{
     if(isModalOpen){setModalOpenClass("member-modal-open")}
     else {setModalOpenClass("")}
   }, [isModalOpen]) 
 
-  // step → 0 : 로그인 창 / 1 : 회원가입 창 / 2 : 이메일 인증 창
+  /* step 설명
+    0 : 모달 사라질 때 변경될 default 창
+    1 : 로그인 창
+    2 : 회원가입 창
+    3 : 이메일 인증 창
+    4 : 성과표 창
+  */
+ 
   useEffect(()=>{
     switch(modalStep){
       case 0: 
@@ -34,17 +48,19 @@ const Modal = (props) => {
       case 3: setModalStepClass(`modal-sm`); break
       case 4: setModalStepClass(`modal-lg`); break
       case 5: setModalStepClass(`modal-xl`); break
-      // default: setModalClass('modal-step-0')
+      default: // nothing
     }
   }, [modalStep])
 
-  /** 모달창 닫으면 인풋 내용 초기화 되도록 함 */
-  // 공통 기능임.
-  // const modalClose = useCallback(() => {
-  //   dispatch(switchModalOpen())
-  //   dispatch(setModalStep(0))
-  // })
+  // 개발 중
+  useEffect(() => {
+    document.addEventListener("keydown", escFunction);
+    return () => {
+      document.removeEventListener("keydown", escFunction);
+    };
+  }, [modalOpenClass]);
 
+    
     return (
       <div className={`member-modal ${modalOpenClass}`}>
         <div className={`${modalStepClass}`}>
@@ -52,7 +68,7 @@ const Modal = (props) => {
             <FontAwesomeIcon icon={faXmark} onClick={()=>{dispatch(setModalDefault())}} style={{cursor:'pointer' }}></FontAwesomeIcon>
             { 
               // 스텝 테스트용, 평소에는 비활성화 해야함!
-              <FontAwesomeIcon icon={faArrowRight} onClick={()=>{dispatch(setModalStep(modalStep + 1))}} style={{cursor:'pointer'}}></FontAwesomeIcon>
+              // <FontAwesomeIcon icon={faArrowRight} onClick={()=>{dispatch(setModalStep(modalStep + 1))}} style={{cursor:'pointer'}}></FontAwesomeIcon>
             }
             { modalStep === 1
             ? <FontAwesomeIcon icon={faArrowLeft} onClick={()=>{dispatch(setModalStep(modalStep - 1))}} style={{cursor:'pointer'}}></FontAwesomeIcon>

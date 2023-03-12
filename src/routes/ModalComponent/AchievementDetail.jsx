@@ -10,7 +10,29 @@ import { MyResponsiveLine } from "./chart";
 const AchievementDetail = () => {
   const state = useSelector( (state) => state )
   const dispatch = useDispatch()
-  const {songName, songId, songDifficulty, imgFindName} = state.achievementSongInfo
+  const {imgFindName} = state.achievementSongInfo
+  const {
+    id,
+    name,
+    artist,
+    keyType,
+    difficulty,
+    category,
+    level,
+    rank,
+    bestScore,
+    totalNote,
+    bpm,
+    addTime,
+    description,
+    recordId,
+    musicInfoId,
+    grade,
+    isAllCool,
+    isNoMiss,
+    score,
+    percentage,
+  } = state.achievementSongInfo.songInfo
   const [achievementSongHistory, setAchievementSongHistory] = useState([])
 
   
@@ -119,6 +141,7 @@ const AchievementDetail = () => {
   //       })
   //     })
   // }, [])
+  
   const [차이, set차이] = useState([])
 
   const 차이계산 = () => {
@@ -163,8 +186,28 @@ const AchievementDetail = () => {
           // onClick={achievementModalOpen}
         // style={{border: "2px solid yellow", backgroundColor:"yellow" , borderRadius: "50%"}}
         ></img>
-        <h3>{songName}, {songId}, {songDifficulty}</h3>
       </div>
+      <h3>데이터 통신없이 즉시 뽑아올 수 있는 정보들</h3>
+        <li>id : {id}</li>
+        <li>name : {name}</li>
+        <li>artist : {artist}</li>
+        <li>keyType : {keyType}</li>
+        <li>difficulty : {difficulty}</li>
+        <li>category : {category}</li>
+        <li>level : {level}</li>
+        <li>rank : {rank}</li>
+        <li>bestScore : {bestScore}</li>
+        <li>totalNote : {totalNote}</li>
+        <li>bpm : {bpm}</li>
+        <li>addTime : {addTime}</li>
+        <li>description : {description}</li>
+        <li>recordId : {recordId}</li>
+        <li>musicInfoId : {musicInfoId}</li>
+        <li>grade : {grade}</li>
+        <li>isAllCool : {isAllCool}</li>
+        <li>isNoMiss : {isNoMiss}</li>
+        <li>score : {score}</li>
+        <li>percentage : {percentage}</li>
       <MyResponsiveLine />
 
       <table>

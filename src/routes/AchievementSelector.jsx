@@ -93,7 +93,7 @@ const AchievementSelector = () => {
           } else el.data = push[i]
         })
         setOverall(copyOverall)
-        console.log(copyOverall)
+        // console.log(copyOverall)
         // console.log(copyOverall)
         setSongCount(totalCnt)
       })
@@ -178,7 +178,6 @@ const AchievementSelector = () => {
         </label>
         <span className="bold">필터 보기</span>
       </div>
-        {/* <div className="achievement-filter-enabler">테스트</div> */}
       </div>
     </div>
     <div className={`achievement-filter-wrapper no-drag ${filterClass}`}>
@@ -186,7 +185,6 @@ const AchievementSelector = () => {
         <h4 className="theme-pp">KEY</h4>
         {
           키목록.map((el, i) => {
-            // 해야할 것. state index 받아와서 이거의 i가 index랑 같으면 클래스 부착시켜라~
             return (
               <li 
                 className={`achievement-filter-element ${i === keyIndex ? "achievement-filter-element-active" : ""}`} 
