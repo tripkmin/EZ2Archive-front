@@ -17,7 +17,7 @@ import PleaseSelectAchievement from './routes/guider/PleaseSelectAchievement'
 import PleaseSelectRank from './routes/guider/PleaseSelectRank';
 import PleaseWaiting from './routes/guider/PleaseWaiting'
 import Navbar from './routes/Navbar'
-import Login from './routes/Login'
+import Modal from './routes/Modal'
 import NotFound from './routes/Announce/404';
 import Manage from './routes/Manage';
 import AchievementSelector from './routes/AchievementSelector';
@@ -30,7 +30,7 @@ function App() {
   return (
     <>
       <Navbar/>
-        <Login/>
+        <Modal/>
           <div className="main-wrapper">
           {/* 라우트 영역 */}
             <Routes>

@@ -4,7 +4,7 @@ import axios from "axios"
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom"
-import { switchModalOpen, setModalStep, setUserName, setUserId, setUserAuth, setUserAddTime, setDefault } from "../store"
+import { switchModalOpen, setModalStep, setUserName, setUserId, setUserAuth, setUserAddTime } from "../store"
 import { API_URL } from "../services/temp";
 
 function Navbar(){
@@ -67,10 +67,6 @@ function Navbar(){
       });
   };
 
-  const verifyAndNavigate = (page) => {
-    // if (){}
-  }
-
   return (
     <header>
       <nav className="nav-wrapper theme-pp-shadow">
@@ -81,19 +77,20 @@ function Navbar(){
               <span className="category-link" onClick={()=>{ navigate('/achievement') }}>성과표</span>
               <span className="category-link" onClick={()=>{ navigate('/rank') }}>서열표</span>
               <span className="category-link" onClick={()=>{ navigate('/tier') }}>티어표</span>
-              <span className="category-link" onClick={()=>{ alert('준비 중입니다') }}>안내</span>
+              <span className="category-link" onClick={()=>{ alert('준비중이긴 한데 언제 나올지는 모름 ㅅㄱ') }}>NEW 성과표</span>
+              <span className="category-link" onClick={()=>{ alert('감바스 개땡기네') }}>안내</span>
             </div>
             <img className="pp-navbar-pattern" src={process.env.PUBLIC_URL + '/navbar/Asset 1.svg'} alt="logo" onClick={()=>{ navigate('/') }}></img>
             <div>
               {
                 state.userinfo.userName !== ""
                 ? <span className="category-link">{state.userinfo.userName}님</span>
-                : <span className="category-link" onClick={()=>{ dispatch(switchModalOpen()); dispatch(setModalStep(0)) }}>로그인</span>
+                : <span className="category-link" onClick={()=>{ dispatch(switchModalOpen()); dispatch(setModalStep(1)) }}>로그인</span>
               }
               {
                 state.userinfo.userName !== ""
                 ? <span className="category-link" onClick={logout}>로그아웃</span>
-                : <span className="category-link" onClick={()=>{ dispatch(switchModalOpen()); dispatch(setModalStep(1)) }}>회원가입</span>
+                : <span className="category-link" onClick={()=>{ dispatch(switchModalOpen()); dispatch(setModalStep(2)) }}>회원가입</span>
               }
               {
                 state.userinfo.userAuth == "ADMIN"
@@ -106,39 +103,6 @@ function Navbar(){
       </nav>
       <div className="nav-blocker"></div>
     </header>
-    // <header>
-    //   <nav className="nav-wrapper theme-pp-shadow">
-    //     <div className="container">
-    //       <div className="nav">
-    //         <img className="logo" src={process.env.PUBLIC_URL + '/navbar/ez2archive_logo.svg'} alt="logo" onClick={()=>{ navigate('/') }}></img>
-    //         {/* <div className="category-box">
-    //           <span className="category-link" onClick={()=>{ navigate('/achievement') }}>성과표</span>
-    //           <span className="category-link" onClick={()=>{ navigate('/rank') }}>서열표</span>
-    //           <span className="category-link" onClick={()=>{ navigate('/tier') }}>티어표</span>
-    //           <span className="category-link" onClick={()=>{ alert('준비 중입니다') }}>안내</span>
-    //         </div> */}
-    //         <img className="pp-navbar-pattern" src={process.env.PUBLIC_URL + '/navbar/Asset 1.svg'} alt="logo" onClick={()=>{ navigate('/') }}></img>
-    //         {/* <div>
-    //           {
-    //             state.userinfo.userName !== ""
-    //             ? <span className="category-link">{state.userinfo.userName}님</span>
-    //             : <span className="category-link" onClick={()=>{ dispatch(switchModalOpen()); dispatch(setModalStep(0)) }}>로그인</span>
-    //           }
-    //           {
-    //             state.userinfo.userName !== ""
-    //             ? <span className="category-link" onClick={logout}>로그아웃</span>
-    //             : <span className="category-link" onClick={()=>{ dispatch(switchModalOpen()); dispatch(setModalStep(1)) }}>회원가입</span>
-    //           }
-    //           {
-    //             state.userinfo.userAuth == "ADMIN"
-    //             ? <span className="category-link" onClick={()=>{ navigate('/manage')}}>관리</span>
-    //             : null
-    //           }
-    //         </div> */}
-    //       </div>
-    //     </div>
-    //   </nav>
-    // </header>
   )
 }
 

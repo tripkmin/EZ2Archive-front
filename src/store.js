@@ -19,7 +19,7 @@ const userinfo = createSlice({
     setManageMode(state, action){
       state.manageMode = action.payload;
     },
-    setDefault(state, action){
+    setDefault(state){
       state.userName = "";
       state.userId = "";
       state.userAuth = "";
@@ -29,19 +29,24 @@ const userinfo = createSlice({
   }
 })
 
-const memberModal = createSlice({
+const modal = createSlice({
   name : "memberModal",
   initialState : {isModalOpen : false, modalStep : 0 },
   reducers : {
     switchModalOpen(state){
-      state.isModalOpen = !state.isModalOpen
+      state.isModalOpen = !state.isModalOpen;
     },
     setModalStep(state, action){
-      state.modalStep = action.payload
+      state.modalStep = action.payload;
+    },
+    setModalDefault(state){
+      state.isModalOpen = false;
+      state.modalStep = 0;
     }
   }
 })
 
+// filterSelected같은 걸로 나중에 바꾸기
 const achievementUserSelected = createSlice({
   name : "achievementUserSelected",
   // selectedKey는 4k, selectedKeyCaps는 FOUR와 같이 저장됨.
@@ -79,6 +84,26 @@ const achievementUserSelected = createSlice({
       state.selectedDifficulty = 0;
       state.selectedRank = "";
     }
+  }
+})
+
+const achievementSongInfo = createSlice({
+  name : "achievementSongInfo",
+  initialState : {songName : "", songDifficulty : 0, songId : 0, imgFindName: ""},
+  reducers : {
+    setAchievementSongName(state, action){
+      state.songName = action.payload
+    },
+    setSongDifficulty(state, action){
+      state.songDifficulty = action.payload
+    },
+    setAchievementSongInfoId(state, action){
+      state.songId = action.payload
+    },
+    setImgFindName(state, action){
+      state.imgFindName = action.payload
+    }
+
   }
 })
 
@@ -157,8 +182,9 @@ const selectIndex = createSlice({
 export default configureStore({
   reducer: { 
     userinfo : userinfo.reducer,
-    memberModal : memberModal.reducer,
+    modal : modal.reducer,
     achievementUserSelected : achievementUserSelected.reducer,
+    achievementSongInfo : achievementSongInfo.reducer,
     achievementSelectIndex : achievementSelectIndex.reducer,
     rankUserSelected : rankUserSelected.reducer,
     selectIndex : selectIndex.reducer,
@@ -166,9 +192,10 @@ export default configureStore({
 }) 
 
 export const { setUserName, setUserId, setUserAuth, setUserAddTime, setManageMode, setDefault } = userinfo.actions
-export const { switchModalOpen, setModalStep } = memberModal.actions
+export const { switchModalOpen, setModalStep, setModalDefault } = modal.actions
 // export const { switchLoginModal } = userLogin.actions
 export const { setTitleView, setDescending, setAchievementKey, setAchievementDifficulty, setAchievementRank, setAchievementClean, setSelectedRankView } = achievementUserSelected.actions
+export const { setAchievementSongName, setSongDifficulty, setAchievementSongInfoId, setImgFindName } = achievementSongInfo.actions
 // export const {  } = achievementSelectIndex.actions
 export const { setRankTitleView, setRankKeyAndDifficulty, setRankDescending, setRankCleanKeyAndDifficulty } = rankUserSelected.actions
 export const { setClass, cleanClass } = selectIndex.actions

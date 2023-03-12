@@ -1,22 +1,23 @@
 /*eslint-disable*/
+
 import axios from "axios"
 import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react"
 import { API_URL } from "../services/temp";
-import { setAchievementKey, setAchievementDifficulty, setAchievementClean } from "../store"
+import { setAchievementKey, setAchievementDifficulty, switchModalOpen, setModalStep, setModalDefault, setAchievementSongInfoId, setAchievementSongName, setSongDifficulty, setImgFindName  } from "../store"
 import defaultProfile from './../imagenone.webp'
 
 const AchievementList = () => {
   const state = useSelector( (state) => state )
   const dispatch = useDispatch()
   const {urlKey, urlDifficulty} = useParams()
-  const {selectedKey, selectedKeyCaps, selectedDifficulty, selectedRank, selectedRankView} = state.achievementUserSelected
+  const {selectedKey, selectedKeyCaps, selectedDifficulty, selectedRank, selectedRankView, songTitleView, isDescending} = state.achievementUserSelected
   const [list, setList] = useState([])
   const AT = localStorage.getItem("accessToken")
   
   let levelIndex 
-  if (state.achievementUserSelected.isDescending){levelIndex = [[9,8],[7,6],[5,4],[3,2],[1,0]];}
+  if (isDescending){levelIndex = [[9,8],[7,6],[5,4],[3,2],[1,0]];}
   else {levelIndex = [[1,0],[3,2],[5,4],[7,6],[9,8]];}
 
   // URL 직접 접근 시 해당 키/난이도를 바로 조회하도록 설정
@@ -78,11 +79,11 @@ const AchievementList = () => {
     const selectedRankIndex = dbRank.indexOf(selectedRank);
 
     if (selectedRankView === "동일" && selectedRank !== grade){return "disabled"} 
-    if (selectedRankView === "초과" && selectedRankIndex <= gradeIndex){return "disabled"}
-    if (selectedRankView === "이상" && selectedRankIndex < gradeIndex){return "disabled"}
-    if (selectedRankView === "이하" && selectedRankIndex > gradeIndex){return "disabled"}
-    if (selectedRankView === "미만" && selectedRankIndex >= gradeIndex){return "disabled"}
-    if (selectedRankView === "해제"){return ""}
+    else if (selectedRankView === "초과" && selectedRankIndex <= gradeIndex){return "disabled"}
+    else if (selectedRankView === "이상" && selectedRankIndex < gradeIndex){return "disabled"}
+    else if (selectedRankView === "이하" && selectedRankIndex > gradeIndex){return "disabled"}
+    else if (selectedRankView === "미만" && selectedRankIndex >= gradeIndex){return "disabled"}
+    else {return ""}
   }
 
   const isPlayed = (songinfo) => {
@@ -95,6 +96,17 @@ const AchievementList = () => {
   
   const handleImgError = (e) => {
     e.target.src = defaultProfile;
+  }
+
+  // 여기서 이제 songinfo를 dispatch해라고 코드 짜야함.
+  const achievementModalOpen = (filteredElement, renamed) => {
+    const {name, difficulty, grade, percentage, score, musicInfoId, allCool, noMiss} = filteredElement
+    dispatch(switchModalOpen())
+    dispatch(setModalStep(4))
+    dispatch(setAchievementSongName(name))
+    dispatch(setSongDifficulty(difficulty))
+    dispatch(setAchievementSongInfoId(musicInfoId))
+    dispatch(setImgFindName(renamed))
   }
 
     return (
@@ -122,8 +134,8 @@ const AchievementList = () => {
                       const x = a.difficulty;
                       const y = b.difficulty;
                       //내림차순이면 난이도 정렬 역시 내림차순으로 (SHD → EZ), 오름차순이면 (EZ → SHD)순으로 정렬.
-                      if(state.rankUserSelected.isDescending === true){
-                        // SHD 정렬 먼저
+                      if(isDescending === true){
+                        // HD 정렬 먼저
                         if (x.length < y.length) return 1;
                         if (x.length > y.length) return -1;
                         // 그다음 EZ, NM, HD의 뒷 글자(Z, M, D)를 가지고 정렬
@@ -138,85 +150,87 @@ const AchievementList = () => {
                         if (x.slice(x.length-1, x.length) > y.slice(y.length-1, y.length)) return -1;
                       }
                     }).map((filteredElement, index)=>{
-                      const renamed = filteredElement.name.toLowerCase().replace(/ /g, "").replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/ ]/g, "");
+                      const {name, difficulty, grade, percentage, score, musicInfoId, allCool, noMiss} = filteredElement
+                      const renamed = name.toLowerCase().replace(/ /g, "").replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/ ]/g, "");
                       return (
                         <div className="song-wrapper" key={index}>
                           <div className="song-infobox">
-                            <div className="imgbox no-drag">
+                            <div className="imgbox no-drag" 
+                            onMouseDown={()=>{
+                              achievementModalOpen(filteredElement, renamed)
+                            }}
+                            >
                               <img  
                                 src={process.env.PUBLIC_URL + '/musicdiskResize/'+ renamed + '.webp'} 
                                 // 아래는 에러 테스트용.
                                 // src={process.env.PUBLIC_URL + '/musicdiskResize/'+ renamed + '.web'} 
-                                alt={filteredElement.name}
+                                alt={name}
                                 onLoad={()=>{console.log("로드완료")}}
                                 onError={handleImgError}
                                 className={`${returnClass(filteredElement)} ${matchFilter(filteredElement)}`}
-                              // style={{border: "2px solid yellow", backgroundColor:"yellow" , borderRadius: "50%"}}
                               ></img>
                               <div className="shadowbox"></div>
-                              <span className={`level-badge ${filteredElement.difficulty}`}>{filteredElement.difficulty}</span>
-                              {/* <img src={process.env.PUBLIC_URL + '/rankImg/'+ filteredElement.grade + '.png'} className="testing"></img> */}
+                              <span className={`level-badge ${difficulty}`}>{difficulty}</span>
                               <div 
                                 className={`test2 ${isPlayed(filteredElement) ? "" : "hidden"}`}
                               >
-                                <img src={process.env.PUBLIC_URL + '/rankImg/'+ filteredElement.grade + '.png'} className="test3"></img>
-                                {/* <div className="test3"></div> */}
-                                <p className="test4">{Math.round(filteredElement.percentage * 10) / 10}%</p>
+                                <img src={process.env.PUBLIC_URL + '/rankImg/'+ grade + '.png'} className="test3"></img>
+                                <p className="test4">{Math.round(percentage * 10) / 10}%</p>
                               </div>
                             </div>
                             <div className="hoverbox no-drag">
                               <div className="hoverbox-contents">
                               {
-                                filteredElement.name.length > 13
+                                name.length > 13
                                 ? 
-                                  <div className="hoverbox-title" style={{width:`${filteredElement.name.length*30}px`}}>
-                                    <h5 className="width-50">{filteredElement.name}</h5>
-                                    <h5 className="width-50">{filteredElement.name}</h5>
+                                  <div className="hoverbox-title" style={{width:`${name.length*30}px`}}>
+                                    <h5 className="width-50">{name}</h5>
+                                    <h5 className="width-50">{name}</h5>
                                   </div>
                                 : 
                                   <div className="hoverbox-title">
-                                    <h5 className="animation-paused">{filteredElement.name}</h5>
+                                    <h5 className="animation-paused">{name}</h5>
                                   </div>
                               }
                               {
-                                // filteredElement.artist.length > 24
-                                // ? <div className="hoverbox-subtitle" style={{width:`${filteredElement.artist.length*20}px`}}>
-                                //     <span className="width-50">{filteredElement.artist}</span>
-                                //     <span className="width-50">{filteredElement.artist}</span>
+                                // artist.length > 24
+                                // ? <div className="hoverbox-subtitle" style={{width:`${artist.length*20}px`}}>
+                                //     <span className="width-50">{artist}</span>
+                                //     <span className="width-50">{artist}</span>
                                 //   </div>
                                 // : <div className="hoverbox-subtitle">
-                                //     <span className="animation-paused">{filteredElement.artist}</span>
+                                //     <span className="animation-paused">{artist}</span>
                                 //   </div>
                               }
                                 <table>
                                   <tbody>
                                     <tr>
                                       <td>SCORE</td>
-                                      <td>{filteredElement.score}</td>
+                                      <td>{score}</td>
                                     </tr>
                                     {/* <tr>
                                       <td>RATE</td>
-                                      <td>{Math.round(filteredElement.percentage * 10) / 10}</td>
+                                      <td>{Math.round(percentage * 10) / 10}</td>
                                     </tr> */}
                                     <tr>
                                       <td>곡 코드</td>
-                                      <td>{filteredElement.musicInfoId}</td>
+                                      <td>{musicInfoId}</td>
                                     </tr>
                                     <tr>
                                       <td>곡 랭크</td>
-                                      <td>{filteredElement.grade} </td>
+                                      <td>{grade} </td>
                                     </tr>
                                     <tr>
                                       <td>ALL</td>
-                                      <td>{filteredElement.allCool ? "Y" : "N"}/{filteredElement.noMiss ? "Y" : "N"}</td>
+                                      <td>{allCool ? "Y" : "N"}/{noMiss ? "Y" : "N"}</td>
                                     </tr>
                                   </tbody>
                                 </table>
                               </div>
                             </div>
                             {
-                              state.achievementUserSelected.songTitleView === true
-                              ? <p className="song-title">{filteredElement.name} </p> 
+                              songTitleView === true
+                              ? <p className="song-title">{name} </p> 
                               : null
                             }
                           </div>

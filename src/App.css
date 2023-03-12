@@ -3,7 +3,8 @@
 
 /* 추가 리셋 */
 input[type="text"],
-input[type="password"] {
+input[type="password"],
+textarea {
   all: unset;
 }
 
@@ -18,12 +19,16 @@ input[type="password"] {
 
 /* 스크롤바 관련 */
 
-html {
+html,
+textarea,
+.achievement-detail-wrapper {
   overflow: -moz-scrollbars-vertical;
   overflow-y: scroll;
 }
 
-body {
+body,
+textarea,
+.achievement-detail-wrapper {
   --sb-track-color: #eee;
   --sb-thumb-color: #787878;
   /* --sb-track-color: #787878;
@@ -34,17 +39,23 @@ body {
                    var(--sb-track-color);
 }
 
-body::-webkit-scrollbar {
+body::-webkit-scrollbar,
+textarea::-webkit-scrollbar,
+.achievement-detail-wrapper::-webkit-scrollbar {
   width: var(--sb-size);
   height: var(--sb-size);
 }
 
-body::-webkit-scrollbar-track {
+body::-webkit-scrollbar-track,
+textarea::-webkit-scrollbar-track,
+.achievement-detail-wrapper::-webkit-scrollbar-track {
   background: var(--sb-track-color);
   border-radius: 0px;
 }
 
-body::-webkit-scrollbar-thumb {
+body::-webkit-scrollbar-thumb,
+textarea::-webkit-scrollbar-thumb,
+.achievement-detail-wrapper::-webkit-scrollbar-thumb {
   background: var(--sb-thumb-color);
   border-radius: 0px;
   
@@ -59,7 +70,8 @@ h3,
 h4,
 h5,
 h6,
-small {
+small,
+textarea {
   transform: rotate(0.04deg);
 }
 
@@ -73,7 +85,8 @@ h5,
 h6,
 div,
 button,
-small {
+small,
+textarea {
   font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
   line-height: 140%;
   letter-spacing: -0.75px;
@@ -156,22 +169,24 @@ button:disabled:hover {
 }
 
 input[type="text"],
-input[type="password"] {
+input[type="password"],
+textarea {
   box-sizing: border-box;
   border: none;
   border: 1px solid #ddd;
   border-radius: 5px;
   padding:10px;
   width:100%;
-  transition: all 0.3s;
+  transition: all 0.1s;
   font-size: 13px;
   /* background-color: white; */
 }
 
 input[type="text"]:focus,
-input[type="password"]:focus {
+input[type="password"]:focus,
+textarea:focus {
   border: 1px solid #911eef;
-  transition: all 0.3s;
+  transition: all 0.1s;
   font-size: 13px;
   box-shadow: 0px 10px 15px rgba(113, 75, 255, 0.15);
 }
@@ -312,40 +327,53 @@ body {
   opacity: 1;
 }
 
-.modal-step-0 {
+.modal-sm {
   width:400px;
   height:450px;
   border-radius: 10px;
   background-color: white;
   z-index: 1000;
   padding:10px;
-  transition: all 0.3s;
+  transition: all 0.2s;
   display:flex;
   flex-direction: column;
   overflow: hidden;
 }
 
-.modal-step-1 {
+.modal-md {
   width:400px;
   height:800px;
   border-radius: 10px;
   background-color: white;
   z-index: 1000;
   padding:10px;
-  transition: all 0.3s;
+  transition: all 0.2s;
   display:flex;
   flex-direction: column;
   overflow: hidden;
 }
 
-.modal-step-2 {
-  width:400px;
-  height:400px;
+.modal-lg {
+  width:800px;
+  height:1000px;
   border-radius: 10px;
   background-color: white;
   z-index: 1000;
   padding:10px;
-  transition: all 0.3s;
+  transition: opacity 0.2s;
+  display:flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-xl {
+  width:1000px;
+  height:1000px;
+  border-radius: 10px;
+  background-color: white;
+  z-index: 1000;
+  padding:10px;
+  transition: opacity 0.2s;
   display:flex;
   flex-direction: column;
   overflow: hidden;
@@ -613,14 +641,17 @@ html, body, #root {
 }
 
 .footer {
-  padding: 15px 30px;
+  padding: 15px;
   border-top: 3px solid #e3dbff;
 }
 
 .footer>div {
-  padding: 10px 0px;
+  padding: 5px 0px;
 }
 
+.footer p {
+  font-size: 16px;
+}
 
 /****************************** Navbar 관련 옵션 ******************************/
 
@@ -638,7 +669,7 @@ html, body, #root {
 
 .nav {
   /* 반응형 구현 시 뗄 것 */
-  width:1100px;
+  min-width:750px;
   /*  */
   display: flex;
   justify-content: space-between;
@@ -1122,6 +1153,7 @@ tr>td:nth-child(1){
   /* box-shadow: 0px 10px 15px rgba(113, 75, 255, 0.15); */
 }
 
+
 .bar-shadow {
   box-shadow: 0px 3px 15px rgba(113, 75, 255, 0.15);
   /* transform: translateX(-700px); */
@@ -1246,6 +1278,23 @@ tr>td:nth-child(1){
   border-radius: 7.5px;
   cursor:pointer;
 } */
+
+/*  */
+
+.achievement-detail-wrapper {
+  padding:10px;
+  overflow-y: scroll;
+}
+
+.achievement-detail-info {
+  display:flex;
+  padding:20px 50px;
+}
+
+.achievement-detail-wrapper textarea {
+  font-size:16px;
+  height:5rem;
+}
 
 /****************************** 서열표 키/난이도 선택 컴포넌트 관련 ******************************/
 
@@ -1478,27 +1527,17 @@ input:checked + .slider:before {
 
 .imgbox {
   position : relative;
-  /* width: 105px;
-  height: 105px; */
   width: 120px;
   height: 120px;
-  /* padding:10px; */
   transition: all 0.5s;
   text-align: center;
-  /*      NEW*/
   transition: all 0.1s;
-  padding: 0px;
-  /*      NEW*/
+  cursor:pointer;
 }
 
 .imgbox>img {
   width: 90%;
   height: 90%;
-  /* animation-name: disk-rotation-default;
-  animation-duration: 0.5s; */
-  /* transition: all 1s;
-  transform:rotate(0deg); */
-  /* transition-delay: 0.3s; */
 }
 
 .shadowbox {
