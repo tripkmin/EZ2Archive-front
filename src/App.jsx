@@ -37,18 +37,18 @@ function App() {
               <Route path="/" element={ <Main/> }></Route>
               <Route path="/achievement" element={ <><AchievementSelector/><Outlet/></> }>
                 <Route index element={ <PleaseSelectAchievement/> }></Route>
-                <Route path=":urlKey/:urlDifficulty" element={ <><AchievementList /></> }></Route>
-                <Route path=":urlKey/:urlDifficulty" element={ <><AchievementList /></> }></Route>
-                <Route path=":urlKey/:urlDifficulty" element={ <><AchievementList /></> }></Route>
-                <Route path=":urlKey/:urlDifficulty" element={ <><AchievementList /></> }></Route>
+                <Route path=":urlKey/:urlLevel" element={ <><AchievementList /></> }></Route>
+                <Route path=":urlKey/:urlLevel" element={ <><AchievementList /></> }></Route>
+                <Route path=":urlKey/:urlLevel" element={ <><AchievementList /></> }></Route>
+                <Route path=":urlKey/:urlLevel" element={ <><AchievementList /></> }></Route>
               </Route>
               <Route path="/tier" element={ <><MyTier></MyTier><PleaseWaiting></PleaseWaiting></> }></Route>
               <Route path="/rank" element={ <><RankOrderSelector/> <Outlet></Outlet></> }>
                 <Route index element={ <PleaseSelectRank/> }></Route>
-                <Route path="4k/:selectedDifficulty" element={ <><RankOrderList selectedKey="4k"/></> }></Route>
-                <Route path="5k/:selectedDifficulty" element={ <><RankOrderList selectedKey="5k"/></> }></Route>
-                <Route path="6k/:selectedDifficulty" element={ <><RankOrderList selectedKey="6k"/></> }></Route>
-                <Route path="8k/:selectedDifficulty" element={ <><RankOrderList selectedKey="8k"/></> }></Route>
+                <Route path="4k/:urlLevel" element={ <><RankOrderList selectedKey="4k"/></> }></Route>
+                <Route path="5k/:urlLevel" element={ <><RankOrderList selectedKey="5k"/></> }></Route>
+                <Route path="6k/:urlLevel" element={ <><RankOrderList selectedKey="6k"/></> }></Route>
+                <Route path="8k/:urlLevel" element={ <><RankOrderList selectedKey="8k"/></> }></Route>
               </Route>
               <Route path="/manage" element={ <Manage/> }></Route>
               <Route path="*" element={ <NotFound/> }/>

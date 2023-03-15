@@ -15,7 +15,11 @@ const CustomizeBtn = () => {
   const [themeList] = useState(["pp", "tt"])
   const clickRef = useRef()
 
-  const clickOutside = (e) => {if (isOpen && !clickRef.current.contains(e.target)) {setIsOpen(false)}}
+  const clickOutside = (e) => {
+    if (isOpen && !clickRef.current.contains(e.target)){
+      setIsOpen(false)
+    }
+  }
 
   // useEffect(()=>{
   //   if (state.userinfo.manageMode){setShow(false);}

@@ -1,13 +1,13 @@
 /*eslint-disable*/
 import { useEffect } from "react"
 import { useDispatch } from "react-redux"
-import { setRankCleanKeyAndDifficulty, cleanClass } from "./../../store"
+import { setRankCleanKeyAndLevel, cleanClass } from "./../../store"
 
 const PleaseSelectRank = () => {
   const dispatch = useDispatch()
   useEffect(() => {
     dispatch(cleanClass())
-    dispatch(setRankCleanKeyAndDifficulty())
+    dispatch(setRankCleanKeyAndLevel())
   }, [])
   
   return (

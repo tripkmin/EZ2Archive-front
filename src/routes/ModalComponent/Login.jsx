@@ -75,7 +75,7 @@ const Login = () => {
         </fieldset>
       </form>
       <div className="login-body-sub">
-        <p onClick={()=>{dispatch(setModalStep(1))}}>회원가입</p>
+        <p onClick={()=>{dispatch(setModalStep(2))}}>회원가입</p>
         <p>ID/PW 찾기</p>
       </div>
     </div>

@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { useParams } from "react-router-dom";
-import { setRankKeyAndDifficulty } from '../store.js'
+import { setRankKeyAndLevel } from '../store.js'
 // import Skeleton from 'react-loading-skeleton'
 // import 'react-loading-skeleton/dist/skeleton.css'
 import defaultProfile from './../imagenone.webp'
@@ -14,19 +14,19 @@ import { API_URL } from "../services/temp";
 const RankOrderList = (props) => {
   const state = useSelector( (state) => state )
   const dispatch = useDispatch()
-  const {selectedDifficulty} = useParams()
+  const {urlLevel} = useParams()
   const [list, setList] = useState([])
-  let levelIndex 
+  let rankIndex 
 
   /** RankOrderSelector에서 내림차순 On/Off시 참조할 Index를 변경함. */
-  if (state.rankUserSelected.isDescending){levelIndex = [[9,8],[7,6],[5,4],[3,2],[1,0]];}
-  else {levelIndex = [[1,0],[3,2],[5,4],[7,6],[9,8]];}
+  if (state.rankUserSelected.isDescending){rankIndex = [[9,8],[7,6],[5,4],[3,2],[1,0],[-99]];}
+  else {rankIndex = [[1,0],[3,2],[5,4],[7,6],[9,8],[-99]];}
 
   /** 유저가 URL로 직접 접근시 대응 */
   useEffect(()=>{
     const getAndSetSongs = (key) => {
       axios
-        .get(`${API_URL}/rank/list/${key}/${selectedDifficulty}`)
+        .get(`${API_URL}/rank/list/${key}/${urlLevel}`)
         .then((res) => { return setList(res.data.data) })
         .catch((err) => { console.log(err) })
     }
@@ -37,11 +37,12 @@ const RankOrderList = (props) => {
       case '8k': getAndSetSongs("EIGHT"); break;
       default: // nothing
     }
-    dispatch(setRankKeyAndDifficulty({key: props.selectedKey, difficulty: parseInt(selectedDifficulty)}))
-  }, [state.rankUserSelected.selectedDifficulty, state.rankUserSelected.selectedKey])
+    dispatch(setRankKeyAndLevel({key: props.selectedKey, level: parseInt(urlLevel)}))
+  }, [state.rankUserSelected.selectedLevel, state.rankUserSelected.selectedKey])
 
-  const detailDifficultyFilter = (detailDifficulty) => {
-      switch(detailDifficulty){
+  // 은근 재사용 많이 하는 함수라 utills로 뺐음. 나중에 지장없으면 삭제할 것.
+  const rankFilter = (rank) => {
+      switch(rank){
         case 0:
         case 1:
           return '하';
@@ -57,6 +58,8 @@ const RankOrderList = (props) => {
         case 8:
         case 9:
           return '최상';
+        case -99:
+          return '-';
         default: 
           // nothing
       }
@@ -69,28 +72,28 @@ const RankOrderList = (props) => {
   return (
     <>
       <div className="pleaseWait">
-        <p><strong>5, 6, 8키</strong>의 <strong>레벨 16</strong>곡들은 서열 투표를 진행할 예정입니다.</p>
+        <p>본 서열표는 <strong>S⁺ 달성</strong>을 기준으로 매겨진 서열입니다.</p>
       </div>
       <div className="orderlist-wrapper">
         <div className="header">
           <h1 className="theme-pp">{props.selectedKey.toUpperCase()} </h1>
-          <h1>{selectedDifficulty}</h1>
+          <h1>{urlLevel}</h1>
         </div>
         {/* Songs 클래스 네임 변경할것 */}
         <div className="flex-grow-1">
         {/* 서열 9부터 0까지 내림차순으로 반환함 */}
         {
-          levelIndex.map((detailDifficulty, index) => { 
+          rankIndex.map((targetRank, index) => { 
             const copylist = [...list]
             // 서열값이 있는지 확인하고 있으면 JSX 출력, 없으면 null 뱉기
-            return list.filter(songlist => songlist.rank === detailDifficulty[0] || songlist.rank === detailDifficulty[1]).length !== 0
+            return list.filter(songlist => songlist.rank === targetRank[0] || songlist.rank === targetRank[1]).length !== 0
             ? <div className="order-box" key={index}>
-                <span className="order-grade">{detailDifficultyFilter(detailDifficulty[0])}</span>
+                <span className="order-grade">{rankFilter(targetRank[0])}</span>
                 <div className='order-list'>
                 {/* 특정 서열(ex:19.최상 → 19.9과 19.8)에 해당하는 곡명과 이미지들 전부 출력 */}
                 {/* 오름차순이 켜져있으면 난이도(EZ,NM,HD,SHD) > 이름 순으로 정렬해서 표시하도록 할 것. 내림차순이면 (SHD,HD,NM,EZ)*/}
                 {
-                  copylist.filter(songlist => songlist.rank === detailDifficulty[0] || songlist.rank === detailDifficulty[1]).sort((a,b)=>{
+                  copylist.filter(songlist => songlist.rank === targetRank[0] || songlist.rank === targetRank[1]).sort((a,b)=>{
                     const x = a.difficulty;
                     const y = b.difficulty;
                     //내림차순이면 난이도 정렬 역시 내림차순으로 (SHD → EZ), 오름차순이면 (EZ → SHD)순으로 정렬.

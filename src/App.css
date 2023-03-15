@@ -21,14 +21,14 @@ textarea {
 
 html,
 textarea,
-.achievement-detail-wrapper {
+.achievement-modal-wrapper {
   overflow: -moz-scrollbars-vertical;
   overflow-y: scroll;
 }
 
 body,
 textarea,
-.achievement-detail-wrapper {
+.achievement-modal-wrapper {
   --sb-track-color: #eee;
   --sb-thumb-color: #787878;
   /* --sb-track-color: #787878;
@@ -41,21 +41,21 @@ textarea,
 
 body::-webkit-scrollbar,
 textarea::-webkit-scrollbar,
-.achievement-detail-wrapper::-webkit-scrollbar {
+.achievement-modal-wrapper::-webkit-scrollbar {
   width: var(--sb-size);
   height: var(--sb-size);
 }
 
 body::-webkit-scrollbar-track,
 textarea::-webkit-scrollbar-track,
-.achievement-detail-wrapper::-webkit-scrollbar-track {
+.achievement-modal-wrapper::-webkit-scrollbar-track {
   background: var(--sb-track-color);
   border-radius: 0px;
 }
 
 body::-webkit-scrollbar-thumb,
 textarea::-webkit-scrollbar-thumb,
-.achievement-detail-wrapper::-webkit-scrollbar-thumb {
+.achievement-modal-wrapper::-webkit-scrollbar-thumb {
   background: var(--sb-thumb-color);
   border-radius: 0px;
   
@@ -1003,14 +1003,16 @@ html, body, #root {
   width: 15%;
 }
 
-tr>td {
+.tier-box-items tr>td {
   line-height: 150%;
   font-size:20px;
 }
 
-tr>td:nth-child(1){
+.tier-box-items tr>td:nth-child(1){
   font-weight: 1000;
 }
+
+
 
 .notfound {
   display : flex;
@@ -1074,14 +1076,6 @@ tr>td:nth-child(1){
   margin-right : 5px;
 }
 
-/* .achievement-detail {
-  flex-grow: 1;
-} */
-/* 
-.achievement-detail table {
-  margin: auto;
-} */
-
 .achievement-detail h3,
 .achievement-filter h3 {
   text-align: center;
@@ -1099,6 +1093,10 @@ tr>td:nth-child(1){
   text-align: center;
   min-width: 50px;
 } 
+
+.achievement-detail tr>td:nth-child(1){
+  font-weight: 1000;
+}
 
 .achievement-detail td:nth-child(2){
   padding-right: 40px;
@@ -1156,9 +1154,21 @@ tr>td:nth-child(1){
 
 .bar-shadow {
   box-shadow: 0px 3px 15px rgba(113, 75, 255, 0.15);
-  /* transform: translateX(-700px); */
-  /* width: 700px; */
+}
 
+.achievement-option-box {
+  position: absolute;
+  bottom: -25px;
+  left: 50%;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 60px;
+  color: white;
+  background-color: #473395;
+  border-radius: 15px;
+  transform: translate(-50%, 0);
+  cursor:pointer;
 }
 
 .achievement-filter div {
@@ -1281,20 +1291,98 @@ tr>td:nth-child(1){
 
 /*  */
 
-.achievement-detail-wrapper {
+.achievement-modal-wrapper {
   padding:10px;
+  overflow-x: hidden;
   overflow-y: scroll;
 }
 
-.achievement-detail-info {
+.achievement-modal-info {
   display:flex;
-  padding:20px 50px;
+  padding:40px 20px;
+  border-bottom: 2px solid #e6dfff;
+  box-shadow: 0px 10px 5px -4px rgba(113, 75, 255, 0.15);
+  border-radius: 20px;
 }
 
-.achievement-detail-wrapper textarea {
+.achievement-modal-diskimg {
+  width: 220px;
+  height: 220px;
+  margin-right:40px;
+}
+
+.achievement-modal {
+  flex-grow: 1;
+}
+
+/* .achievement-modal-song-info {} */
+
+.achievement-modal-song-header {
+  display:flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.achievement-modal-song-header h3,
+.achievement-modal-song-header h5 {
+  line-height: 120%;
+}
+
+.achievement-modal-song-left h5{
+  font-weight: 500;
+}
+
+.achievement-modal-user-info {
+  display:flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.achievement-modal-user-info tr>td:nth-child(1){
+  font-weight: 800;
+  padding-right: 30px;
+}
+
+.achievement-modal-user-info td{
+  padding-bottom:10px;
+}
+
+.achievement-modal-song-grade{
+  height:130px;
+}
+
+/* 임시 */
+
+.linetest {
+  height:500px;
+}
+
+/* 임시 */
+
+.achievement-modal-songinfo h2, 
+.achievement-modal-songinfo h5 {
+  line-height: 100%;
+  /* margin: 5px 0px */
+}
+
+.achievement-history-table {
+  width:100%;
+  text-align: center;
+}
+
+.achievement-history-table thead {
+  font-weight: 800;
+}
+
+.achievement-history-table td {
+  padding: 5px 0px;
+}
+
+.achievement-modal-wrapper textarea {
   font-size:16px;
   height:5rem;
 }
+
 
 /****************************** 서열표 키/난이도 선택 컴포넌트 관련 ******************************/
 
@@ -1722,7 +1810,7 @@ input:checked + .slider:before {
 .no-play {
   border: 2px solid transparent;
   border-radius: 50%;
-  background-color: #ddd;
+  background-color: rgb(156, 89, 219);
   /* background-image: linear-gradient(90deg, rgba(52,52,52,1) 0%, rgba(103,103,103,1) 50%, rgba(52,52,52,1) 100%); */
   background-origin: border-box;
   background-clip: border-box;

@@ -7,70 +7,10 @@ import { ResponsiveLine } from '@nivo/line'
 // no chart will be rendered.
 // website examples showcase many properties,
 // you'll often use just a few of them.
-
-const data = [
-  {
-    "id": "japan",
-    "color": "hsl(238, 70%, 50%)",
-    "data": [
-      {
-        "x": "plane",
-        "y": 3
-      },
-      {
-        "x": "helicopter",
-        "y": 122
-      },
-      {
-        "x": "boat",
-        "y": 161
-      },
-      {
-        "x": "train",
-        "y": 52
-      },
-      {
-        "x": "subway",
-        "y": 197
-      },
-      {
-        "x": "bus",
-        "y": 16
-      },
-      {
-        "x": "car",
-        "y": 263
-      },
-      {
-        "x": "moto",
-        "y": 82
-      },
-      {
-        "x": "bicycle",
-        "y": 117
-      },
-      {
-        "x": "horse",
-        "y": 162
-      },
-      {
-        "x": "skateboard",
-        "y": 272
-      },
-      {
-        "x": "others",
-        "y": 284
-      }
-    ]
-  },
-]
-
-export const MyResponsiveLine = (
-  // { data /* see data tab */ }
-  ) => (
+export const MyResponsiveLine = ({ data /* see data tab */ }) => (
     <ResponsiveLine
         data={data}
-        margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
+        margin={{ top: 50, right: 40, bottom: 50, left: 60 }}
         xScale={{ type: 'point' }}
         yScale={{
             type: 'linear',
@@ -82,57 +22,63 @@ export const MyResponsiveLine = (
         yFormat=" >-.2f"
         axisTop={null}
         axisRight={null}
-        axisBottom={{
-            orient: 'bottom',
-            tickSize: 5,
-            tickPadding: 5,
-            tickRotation: 0,
-            legend: 'transportation',
-            legendOffset: 36,
-            legendPosition: 'middle'
-        }}
+        axisBottom={null}
+            // {
+            // orient: 'bottom',
+            // tickSize: 5,
+            // tickPadding: 5,
+            // tickRotation: 0,
+            // legend: '기록',
+            // legendOffset: 35,
+            // legendPosition: 'middle'
+            // }
         axisLeft={{
             orient: 'left',
             tickSize: 5,
             tickPadding: 5,
             tickRotation: 0,
-            legend: 'count',
+            legend: 'percent',
             legendOffset: -40,
             legendPosition: 'middle'
         }}
+        enableGridX={false}
+        enableGridY={false}
+        colors={{ scheme: 'spectral' }}
+        lineWidth={3}
         pointSize={10}
-        pointColor={{ theme: 'background' }}
+        pointColor={{ from: 'color', modifiers: [] }}
         pointBorderWidth={2}
-        pointBorderColor={{ from: 'serieColor' }}
+        pointBorderColor={{ from: 'color', modifiers: [] }}
         pointLabelYOffset={-12}
+        areaBlendMode="screen"
+        crosshairType="cross"
         useMesh={true}
         legends={[
-            {
-                anchor: 'bottom-right',
-                direction: 'column',
-                justify: false,
-                translateX: 100,
-                translateY: 0,
-                itemsSpacing: 0,
-                itemDirection: 'left-to-right',
-                itemWidth: 80,
-                itemHeight: 20,
-                itemOpacity: 0.75,
-                symbolSize: 12,
-                symbolShape: 'circle',
-                symbolBorderColor: 'rgba(0, 0, 0, .5)',
-                effects: [
-                    {
-                        on: 'hover',
-                        style: {
-                            itemBackground: 'rgba(0, 0, 0, .03)',
-                            itemOpacity: 1
-                        }
-                    }
-                ]
-            }
+            // {
+            //     anchor: 'bottom-right',
+            //     direction: 'row',
+            //     justify: false,
+            //     translateX: 20,
+            //     translateY: -12,
+            //     itemsSpacing: 0,
+            //     itemDirection: 'left-to-right',
+            //     itemWidth: 80,
+            //     itemHeight: 25,
+            //     itemOpacity: 0.75,
+            //     symbolSize: 19,
+            //     symbolShape: 'circle',
+            //     symbolBorderColor: 'rgba(0, 0, 0, .5)',
+            //     effects: [
+            //         {
+            //             on: 'hover',
+            //             style: {
+            //                 itemBackground: 'rgba(0, 0, 0, .03)',
+            //                 itemOpacity: 1
+            //             }
+            //         }
+            //     ]
+            // }
         ]}
+        motionConfig="default"
     />
 )
-
-

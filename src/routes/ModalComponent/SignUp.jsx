@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import { API_URL } from "../../services/temp";
 
-const Signin = (props) => {
+const SignUp = (props) => {
   const dispatch = useDispatch()
   const state = useSelector( (state) => state )
   
@@ -212,7 +212,7 @@ const Signin = (props) => {
                   "password": signPassword,
                   "userId": signId
                 })
-                dispatch(setModalStep(2))
+                dispatch(setModalStep(3))
                 }}>제출하기</button>
             </div>
           </fieldset>
@@ -221,4 +221,4 @@ const Signin = (props) => {
     )
   }
  
-export default Signin
+export default SignUp

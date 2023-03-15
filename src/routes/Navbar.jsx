@@ -77,8 +77,8 @@ function Navbar(){
               <span className="category-link" onClick={()=>{ navigate('/achievement') }}>성과표</span>
               <span className="category-link" onClick={()=>{ navigate('/rank') }}>서열표</span>
               <span className="category-link" onClick={()=>{ navigate('/tier') }}>티어표</span>
-              <span className="category-link" onClick={()=>{ alert('준비중이긴 한데 언제 나올지는 모름 ㅅㄱ') }}>NEW 성과표</span>
-              <span className="category-link" onClick={()=>{ alert('감바스 개땡기네') }}>안내</span>
+              <span className="category-link" onClick={()=>{ alert('겁이나하아하아아ㅏㅏ 강하지 못한나아ㅏㅏㅏ 너없이 무엇도 아닌나ㅏ ') }}>NEW 성과표</span>
+              <span className="category-link" onClick={()=>{ alert('비비큐황금올리브가 땡기는 밤입니다') }}>안내</span>
             </div>
             <img className="pp-navbar-pattern" src={process.env.PUBLIC_URL + '/navbar/Asset 1.svg'} alt="logo" onClick={()=>{ navigate('/') }}></img>
             <div>

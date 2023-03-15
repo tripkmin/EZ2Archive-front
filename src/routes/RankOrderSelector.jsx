@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { setRankTitleView, setRankKeyAndDifficulty, setRankCleanKeyAndDifficulty, setRankDescending, setClass, cleanClass } from "../store"
+import { setRankTitleView, setRankKeyAndLevel, setRankCleanKeyAndLevel, setRankDescending, setClass, cleanClass } from "../store"
 
 const RankOrderSelector = () => {
 
@@ -12,42 +12,41 @@ const RankOrderSelector = () => {
   const navigate = useNavigate()
 
   /** RankOrderSelector에서 특정 레벨(ex: lv.17)을 선택할 때 실행됨 */
-  const goToPage = (key, difficulty) => {
+  const goToPage = (key, level) => {
     // 원본
-    navigate(`/rank/${key}/${difficulty}`)
-    // navigate(`/${key}/${difficulty}`)
-    dispatch(setRankKeyAndDifficulty({key: key, difficulty: difficulty}))
+    navigate(`/rank/${key}/${level}`)
+    dispatch(setRankKeyAndLevel({key: key, level: level}))
   }
 
  useEffect(()=>{
     // 유저가 선택한 난이도와 키 값을 받아 거기에 볼드 클래스를 부착해줌. 
     const step = state.selectIndex.find(el => el.key === state.rankUserSelected.selectedKey)
     const getKeyIndex = state.selectIndex.findIndex(el => el.key === state.rankUserSelected.selectedKey)
-    const getDifficultyIndex = step?.difficulty.findIndex(el => el === state.rankUserSelected.selectedDifficulty)
-    if(getKeyIndex !== undefined & getDifficultyIndex !== undefined){
-      dispatch(setClass({step1 : getKeyIndex, step2 : getDifficultyIndex}))
+    const getLevelIndex = step?.level.findIndex(el => el === state.rankUserSelected.selectedLevel)
+    if(getKeyIndex !== undefined & getLevelIndex !== undefined){
+      dispatch(setClass({step1 : getKeyIndex, step2 : getLevelIndex}))
     }
     // 아래 코드는 index에 0이 들어올 경우 false로 간주되어 클래스 부착이 안되는 문제가 있음. 그래서 위처럼 조건문으로 작성.
-    // getKeyIndex && getDifficultyIndex && dispatch(setClass({step1 : getKeyIndex, step2 : getDifficultyIndex}))
+    // getKeyIndex && getLevelIndex && dispatch(setClass({step1 : getKeyIndex, step2 : getLevelIndex}))
   return () => {
     dispatch(cleanClass())
-    dispatch(setRankCleanKeyAndDifficulty())
+    dispatch(setRankCleanKeyAndLevel())
   }
- }, [state.rankUserSelected.selectedKey, state.rankUserSelected.selectedDifficulty])
+ }, [state.rankUserSelected.selectedKey, state.rankUserSelected.selectedLevel])
 
   return (
     <div className="rank-order-selector-wrapper">
       <div className="rank-order-selector">
         {
-          state.selectIndex.map((KeyAndDifficultyData, index)=>{
+          state.selectIndex.map((KeyLevelData, index)=>{
             return (
               <div className="single-key-level-selector" key={index}>
-                <h1 className="theme-pp">{KeyAndDifficultyData.key.toUpperCase()}</h1>
+                <h1 className="theme-pp">{KeyLevelData.key.toUpperCase()}</h1>
                   {
-                    KeyAndDifficultyData.difficulty.map((singleDifficulty, index)=>{
-                    return <div key={index}><span className={`link ${KeyAndDifficultyData.class[index]}`} onClick={()=>{
-                      goToPage(KeyAndDifficultyData.key, singleDifficulty)
-                    }}>Lv. {singleDifficulty}</span></div>
+                    KeyLevelData.level.map((singleLevel, index)=>{
+                    return <div key={index}><span className={`link ${KeyLevelData.class[index]}`} onClick={()=>{
+                      goToPage(KeyLevelData.key, singleLevel)
+                    }}>Lv. {singleLevel}</span></div>
                     })
                   }
               </div>

@@ -50,7 +50,7 @@ const modal = createSlice({
 const achievementUserSelected = createSlice({
   name : "achievementUserSelected",
   // selectedKey는 4k, selectedKeyCaps는 FOUR와 같이 저장됨.
-  initialState : {selectedKey : "", selectedKeyCaps: "", selectedDifficulty : 0, selectedRank : "", selectedRankView : "", songTitleView : true, isDescending : true, },
+  initialState : {selectedKey : "", selectedKeyCaps: "", selectedLevel : 0, selectedRank : "", selectedRankView : "", songTitleView : true, isDescending : true, },
   reducers : {
     setTitleView(state, action){
       state.songTitleView = action.payload
@@ -68,20 +68,22 @@ const achievementUserSelected = createSlice({
         default: // nothing
       }
     },
-    setAchievementDifficulty(state, action){
-      state.selectedDifficulty = action.payload;
+    setAchievementLevel(state, action){
+      state.selectedLevel = action.payload;
     },
     setAchievementRank(state, action){
-      state.selectedRank = action.payload;
+      if(state.selectedRank === action.payload){state.selectedRank = ""}
+      else{state.selectedRank = action.payload}
     },
     setSelectedRankView(state, action){
-      state.selectedRankView = action.payload;
+      if(state.selectedRankView === action.payload){state.selectedRankView = ""}
+      else{state.selectedRankView = action.payload}
     }
     ,
     setAchievementClean(state){
       state.selectedKey = "";
       state.selectedKeyCaps = "";
-      state.selectedDifficulty = 0;
+      state.selectedLevel = 0;
       state.selectedRank = "";
     }
   }
@@ -105,25 +107,25 @@ const achievementSelectIndex = createSlice({
   initialState : [
     {
       key: '4k', 
-      difficulty : Array.from({length: 20}, (_, i) => i + 1), 
+      level : Array.from({length: 20}, (_, i) => i + 1), 
       dbRank : ["SPPP","SPP","SP","S","AP","A","B","C","D","E","F",],
       convertName : ["S⁺⁺⁺","S⁺⁺","S⁺","S","A⁺","A","B","C","D","E","F",],
       class: ["", "", "", "", ""]}, 
     {
       key: '5k', 
-      difficulty : Array.from({length: 20}, (_, i) => i + 1), 
+      level : Array.from({length: 20}, (_, i) => i + 1), 
       dbRank : ["SPPP","SPP","SP","S","AP","A","B","C","D","E","F",],
       convertName : ["S⁺⁺⁺","S⁺⁺","S⁺","S","A⁺","A","B","C","D","E","F",],
       class: ["", "", "", "", ""]}, 
     {
       key: '6k', 
-      difficulty : Array.from({length: 20}, (_, i) => i + 1), 
+      level : Array.from({length: 20}, (_, i) => i + 1), 
       dbRank : ["SPPP","SPP","SP","S","AP","A","B","C","D","E","F",],
       convertName : ["S⁺⁺⁺","S⁺⁺","S⁺","S","A⁺","A","B","C","D","E","F",],
       class: ["", "", "", "", ""]}, 
     {
       key: '8k', 
-      difficulty : Array.from({length: 20}, (_, i) => i + 1), 
+      level : Array.from({length: 20}, (_, i) => i + 1), 
       dbRank : ["SPPP","SPP","SP","S","AP","A","B","C","D","E","F",],
       convertName : ["S⁺⁺⁺","S⁺⁺","S⁺","S","A⁺","A","B","C","D","E","F",],
       class: ["", "", "", "", ""]}],
@@ -131,7 +133,7 @@ const achievementSelectIndex = createSlice({
 
 const rankUserSelected = createSlice({
   name : "rankUserSelected",
-  initialState : {selectedKey : "", selectedDifficulty : 0, songTitleView : true, isDescending : true},
+  initialState : {selectedKey : "", selectedLevel : 0, songTitleView : true, isDescending : true},
   reducers : {
     setRankTitleView(state, action){
       state.songTitleView = action.payload
@@ -139,14 +141,14 @@ const rankUserSelected = createSlice({
     setRankDescending(state, action){
       state.isDescending = action.payload
     },
-    setRankKeyAndDifficulty(state, action){
+    setRankKeyAndLevel(state, action){
       state.selectedKey = action.payload.key;
-      state.selectedDifficulty = action.payload.difficulty;
+      state.selectedLevel = action.payload.level;
       // RankOrderSelector에서 특정 키, 난이도 선택했을 때 실행 되도록 함.
     },
-    setRankCleanKeyAndDifficulty(state){
+    setRankCleanKeyAndLevel(state){
       state.selectedKey = "";
-      state.selectedDifficulty = 0;
+      state.selectedLevel = 0;
     }
   }
 })
@@ -154,10 +156,10 @@ const rankUserSelected = createSlice({
 const selectIndex = createSlice({
   name : "selectIndex",
   initialState : [
-    {key: '4k', difficulty : [20, 19, 18, 17, 16], class: ["", "", "", "", ""]}, 
-    {key: '5k', difficulty : [20, 19, 18, 17, 16], class: ["", "", "", "", ""]}, 
-    {key: '6k', difficulty : [20, 19, 18, 17, 16], class: ["", "", "", "", ""]}, 
-    {key: '8k', difficulty : [20, 19, 18, 17, 16], class: ["", "", "", "", ""]}],
+    {key: '4k', level : [20, 19, 18, 17, 16], class: ["", "", "", "", ""]}, 
+    {key: '5k', level : [20, 19, 18, 17, 16], class: ["", "", "", "", ""]}, 
+    {key: '6k', level : [20, 19, 18, 17, 16], class: ["", "", "", "", ""]}, 
+    {key: '8k', level : [20, 19, 18, 17, 16], class: ["", "", "", "", ""]}],
   reducers : {
     setClass(state, action){
       state[action.payload.step1].class[action.payload.step2] = "bold"
@@ -187,9 +189,9 @@ export default configureStore({
 export const { setUserName, setUserId, setUserAuth, setUserAddTime, setManageMode, setDefault } = userinfo.actions
 export const { switchModalOpen, setModalStep, setModalDefault } = modal.actions
 // export const { switchLoginModal } = userLogin.actions
-export const { setTitleView, setDescending, setAchievementKey, setAchievementDifficulty, setAchievementRank, setAchievementClean, setSelectedRankView } = achievementUserSelected.actions
+export const { setTitleView, setDescending, setAchievementKey, setAchievementLevel, setAchievementRank, setAchievementClean, setSelectedRankView } = achievementUserSelected.actions
 export const { setImgFindName, setSongInfo } = achievementSongInfo.actions
 // export const {  } = achievementSelectIndex.actions
-export const { setRankTitleView, setRankKeyAndDifficulty, setRankDescending, setRankCleanKeyAndDifficulty } = rankUserSelected.actions
+export const { setRankTitleView, setRankKeyAndLevel, setRankDescending, setRankCleanKeyAndLevel } = rankUserSelected.actions
 export const { setClass, cleanClass } = selectIndex.actions
 

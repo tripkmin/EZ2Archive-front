@@ -5,14 +5,14 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react"
 import { API_URL } from "../services/temp";
-import { setTitleView, setDescending, setAchievementKey, setAchievementDifficulty, setAchievementRank, setSelectedRankView, setAchievementClean } from "../store"
+import { setTitleView, setDescending, setAchievementKey, setAchievementLevel, setAchievementRank, setSelectedRankView, setAchievementClean } from "../store"
 
 const AchievementSelector = () => {
 
   const state = useSelector((state) => state)
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const {songTitleView, isDescending, selectedKey, selectedKeyCaps, selectedDifficulty, selectedRank, selectedRankView} = state.achievementUserSelected
+  const {songTitleView, isDescending, selectedKey, selectedKeyCaps, selectedLevel, selectedRank, selectedRankView} = state.achievementUserSelected
   const [overall, setOverall] = useState([
     { name : "rateAvg", data : 0, convertName : "AVERAGE RATE"},
     { name : "allCoolCnt", data : 0, convertName : "ALL COOL" },
@@ -36,7 +36,7 @@ const AchievementSelector = () => {
   // 임시 영역
   const 키목록 = ['4k', '5k', '6k', '8k']
   const 레벨목록 = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
-  const 랭크목록 = [
+  const 등급목록 = [
     {dbRank : "SPPP", convertName : "S⁺⁺⁺"},
     {dbRank : "SPP", convertName : "S⁺⁺"},
     {dbRank : "SP", convertName : "S⁺"},
@@ -49,7 +49,7 @@ const AchievementSelector = () => {
     {dbRank : "E", convertName : "E"},
     {dbRank : "F", convertName : "F"},
   ]
-  const 랭크필터목록 = ["초과", "이상", "동일", "이하", "미만", "해제"]
+  const 등급필터목록 = ["초과", "이상", "동일", "이하", "미만", "해제"]
   const 타이틀목록 = [
     {convertName : "ON", value: true}, 
     {convertName :  "OFF", value: false}
@@ -62,12 +62,12 @@ const AchievementSelector = () => {
   // 세부 옵션을 선택하면 선택한 곳의 index를 알아내기 위해 설정함.
   useEffect(()=>{
     setKeyIndex(키목록.indexOf(selectedKey))
-    setLevelIndex(레벨목록.indexOf(parseInt(selectedDifficulty)))
-    setRankIndex(랭크목록.findIndex(el => el.dbRank === selectedRank))
-    setRankFilterIndex(랭크필터목록.indexOf(selectedRankView))
+    setLevelIndex(레벨목록.indexOf(parseInt(selectedLevel)))
+    setRankIndex(등급목록.findIndex(el => el.dbRank === selectedRank))
+    setRankFilterIndex(등급필터목록.indexOf(selectedRankView))
     setTitleIndex(songTitleView ? 0 : 1)
     setDescIndex(isDescending ? 0 : 1)
-  }, [selectedKey, selectedDifficulty, selectedRank, selectedRankView, songTitleView, isDescending])
+  }, [selectedKey, selectedLevel, selectedRank, selectedRankView, songTitleView, isDescending])
 
   useEffect(()=>{
     if (filterShow) {setFilterClass("")}
@@ -76,30 +76,67 @@ const AchievementSelector = () => {
   // 
   useEffect(()=>{
     const AT = localStorage.getItem("accessToken")
-    if (selectedKey && selectedDifficulty) {
+    if (selectedKey && selectedLevel) {
       axios
-        .get(`${API_URL}/achievement/${selectedKeyCaps}/${selectedDifficulty}/overall`, {
+        .get(`${API_URL}/musicInfo/${selectedKeyCaps}/${selectedLevel}/record`, {
           headers: {
             Authorization: `Bearer ${AT}`
           }
         })
-      .then((res) => {
-        const { allCoolCnt, noMissCnt, rateAvg, spCnt, sppCnt, spppCnt, totalCnt } = res.data.data
-        let copyOverall = [...overall]
-        let push = [rateAvg, allCoolCnt, noMissCnt, spppCnt, sppCnt, spCnt]
-        copyOverall.forEach((el, i) => {
-          if(el.name === "rateAvg"){
-            el.data = Math.round(push[i] * 10)/10
-          } else el.data = push[i]
-        })
-        setOverall(copyOverall)
-        // console.log(copyOverall)
-        // console.log(copyOverall)
-        setSongCount(totalCnt)
+        .then((res) => {
+          // 가공해야 할 정보
+            // 평균 rate
+            // all cool 갯수
+            // all combo 갯수
+            // s+++ ~ s+ 갯수      
+          const {data} = res.data
+          const percentages = data.map(data => data.percentage)
+          // const percentagesSum = percentages.reduce((a, b) => a + b, 0)
+          // const avgRate = parseFloat((percentagesSum / percentages.length).toFixed(2))
+          const allCoolData = data.filter(data => data.isAllCool)
+          const noMissData = data.filter(data => data.isNoMiss)
+          const grades = data.map(data => data.grade)
+          const spppCount = grades.filter(data => data === "SPPP").length
+          const sppCount = spppCount + grades.filter(data => data === "SPP").length
+          const spCount = spppCount + sppCount + grades.filter(data => data === "SP").length
+          const getAvg = (numsArray, toFixedNums) => {
+            if (numsArray.length !== 0){
+              const sum = numsArray.reduce((a, b) => a + b, 0)
+              const avgRate = parseFloat((sum / numsArray.length).toFixed(toFixedNums))
+              // toFixed는 string 형식으로 반환하므로..
+              return avgRate
+            } else { return 0 }
+          }
+          setOverall([
+            { name : "rateAvg", data : getAvg(percentages, 2), convertName : "AVERAGE RATE"},
+            { name : "allCoolCnt", data : allCoolData.length, convertName : "ALL COOL" },
+            { name : "noMissCnt", data : noMissData.length, convertName : "NO MISS"},
+            { name : "spppCnt", data : spppCount, convertName : "S⁺⁺⁺"},
+            { name : "sppCnt", data : sppCount, convertName : "S⁺⁺"},
+            { name : "spCnt", data : spCount, convertName : "S⁺"},
+          ]);
+          return axios.get(`${API_URL}/musicInfo/${selectedKeyCaps}/${selectedLevel}/list`)
+        // const { allCoolCnt, noMissCnt, rateAvg, spCnt, sppCnt, spppCnt, totalCnt } = res.data.data
+        // let copyOverall = [...overall]
+        // let push = [rateAvg, allCoolCnt, noMissCnt, spppCnt, sppCnt, spCnt]
+        // copyOverall.forEach((el, i) => {
+        //   if(el.name === "rateAvg"){
+        //     el.data = Math.round(push[i] * 10)/10
+        //   } else el.data = push[i]
+        // })
+        // setOverall(copyOverall)
+        // setSongCount(totalCnt)
       })
-        navigate(`${selectedKey}/${selectedDifficulty}`)
+      .then((res)=>{
+        const {data} = res.data
+        setSongCount(data.length)
+        navigate(`${selectedKey}/${selectedLevel}`)
+      })
+      .catch((error) => {
+        console.error(error);
+      });
     }
-  }, [selectedKey, selectedDifficulty])
+  }, [selectedKey, selectedLevel])
 
   useEffect(()=>{
     return () => {
@@ -124,9 +161,9 @@ const AchievementSelector = () => {
             : selectedKey.toUpperCase()
             }</h1>
             <h4>{
-            selectedDifficulty === 0
+            selectedLevel === 0
             ? ""
-            : selectedDifficulty
+            : selectedLevel
             }</h4>
           </div>
           <h4>{userName}</h4>
@@ -146,9 +183,12 @@ const AchievementSelector = () => {
                 overall.map((overall, i) => {
                   return (
                     <tr key={i}>
-                      <td>{Math.round(((overall.data)) * 10) / 10}%</td>
+                      {/* <td>{Math.round(((overall.data)) * 10) / 10}%</td> */}
+                      <td>{`${overall.data}%`}</td>
                       {/* 임시, Average Rate 표기 방식이 달라질 경우 아래 부분 수정 */}
-                      <td>{ overall.name === "rateAvg" ? overall.data + "/" + 100 : overall.data + "/" + songCount }</td>
+                      <td>{ overall.name === "rateAvg" 
+                      ? overall.data.toFixed(0) + "/" + 100 
+                      : overall.data + "/" + songCount }</td>
                       {/* 임시 끝 */}
                       <td>
                         <div className="behind-bar">
@@ -171,13 +211,9 @@ const AchievementSelector = () => {
             </tbody>
           </table>
         </div>
-        <div className="option-box">
-        <label className="switch">
-          <input type="checkbox" onClick={()=>{setFilterShow(!filterShow)}} defaultChecked></input>
-          <span className="slider round"></span>
-        </label>
-        <span className="bold">필터 보기</span>
-      </div>
+        <div className="achievement-option-box" onClick={()=>{setFilterShow(!filterShow)}}>
+          <span className="bold">필터 {filterShow ? "숨기기" : "보기"}</span>
+        </div>
       </div>
     </div>
     <div className={`achievement-filter-wrapper no-drag ${filterClass}`}>
@@ -203,7 +239,7 @@ const AchievementSelector = () => {
               <li 
               className={`achievement-filter-element ${i === levelIndex ? "achievement-filter-element-active" : ""}`} 
               key={i} 
-              onClick={()=>{dispatch(setAchievementDifficulty(el))}}
+              onClick={()=>{dispatch(setAchievementLevel(el))}}
               >{el}</li>
             )
           })
@@ -212,7 +248,7 @@ const AchievementSelector = () => {
       <div>
       <h4 className="theme-pp">RANK</h4>
       {
-        랭크목록.map((el, i) => {
+        등급목록.map((el, i) => {
           return (
             <li 
             className={`achievement-filter-element ${i === rankIndex ? "achievement-filter-element-active" : ""}`} 
@@ -226,7 +262,7 @@ const AchievementSelector = () => {
       <div>
         <h4 className="theme-pp">FILTER</h4>
         {
-          랭크필터목록.map((el, i) => {
+          등급필터목록.map((el, i) => {
             return (
               <li 
                 className={`achievement-filter-element ${i === rankFilterIndex ? "achievement-filter-element-active" : ""}`} 
