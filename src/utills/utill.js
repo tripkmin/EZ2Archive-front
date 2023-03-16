@@ -54,3 +54,17 @@ export const gradeConvert = (dbGrade) => {
     default: // nothing
   }
 }
+
+export const getPlayStatusClass = (songinfo) => {
+  const { isAllCool, isNoMiss } = songinfo
+  if (isAllCool) { return "all-cool" }
+  else if (isNoMiss) { return "all-combo" }
+  else if (isPlayed(songinfo)) { return "clear" }
+  else { return "no-play" }
+}
+
+export const isPlayed = (songinfo) => {
+  const { score, percentage, id, grade } = songinfo
+  if (percentage > 0 && id > 0 && score > 0 && grade){ return true }
+  else { return false }
+}

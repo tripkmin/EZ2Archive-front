@@ -10,7 +10,7 @@ import { ResponsiveLine } from '@nivo/line'
 export const MyResponsiveLine = ({ data /* see data tab */ }) => (
     <ResponsiveLine
         data={data}
-        margin={{ top: 50, right: 40, bottom: 50, left: 60 }}
+        margin={{ top: 50, right: 140, bottom: 50, left: 60 }}
         xScale={{ type: 'point' }}
         yScale={{
             type: 'linear',
@@ -41,8 +41,8 @@ export const MyResponsiveLine = ({ data /* see data tab */ }) => (
             legendOffset: -40,
             legendPosition: 'middle'
         }}
-        enableGridX={false}
-        enableGridY={false}
+        enableGridX={true}
+        enableGridY={true}
         colors={{ scheme: 'spectral' }}
         lineWidth={3}
         pointSize={10}
@@ -54,30 +54,30 @@ export const MyResponsiveLine = ({ data /* see data tab */ }) => (
         crosshairType="cross"
         useMesh={true}
         legends={[
-            // {
-            //     anchor: 'bottom-right',
-            //     direction: 'row',
-            //     justify: false,
-            //     translateX: 20,
-            //     translateY: -12,
-            //     itemsSpacing: 0,
-            //     itemDirection: 'left-to-right',
-            //     itemWidth: 80,
-            //     itemHeight: 25,
-            //     itemOpacity: 0.75,
-            //     symbolSize: 19,
-            //     symbolShape: 'circle',
-            //     symbolBorderColor: 'rgba(0, 0, 0, .5)',
-            //     effects: [
-            //         {
-            //             on: 'hover',
-            //             style: {
-            //                 itemBackground: 'rgba(0, 0, 0, .03)',
-            //                 itemOpacity: 1
-            //             }
-            //         }
-            //     ]
-            // }
+            {
+                anchor: 'bottom-right',
+                direction: 'row',
+                justify: false,
+                translateX: 100,
+                translateY: -12,
+                itemsSpacing: 0,
+                itemDirection: 'left-to-right',
+                itemWidth: 80,
+                itemHeight: 0,
+                itemOpacity: 0.75,
+                symbolSize: 10,
+                symbolShape: 'circle',
+                symbolBorderColor: 'rgba(0, 0, 0, .5)',
+                effects: [
+                    {
+                        on: 'hover',
+                        style: {
+                            itemBackground: 'rgba(0, 0, 0, .03)',
+                            itemOpacity: 1
+                        }
+                    }
+                ]
+            }
         ]}
         motionConfig="default"
     />

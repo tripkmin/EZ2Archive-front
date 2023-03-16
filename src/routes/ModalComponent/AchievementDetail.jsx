@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { API_URL } from "../../services/temp";
 import { setModalDefault } from "../../store";
-import { gradeConvert, keyCapsToNumKey, rankFilter } from "../../utills/utill";
+import { gradeConvert, keyCapsToNumKey, rankFilter, getPlayStatusClass, isPlayed } from "../../utills/utill";
 import { MyResponsiveLine } from "./chart";
 
 const AchievementDetail = () => {
@@ -42,7 +42,8 @@ const AchievementDetail = () => {
   const [임시차트용데이터, set임시차트용데이터] = useState([])
   const [수정된addtime, set수정된addtime] = useState([])
   useEffect(()=>{
-    axios
+    if(musicInfoId){
+      axios
       .get(`${API_URL}/musicInfo/${musicInfoId}/history`, {
         headers: {
           Authorization: `Bearer ${AT}`
@@ -52,6 +53,7 @@ const AchievementDetail = () => {
         const {data} = res.data
         setAchievementSongHistory(data)
       })
+    }
   }, [])
   
   useEffect(()=>{
@@ -156,27 +158,32 @@ const AchievementDetail = () => {
   return (
     <div className="achievement-modal-wrapper">
       <div className="achievement-modal-info">
-        <img  
-          src={process.env.PUBLIC_URL + '/musicdisk/'+ imgFindName + '.webp'} 
-          alt={name}
-          className="achievement-modal-diskimg"
-          // onError={handleImgError}
-          // className={`${returnClass(filteredElement)} ${matchFilter(filteredElement)}`}
-        //   onClick={achievementModalOpen}
-        // style={{border: "2px solid yellow", backgroundColor:"yellow" , borderRadius: "50%"}}
-        ></img>
+        <div className="achievement-modal-diskimg">
+          <img  
+            src={process.env.PUBLIC_URL + '/musicdisk/'+ imgFindName + '.webp'} 
+            alt={name}
+            className={` ${getPlayStatusClass(songInfo)} big-border`}
+            // onError={handleImgError}
+            // className={`${returnClass(filteredElement)} ${matchFilter(filteredElement)}`}
+          //   onClick={achievementModalOpen}
+          // style={{border: "2px solid yellow", backgroundColor:"yellow" , borderRadius: "50%"}}
+          ></img>
+          <span 
+            className={`level-badge-lg ${difficulty}`} 
+          >{difficulty}</span>
+        </div>
         <div className="achievement-modal">
           <div className="achievement-modal-song-info">
             <div className="achievement-modal-song-header">
-              <div className="achievement-modal-song-left">            
+              <div className="achievement-modal-song-header-left">
                 <h3 className="theme-pp">{name}</h3>
                 <h5>{artist}</h5>
               </div>
-              <div className="achievement-modal-song-right">
+              <div className="achievement-modal-song-header-right">
                 <h3>{level}</h3>
-                {/* <h6>{difficulty}</h6> */}
+                <h5>{rankFilter(rank)}</h5>
               </div>
-              </div>
+            </div>
             <div className="achievement-modal-user-info">
               <div>
                 <table>
@@ -194,7 +201,7 @@ const AchievementDetail = () => {
                       <td>{score ? score : "-"}</td>
                     </tr>
                     <tr>
-                      <td className="theme-pp">BEST EFFORT</td>
+                      <td className="theme-pp">STATUS</td>
                       <td>{업적반환(songInfo)}</td>
                     </tr>
                   </tbody>

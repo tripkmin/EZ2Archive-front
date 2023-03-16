@@ -7,7 +7,7 @@ import { useEffect, useState } from "react"
 import { API_URL } from "../services/temp";
 import { setAchievementKey, setAchievementLevel, switchModalOpen, setModalStep, setImgFindName, setSongInfo  } from "../store"
 import defaultProfile from './../imagenone.webp'
-import { rankFilter } from "../utills/utill";
+import { rankFilter, getPlayStatusClass, isPlayed } from "../utills/utill";
 
 const AchievementList = () => {
   const state = useSelector( (state) => state )
@@ -15,6 +15,7 @@ const AchievementList = () => {
   const {urlKey, urlLevel} = useParams()
   const {selectedKey, selectedKeyCaps, selectedLevel, selectedRank, selectedRankView, songTitleView, isDescending} = state.achievementUserSelected
   const [data, setData] = useState([])
+  const [스코어모달, set스코어모달] = useState(false)
   const AT = localStorage.getItem("accessToken")
 
   let rankIndex 
@@ -85,13 +86,13 @@ const AchievementList = () => {
     }
   }
 
-  const getPlayStatusClass = (songinfo) => {
-    const { isAllCool, isNoMiss } = songinfo
-    if (isAllCool) { return "all-cool" }
-    else if (isNoMiss) { return "all-combo" }
-    else if (isPlayed(songinfo)) { return "clear" }
-    else { return "no-play" }
-  }
+  // const getPlayStatusClass = (songinfo) => {
+  //   const { isAllCool, isNoMiss } = songinfo
+  //   if (isAllCool) { return "all-cool" }
+  //   else if (isNoMiss) { return "all-combo" }
+  //   else if (isPlayed(songinfo)) { return "clear" }
+  //   else { return "no-play" }
+  // }
 
   const matchFilter = (songinfo) => {
     const {grade} = songinfo
@@ -107,6 +108,31 @@ const AchievementList = () => {
     // else if (selectedRankView === "이하" && selectedRankIndex > gradeIndex){return "disabled"}
     // else if (selectedRankView === "미만" && selectedRankIndex >= gradeIndex){return "disabled"}
     // else {return ""}
+  }
+
+  const 보여지는퍼센트뒷쪽영빼기 = (퍼센트) => {
+    const 스텝1 = parseFloat(퍼센트).toFixed(2)
+    // const 스텝1 = "99.90"
+    const 스텝1분리 = (num) => 스텝1.split(".")[num]
+   
+    if(스텝1분리(1)?.charAt(스텝1분리(1).length - 1) === "0"){
+      if(스텝1분리(1)?.charAt(스텝1분리(1).length - 2) === "0"){
+        return 스텝1분리(0)
+      } else {
+        return 스텝1분리(0) + "." + 스텝1분리(1)[0]
+      }
+    } else {
+      return 스텝1 
+    }
+    // if(스텝1.charAt(스텝1.length - 1 ) === "0"){
+    //   if(스텝1.charAt(스텝1.length - 2) === "0"){
+    //     return 스텝1.slice(0, 3)
+    //   } else{
+    //     return 스텝1.slice(0, 4)
+    //   }
+    // } else {
+    //   return 스텝1
+    // }
   }
 
   const isPlayed = (songinfo) => {
@@ -206,11 +232,7 @@ const AchievementList = () => {
                       return (
                         <div className="song-wrapper" key={index}>
                           <div className="song-infobox">
-                            <div className="imgbox no-drag" 
-                            onClick={()=>{
-                              achievementModalOpen(filteredElement, renamed)
-                            }}
-                            >
+                            <div className="imgbox no-drag">
                               <img  
                                 src={process.env.PUBLIC_URL + '/musicdiskResize/'+ renamed + '.webp'} 
                                 // 아래는 에러 테스트용.
@@ -218,15 +240,29 @@ const AchievementList = () => {
                                 alt={name}
                                 // onLoad={()=>{console.log("로드완료")}}
                                 onError={handleImgError}
-                                className={`${getPlayStatusClass(filteredElement)} ${matchFilter(filteredElement)}`}
+                                className={`${getPlayStatusClass(filteredElement)} ${matchFilter(filteredElement)} small-border theme-pp-shadow`}
+                                onClick={()=>{achievementModalOpen(filteredElement, renamed)}}
                               ></img>
-                              <div className="shadowbox"></div>
-                              <span className={`level-badge ${difficulty}`}>{difficulty}</span>
+                              <div 
+                                className={`shadowbox ${matchFilter(filteredElement)}`}
+                                onClick={()=>{achievementModalOpen(filteredElement, renamed)}}></div>
+                              <span 
+                                className={`level-badge ${difficulty}`} 
+                                onClick={()=>{achievementModalOpen(filteredElement, renamed)}}
+                              >{difficulty}</span>
                               <div 
                                 className={`test2 ${isPlayed(filteredElement) ? "" : "hidden"}`}
+                                onClick={()=>{achievementModalOpen(filteredElement, renamed)}}
                               >
-                                <img src={process.env.PUBLIC_URL + '/rankImg/'+ grade + '.png'} className="test3"></img>
-                                <p className="test4">{Math.round(percentage * 10) / 10}%</p>
+                                <img 
+                                  src={process.env.PUBLIC_URL + '/rankImg/'+ grade + '.png'} 
+                                  className="test3"
+                                ></img>
+                                <p 
+                                 className="test4"
+                                // >{Math.round(percentage * 10) / 10}%
+                                >{보여지는퍼센트뒷쪽영빼기(percentage)}%
+                                </p>
                               </div>
                             </div>
                             <div className="hoverbox no-drag">
