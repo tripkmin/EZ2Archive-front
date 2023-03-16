@@ -169,7 +169,7 @@ const AchievementDetail = () => {
           <div className="achievement-modal-song-info">
             <div className="achievement-modal-song-header">
               <div className="achievement-modal-song-left">            
-                <h3>{name}</h3>
+                <h3 className="theme-pp">{name}</h3>
                 <h5>{artist}</h5>
               </div>
               <div className="achievement-modal-song-right">
@@ -182,19 +182,19 @@ const AchievementDetail = () => {
                 <table>
                   <tbody>
                     <tr>
-                      <td>TOTAL NOTES</td>
+                      <td className="theme-pp">TOTAL NOTES</td>
                       <td>{totalNote}</td>
                     </tr>
                     <tr>
-                      <td>BEST RATE</td>
+                      <td className="theme-pp">BEST RATE</td>
                       <td>{percentage ? `${percentage.toFixed(2)}%` : "-"}</td>
                     </tr>
                     <tr>
-                      <td>BEST SCORE</td>
+                      <td className="theme-pp">BEST SCORE</td>
                       <td>{score ? score : "-"}</td>
                     </tr>
                     <tr>
-                      <td>BEST EFFORT</td>
+                      <td className="theme-pp">BEST EFFORT</td>
                       <td>{업적반환(songInfo)}</td>
                     </tr>
                   </tbody>

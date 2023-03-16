@@ -50,7 +50,10 @@ const modal = createSlice({
 const achievementUserSelected = createSlice({
   name : "achievementUserSelected",
   // selectedKey는 4k, selectedKeyCaps는 FOUR와 같이 저장됨.
-  initialState : {selectedKey : "", selectedKeyCaps: "", selectedLevel : 0, selectedRank : "", selectedRankView : "", songTitleView : true, isDescending : true, },
+  initialState : {selectedKey : "", selectedKeyCaps: "", selectedLevel : 0, 
+  // selectedRank : "", 
+  selectedRank : [], 
+  selectedRankView : "", songTitleView : true, isDescending : true, },
   reducers : {
     setTitleView(state, action){
       state.songTitleView = action.payload
@@ -72,8 +75,15 @@ const achievementUserSelected = createSlice({
       state.selectedLevel = action.payload;
     },
     setAchievementRank(state, action){
-      if(state.selectedRank === action.payload){state.selectedRank = ""}
-      else{state.selectedRank = action.payload}
+      // if(state.selectedRank === action.payload){state.selectedRank = ""}
+      // else{state.selectedRank = action.payload}
+      const index = state.selectedRank.indexOf(action.payload)
+      if (index !== -1){
+        state.selectedRank.splice(index, 1)
+      } else {state.selectedRank.push(action.payload)}
+    },
+    setAchievementRankDefault(state){
+      state.selectedRank = [];
     },
     setSelectedRankView(state, action){
       if(state.selectedRankView === action.payload){state.selectedRankView = ""}
@@ -84,7 +94,8 @@ const achievementUserSelected = createSlice({
       state.selectedKey = "";
       state.selectedKeyCaps = "";
       state.selectedLevel = 0;
-      state.selectedRank = "";
+      state.selectedRank = [];
+      // state.selectedRank = "";
     }
   }
 })
@@ -189,7 +200,7 @@ export default configureStore({
 export const { setUserName, setUserId, setUserAuth, setUserAddTime, setManageMode, setDefault } = userinfo.actions
 export const { switchModalOpen, setModalStep, setModalDefault } = modal.actions
 // export const { switchLoginModal } = userLogin.actions
-export const { setTitleView, setDescending, setAchievementKey, setAchievementLevel, setAchievementRank, setAchievementClean, setSelectedRankView } = achievementUserSelected.actions
+export const { setTitleView, setDescending, setAchievementKey, setAchievementLevel, setAchievementRank, setAchievementRankDefault, setAchievementClean, setSelectedRankView } = achievementUserSelected.actions
 export const { setImgFindName, setSongInfo } = achievementSongInfo.actions
 // export const {  } = achievementSelectIndex.actions
 export const { setRankTitleView, setRankKeyAndLevel, setRankDescending, setRankCleanKeyAndLevel } = rankUserSelected.actions

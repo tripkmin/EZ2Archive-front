@@ -1211,7 +1211,7 @@ html, body, #root {
 }
 
 .achievement-filter-wrapper {
-  height: 300px;
+  height: 270px;
   width: 90%;
   margin: 0 auto;
   border-right: 3px solid #e3dbff;
@@ -1248,7 +1248,7 @@ html, body, #root {
 
 .achievement-filter-element {
   /* width: 25px; */
-  padding: 3px 8px;
+  padding: 3px 9px;
   margin: 0px 2px;
   cursor: pointer;
 }
@@ -1771,7 +1771,7 @@ input:checked + .slider:before {
 }
 
 .all-cool {
-  border: 2px solid transparent;
+  border: 2.7px solid transparent;
   border-radius: 50%;
   /* background: rgb(252,101,87); */
   background-image: linear-gradient(90deg, rgba(252,101,87,1) 0%, rgba(255,232,4,1) 51%, rgba(50,255,232,1) 100%);
@@ -1791,7 +1791,7 @@ input:checked + .slider:before {
 }
 
 .all-combo {
-  border: 2px solid transparent;
+  border: 2.7px solid transparent;
   border-radius: 50%;
   background-image: linear-gradient(90deg, rgba(250,213,13,1) 0%, rgba(252,203,0,1) 50%, rgba(255,215,4,1) 100%);
   background-origin: border-box;
@@ -1799,7 +1799,7 @@ input:checked + .slider:before {
 }
 
 .clear {
-  border: 2px solid transparent;
+  border: 2.7px solid transparent;
   border-radius: 50%;
   background-image: linear-gradient(90deg, rgba(2,223,252,1) 0%, rgba(64,227,254,1) 50%, rgba(0,225,255,1) 100%);
   background-origin: border-box;
@@ -1808,7 +1808,7 @@ input:checked + .slider:before {
 /** 호버 시 나오는 디스크 백그라운드 관련 */
 
 .no-play {
-  border: 2px solid transparent;
+  border: 2.7px solid transparent;
   border-radius: 50%;
   background-color: rgb(156, 89, 219);
   /* background-image: linear-gradient(90deg, rgba(52,52,52,1) 0%, rgba(103,103,103,1) 50%, rgba(52,52,52,1) 100%); */
@@ -1823,7 +1823,7 @@ input:checked + .slider:before {
   border-radius: 100px;
   margin:0;
   position: absolute;
-  top:-21px;
+  top:-20px;
   left:-17px;
   border: 1px solid #e6dfff;
   visibility: hidden;

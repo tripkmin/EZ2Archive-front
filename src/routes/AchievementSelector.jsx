@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react"
 import { API_URL } from "../services/temp";
-import { setTitleView, setDescending, setAchievementKey, setAchievementLevel, setAchievementRank, setSelectedRankView, setAchievementClean } from "../store"
+import { setTitleView, setDescending, setAchievementKey, setAchievementLevel, setAchievementRank, setAchievementRankDefault, setSelectedRankView, setAchievementClean } from "../store"
 
 const AchievementSelector = () => {
 
@@ -24,7 +24,7 @@ const AchievementSelector = () => {
   const [songCount, setSongCount] = useState(0)
   const [keyIndex, setKeyIndex] = useState(null)
   const [levelIndex, setLevelIndex] = useState(null)
-  const [rankIndex, setRankIndex] = useState(null)
+  const [rankIndex, setRankIndex] = useState([])
   const [titleIndex, setTitleIndex] = useState(null)
   const [descIndex, setDescIndex] = useState(null)
   const [rankFilterIndex, setRankFilterIndex] = useState(null)
@@ -63,11 +63,38 @@ const AchievementSelector = () => {
   useEffect(()=>{
     setKeyIndex(키목록.indexOf(selectedKey))
     setLevelIndex(레벨목록.indexOf(parseInt(selectedLevel)))
-    setRankIndex(등급목록.findIndex(el => el.dbRank === selectedRank))
+    
+    const 인덱스넣을배열 = []
+    selectedRank.map(등급 => {
+      const index = 등급목록.findIndex(등급목록 => 등급목록.dbRank === 등급)
+      인덱스넣을배열.push(index)
+    })
+    console.log(인덱스넣을배열)
+    setRankIndex(인덱스넣을배열)
+    // setRankIndex(등급목록.findIndex(el => el.dbRank === selectedRank))
     setRankFilterIndex(등급필터목록.indexOf(selectedRankView))
     setTitleIndex(songTitleView ? 0 : 1)
     setDescIndex(isDescending ? 0 : 1)
   }, [selectedKey, selectedLevel, selectedRank, selectedRankView, songTitleView, isDescending])
+
+  /* 
+  ["SP", "S", "AP"]
+  이 요소를 기준으로 순회
+  등급목록.dbRank의 몇 번째에 있는가
+  [3,4,5] → RankIndex로 설정됨
+  className 순회할 때 RankIndex에 있는지 확인. i가 그 안에 있는가...로 알면 될듯.
+  */
+
+  //
+  
+  // const 인덱스넣을배열 = []
+  // selectedRank.map(등급 => {
+  //   const index = 등급목록.findIndex(등급목록 => 등급목록.dbRank === 등급)
+  //   인덱스넣을배열.push(index)
+  // })
+  // console.log(인덱스넣을배열)
+
+  //
 
   useEffect(()=>{
     if (filterShow) {setFilterClass("")}
@@ -249,17 +276,24 @@ const AchievementSelector = () => {
       <h4 className="theme-pp">RANK</h4>
       {
         등급목록.map((el, i) => {
+          let 등급인덱스안에있는지 = rankIndex.find(el => el === i)
           return (
+            // rankIndex에서 i가 있는지 확인. true면 클래스부착, 아니면 떼기
+            // rankIndex.find(el => el === i)
             <li 
-            className={`achievement-filter-element ${i === rankIndex ? "achievement-filter-element-active" : ""}`} 
+            // className={`achievement-filter-element ${i === rankIndex ? "achievement-filter-element-active" : ""}`} 
+            className={`achievement-filter-element ${등급인덱스안에있는지 !== undefined ? "achievement-filter-element-active" : ""}`} 
             key={i} 
             onClick={()=>{dispatch(setAchievementRank(el.dbRank))}}
             >{el.convertName}</li>
           )
         })
       }
+      <li 
+      className="achievement-filter-element"
+      onClick={()=>{dispatch(setAchievementRankDefault())}}>해제</li>
       </div>
-      <div>
+      {/* <div>
         <h4 className="theme-pp">FILTER</h4>
         {
           등급필터목록.map((el, i) => {
@@ -272,7 +306,7 @@ const AchievementSelector = () => {
             )  
           })
         }
-      </div>
+      </div> */}
       <div>
         <h4 className="theme-pp">TITLE</h4>
         {

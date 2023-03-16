@@ -95,16 +95,18 @@ const AchievementList = () => {
 
   const matchFilter = (songinfo) => {
     const {grade} = songinfo
-    const dbRank = ["SPPP","SPP","SP","S","AP","A","B","C","D","E","F"]
-    const gradeIndex = dbRank.indexOf(grade);
-    const selectedRankIndex = dbRank.indexOf(selectedRank);
+    const 찾기 = selectedRank.find(선택된등급 => 선택된등급 === grade)
+    if (!찾기 && selectedRank.length !== 0){ return "disabled"}
+    // const dbRank = ["SPPP","SPP","SP","S","AP","A","B","C","D","E","F"]
+    // const gradeIndex = dbRank.indexOf(grade);
+    // const selectedRankIndex = dbRank.indexOf(selectedRank);
 
-    if (selectedRankView === "동일" && selectedRank !== grade){return "disabled"} 
-    else if (selectedRankView === "초과" && selectedRankIndex <= gradeIndex){return "disabled"}
-    else if (selectedRankView === "이상" && selectedRankIndex < gradeIndex){return "disabled"}
-    else if (selectedRankView === "이하" && selectedRankIndex > gradeIndex){return "disabled"}
-    else if (selectedRankView === "미만" && selectedRankIndex >= gradeIndex){return "disabled"}
-    else {return ""}
+    // if (selectedRankView === "동일" && selectedRank !== grade){return "disabled"} 
+    // else if (selectedRankView === "초과" && selectedRankIndex <= gradeIndex){return "disabled"}
+    // else if (selectedRankView === "이상" && selectedRankIndex < gradeIndex){return "disabled"}
+    // else if (selectedRankView === "이하" && selectedRankIndex > gradeIndex){return "disabled"}
+    // else if (selectedRankView === "미만" && selectedRankIndex >= gradeIndex){return "disabled"}
+    // else {return ""}
   }
 
   const isPlayed = (songinfo) => {
@@ -264,10 +266,6 @@ const AchievementList = () => {
                                     <tr>
                                       <td>노트 수</td>
                                       <td>{totalNote} </td>
-                                    </tr>
-                                    <tr>
-                                      <td>ALL</td>
-                                      <td>{isAllCool ? "Y" : "N"}/{isNoMiss ? "Y" : "N"}</td>
                                     </tr>
                                   </tbody>
                                 </table>
