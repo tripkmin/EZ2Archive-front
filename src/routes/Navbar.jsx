@@ -77,7 +77,7 @@ function Navbar(){
               <span className="category-link" onClick={()=>{ navigate('/achievement') }}>성과표</span>
               <span className="category-link" onClick={()=>{ navigate('/rank') }}>서열표</span>
               <span className="category-link" onClick={()=>{ navigate('/tier') }}>티어표</span>
-              <span className="category-link" onClick={()=>{ alert('현재 구현중입니다.')}}>NEW 성과표</span>
+              <span className="category-link" onClick={()=>{ alert('현재 구현중입니다.')}}>NEW 서열표</span>
               <span className="category-link" onClick={()=>{ alert('현재 김현중입니다.') }}>안내</span>
             </div>
             <img className="pp-navbar-pattern" src={process.env.PUBLIC_URL + '/navbar/Asset 1.svg'} alt="logo" onClick={()=>{ navigate('/') }}></img>

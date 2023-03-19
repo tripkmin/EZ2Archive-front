@@ -1,4 +1,3 @@
-
 export const keyCapsToNumKey = (keyCaps) => {
   switch(keyCaps){
     case 'FOUR':
@@ -67,4 +66,48 @@ export const isPlayed = (songinfo) => {
   const { score, percentage, id, grade } = songinfo
   if (percentage > 0 && id > 0 && score > 0 && grade){ return true }
   else { return false }
+}
+
+export const returnGrade = (grade) => {
+  if(grade){
+    return grade
+  } else if(grade === undefined){
+    return "none"
+  }
+}
+
+export const 보여지는퍼센트뒷쪽영빼기 = (퍼센트) => {
+  const 스텝1 = parseFloat(퍼센트).toFixed(2)
+  const 스텝1분리 = (num) => 스텝1.split(".")[num]
+  
+  if(!퍼센트){
+    return "-"
+  } else if(스텝1분리(1)?.charAt(스텝1분리(1).length - 1) === "0"){
+    if(스텝1분리(1)?.charAt(스텝1분리(1).length - 2) === "0"){
+      return 스텝1분리(0)
+    } else {
+      return 스텝1분리(0) + "." + 스텝1분리(1)[0]
+    }
+  } else {
+    return 스텝1 
+  }
+}
+  
+export const formatPercent = (percent) => {
+  const num = parseFloat(percent);
+  
+  if(isNaN(num)) {
+    return "";
+  }
+  
+  const numString = num.toString();
+  const [intPart, decimalPart] = numString.split(".");
+  
+  if(decimalPart === "00") {
+    return intPart;
+  } else if(decimalPart?.charAt(1) === "0") {
+    return intPart + "." + decimalPart?.charAt(0);
+  } else {
+    return numString;
+  }
 }

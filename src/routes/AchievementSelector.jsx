@@ -61,40 +61,20 @@ const AchievementSelector = () => {
 
   // 세부 옵션을 선택하면 선택한 곳의 index를 알아내기 위해 설정함.
   useEffect(()=>{
-    setKeyIndex(키목록.indexOf(selectedKey))
-    setLevelIndex(레벨목록.indexOf(parseInt(selectedLevel)))
-    
+    // 등급 필터로 선택한 등급을 배열에 넣어 표시함.
     const 인덱스넣을배열 = []
     selectedRank.map(등급 => {
       const index = 등급목록.findIndex(등급목록 => 등급목록.dbRank === 등급)
       인덱스넣을배열.push(index)
     })
-    console.log(인덱스넣을배열)
+
+    setKeyIndex(키목록.indexOf(selectedKey))
+    setLevelIndex(레벨목록.indexOf(parseInt(selectedLevel)))
     setRankIndex(인덱스넣을배열)
-    // setRankIndex(등급목록.findIndex(el => el.dbRank === selectedRank))
     setRankFilterIndex(등급필터목록.indexOf(selectedRankView))
     setTitleIndex(songTitleView ? 0 : 1)
     setDescIndex(isDescending ? 0 : 1)
   }, [selectedKey, selectedLevel, selectedRank, selectedRankView, songTitleView, isDescending])
-
-  /* 
-  ["SP", "S", "AP"]
-  이 요소를 기준으로 순회
-  등급목록.dbRank의 몇 번째에 있는가
-  [3,4,5] → RankIndex로 설정됨
-  className 순회할 때 RankIndex에 있는지 확인. i가 그 안에 있는가...로 알면 될듯.
-  */
-
-  //
-  
-  // const 인덱스넣을배열 = []
-  // selectedRank.map(등급 => {
-  //   const index = 등급목록.findIndex(등급목록 => 등급목록.dbRank === 등급)
-  //   인덱스넣을배열.push(index)
-  // })
-  // console.log(인덱스넣을배열)
-
-  //
 
   useEffect(()=>{
     if (filterShow) {setFilterClass("")}
@@ -110,19 +90,13 @@ const AchievementSelector = () => {
             Authorization: `Bearer ${AT}`
           }
         })
-        .then((res) => {
-          // 가공해야 할 정보
-            // 평균 rate
-            // all cool 갯수
-            // all combo 갯수
-            // s+++ ~ s+ 갯수      
+        .then((res) => {   
           const {data} = res.data
           const percentages = data.map(data => data.percentage)
-          // const percentagesSum = percentages.reduce((a, b) => a + b, 0)
-          // const avgRate = parseFloat((percentagesSum / percentages.length).toFixed(2))
+          const grades = data.map(data => data.grade)
+          // iAllCool과 isNoMiss는 Boolean 자료형이므로 filter()로 true 갯수만 뽑아옴.
           const allCoolData = data.filter(data => data.isAllCool)
           const noMissData = data.filter(data => data.isNoMiss)
-          const grades = data.map(data => data.grade)
           const spppCount = grades.filter(data => data === "SPPP").length
           const sppCount = spppCount + grades.filter(data => data === "SPP").length
           const spCount = spppCount + sppCount + grades.filter(data => data === "SP").length
@@ -130,7 +104,7 @@ const AchievementSelector = () => {
             if (numsArray.length !== 0){
               const sum = numsArray.reduce((a, b) => a + b, 0)
               const avgRate = parseFloat((sum / numsArray.length).toFixed(toFixedNums))
-              // toFixed는 string 형식으로 반환하므로..
+              // toFixed는 string 형식으로 반환하므로 parseFloat로 감싸줌.
               return avgRate
             } else { return 0 }
           }
@@ -143,16 +117,6 @@ const AchievementSelector = () => {
             { name : "spCnt", data : spCount, convertName : "S⁺"},
           ]);
           return axios.get(`${API_URL}/musicInfo/${selectedKeyCaps}/${selectedLevel}/list`)
-        // const { allCoolCnt, noMissCnt, rateAvg, spCnt, sppCnt, spppCnt, totalCnt } = res.data.data
-        // let copyOverall = [...overall]
-        // let push = [rateAvg, allCoolCnt, noMissCnt, spppCnt, sppCnt, spCnt]
-        // copyOverall.forEach((el, i) => {
-        //   if(el.name === "rateAvg"){
-        //     el.data = Math.round(push[i] * 10)/10
-        //   } else el.data = push[i]
-        // })
-        // setOverall(copyOverall)
-        // setSongCount(totalCnt)
       })
       .then((res)=>{
         const {data} = res.data
@@ -171,11 +135,16 @@ const AchievementSelector = () => {
     };
   }, [])
 
-  // const sumReturn = (overallInfo) => {
-  //   const { name, data } = overallInfo
-  //   if (name === "spCnt"){}
-  // }
-
+  const 오버올이름이평균아니고데이터가아예0일때 = (obj, songCount) => {
+    const {name, data} = obj
+    if(name === "rateAvg"){
+      return `${data}%`
+    } else if (data === 0){
+      return `${data}%`
+    } else {
+      return `${((data / songCount) * 100).toFixed(1)}%` 
+    }
+  }
   return (
     <>
     <div className="achievement-selector-wrapper">
@@ -196,9 +165,8 @@ const AchievementSelector = () => {
           <h4>{userName}</h4>
         </div>
         <div className="achievement-detail">
-          {/* <h3 className="theme-pp">OVERALL</h3> */}
           <table>
-            <tbody>
+            <thead>
               <tr>
                 <td></td>
                 <td></td>
@@ -206,12 +174,18 @@ const AchievementSelector = () => {
                   <h3 className="theme-pp">OVERALL</h3>
                 </td>
               </tr>
-              {
-                overall.map((overall, i) => {
-                  return (
-                    <tr key={i}>
-                      {/* <td>{Math.round(((overall.data)) * 10) / 10}%</td> */}
-                      <td>{`${overall.data}%`}</td>
+            </thead>
+            {
+              overall.map((overall, i) => {
+                return (
+                  <tbody key={i}>
+                    <tr>
+                      <td>
+                        {오버올이름이평균아니고데이터가아예0일때(overall, songCount)}
+                        {/* { overall.name === "rateAvg"
+                      ? `${overall.data}%`
+                      : `${((overall.data / songCount) * 100).toFixed(1)}%`} */}
+                      </td>
                       {/* 임시, Average Rate 표기 방식이 달라질 경우 아래 부분 수정 */}
                       <td>{ overall.name === "rateAvg" 
                       ? overall.data.toFixed(0) + "/" + 100 
@@ -232,10 +206,10 @@ const AchievementSelector = () => {
                         </div>
                       </td>
                     </tr>
-                  )
-                })
-              }
-            </tbody>
+                  </tbody>
+                )
+              })
+            }
           </table>
         </div>
         <div className="achievement-option-box" onClick={()=>{setFilterShow(!filterShow)}}>

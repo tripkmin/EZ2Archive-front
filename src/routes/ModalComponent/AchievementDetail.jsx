@@ -5,8 +5,11 @@ import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { API_URL } from "../../services/temp";
 import { setModalDefault } from "../../store";
-import { gradeConvert, keyCapsToNumKey, rankFilter, getPlayStatusClass, isPlayed } from "../../utills/utill";
+import { gradeConvert, keyCapsToNumKey, rankFilter, getPlayStatusClass, isPlayed, returnGrade } from "../../utills/utill";
 import { MyResponsiveLine } from "./chart";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faXmark } from "@fortawesome/free-solid-svg-icons"
+
 
 const AchievementDetail = () => {
   const state = useSelector( (state) => state )
@@ -41,9 +44,9 @@ const AchievementDetail = () => {
   const [다음등급, set다음등급] = useState([])
   const [임시차트용데이터, set임시차트용데이터] = useState([])
   const [수정된addtime, set수정된addtime] = useState([])
-  useEffect(()=>{
-    if(musicInfoId){
-      axios
+
+  const getHistory = () => {
+    axios
       .get(`${API_URL}/musicInfo/${musicInfoId}/history`, {
         headers: {
           Authorization: `Bearer ${AT}`
@@ -53,6 +56,21 @@ const AchievementDetail = () => {
         const {data} = res.data
         setAchievementSongHistory(data)
       })
+  }
+  
+  useEffect(()=>{
+    if(musicInfoId){
+      // axios
+      // .get(`${API_URL}/musicInfo/${musicInfoId}/history`, {
+      //   headers: {
+      //     Authorization: `Bearer ${AT}`
+      //   }
+      // })
+      // .then((res)=>{
+      //   const {data} = res.data
+      //   setAchievementSongHistory(data)
+      // })
+      getHistory()
     }
   }, [])
   
@@ -140,7 +158,6 @@ const AchievementDetail = () => {
       임시배열.push({ x : addTime가공[i], y : achievementSongHistory[i].percentage })
     }
 
-    
     const test = [
       {
       "id": "기록",
@@ -151,9 +168,6 @@ const AchievementDetail = () => {
     set임시차트용데이터(test)
     set수정된addtime(addTime가공)
   }, [achievementSongHistory])
-
-
-
   
   return (
     <div className="achievement-modal-wrapper">
@@ -208,11 +222,7 @@ const AchievementDetail = () => {
                 </table>
               </div>
               <div>
-                {/* <h5>Grade</h5> */}
-                { grade 
-                ? <img src={process.env.PUBLIC_URL + '/rankImg/'+ grade + '.png'} className="achievement-modal-song-grade"></img>
-                : null
-                }
+                <img src={process.env.PUBLIC_URL + '/gradeImg/'+ returnGrade(grade) + '.png'} className={`achievement-modal-song-grade ${returnGrade(grade)}`}></img>
               </div>
             </div>
           </div>
@@ -223,20 +233,26 @@ const AchievementDetail = () => {
           <h5>{artist}</h5> */}
         </div>
       </div>
-      <div className="linetest">
-          { 임시차트용데이터.length === 0 
-          ? null
-          : <MyResponsiveLine data={임시차트용데이터}/>
+          { 임시차트용데이터.length <= 1 && 
+            <div className="no-visible-data">
+              <h4>기록이 두 개 이상 있어야 차트 보여줌 ㅅㄱ</h4>
+            </div>
           }
-        </div>
+          { 임시차트용데이터.length > 1 && 
+            <div className="linetest">
+              <MyResponsiveLine data={임시차트용데이터}/>
+            </div>
+          }
       <table className="achievement-history-table">
         <thead>
           <tr>
             <td>기록 날짜</td>
+            {/* <td></td> */}
             <td>점수</td>
             <td>상승폭</td>
             <td>등급</td>
             <td>다음 등급까지</td>
+            <td>삭제</td>
           </tr>
         </thead>
         <tbody>
@@ -249,10 +265,21 @@ const AchievementDetail = () => {
               return (
                 <tr key={i}>
                   <td>{수정된addtime[i]}</td>
+                  {/* <td></td> */}
                   <td>{el.score}</td>
                   <td>{차이[i]}</td>
                   <td>{gradeConvert(el.grade)}</td>
                   <td>{다음등급[i]}</td>
+                  <td><FontAwesomeIcon icon={faXmark} className="history-delete-btn" onClick={()=>{
+                    axios
+                      .delete(`${API_URL}/record/${el.recordHistoryId}/delete`, {
+                        headers: {
+                          Authorization: `Bearer ${AT}`
+                        }
+                      })
+                      .then(res => getHistory())
+                      .catch(err => console.log(err))
+                  }}></FontAwesomeIcon></td>
                 </tr>
               );
             })

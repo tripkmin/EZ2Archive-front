@@ -50,10 +50,7 @@ const modal = createSlice({
 const achievementUserSelected = createSlice({
   name : "achievementUserSelected",
   // selectedKey는 4k, selectedKeyCaps는 FOUR와 같이 저장됨.
-  initialState : {selectedKey : "", selectedKeyCaps: "", selectedLevel : 0, 
-  // selectedRank : "", 
-  selectedRank : [], 
-  selectedRankView : "", songTitleView : true, isDescending : true, },
+  initialState : {selectedKey : "", selectedKeyCaps: "", selectedLevel : 0, selectedRank : [], selectedRankView : "", songTitleView : true, isDescending : true, },
   reducers : {
     setTitleView(state, action){
       state.songTitleView = action.payload

@@ -7,7 +7,9 @@ import { useEffect, useState } from "react"
 import { API_URL } from "../services/temp";
 import { setAchievementKey, setAchievementLevel, switchModalOpen, setModalStep, setImgFindName, setSongInfo  } from "../store"
 import defaultProfile from './../imagenone.webp'
-import { rankFilter, getPlayStatusClass, isPlayed } from "../utills/utill";
+import { rankFilter, getPlayStatusClass, isPlayed, returnGrade, formatPercent } from "../utills/utill";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faCheck, faXmark, faStarHalf, faStar } from "@fortawesome/free-solid-svg-icons"
 
 const AchievementList = () => {
   const state = useSelector( (state) => state )
@@ -15,7 +17,12 @@ const AchievementList = () => {
   const {urlKey, urlLevel} = useParams()
   const {selectedKey, selectedKeyCaps, selectedLevel, selectedRank, selectedRankView, songTitleView, isDescending} = state.achievementUserSelected
   const [data, setData] = useState([])
-  const [스코어모달, set스코어모달] = useState(false)
+  const [스코어입력창선택한거, set스코어입력창선택한거] = useState([-1, -1])
+  const [isAllCool, setIsAllCool] = useState(false)
+  const [isAllCombo, setIsAllCombo] = useState(false)
+  const [scoreInputValue, setScoreInputValue] = useState(-1)
+  const [전송실패모달, set전송실패모달] = useState(false)
+  const [전송완료모달, set전송완료모달] = useState(false)
   const AT = localStorage.getItem("accessToken")
 
   let rankIndex 
@@ -28,39 +35,71 @@ const AchievementList = () => {
     dispatch(setAchievementLevel(urlLevel))  
   }, [])
 
-  useEffect(()=>{
-    const fetchData = async () => {
-      try {
-        let songList = await axios.get(`${API_URL}/musicInfo/${selectedKeyCaps}/${selectedLevel}/list`)
-        let recordList = await axios.get(`${API_URL}/musicInfo/${selectedKeyCaps}/${selectedLevel}/record`, {
-          headers: {
-            Authorization: `Bearer ${AT}`
-          }
-        })
-        let songWithRecordData = []
+  const fetchData = async () => {
+    try {
+      let songList = await axios.get(`${API_URL}/musicInfo/${selectedKeyCaps}/${selectedLevel}/list`)
+      let recordList = await axios.get(`${API_URL}/musicInfo/${selectedKeyCaps}/${selectedLevel}/record`, {
+        headers: {
+          Authorization: `Bearer ${AT}`
+        }
+      })
+      let songWithRecordData = []
 
-        songList = songList.data.data;
-        recordList = recordList.data.data
-        songList.forEach((singleSong) => {
-          let matchIdWithRecord = recordList.find(singleRecord => singleRecord.musicInfoId === singleSong.id)
-          if(matchIdWithRecord){
-            let combinedData = {...singleSong, ...matchIdWithRecord}
-            songWithRecordData.push(combinedData)
-          } else {
-            let combinedData = {...singleSong}
-            songWithRecordData.push(combinedData)
-          }
-        })
-        setData(songWithRecordData); 
-      } catch (err) {
-        console.log(err)
-      }
+      songList = songList.data.data;
+      recordList = recordList.data.data
+      songList.forEach((singleSong) => {
+        let matchIdWithRecord = recordList.find(singleRecord => singleRecord.musicInfoId === singleSong.id)
+        if(matchIdWithRecord){
+          let combinedData = {...singleSong, ...matchIdWithRecord}
+          songWithRecordData.push(combinedData)
+        } else {
+          let combinedData = {...singleSong}
+          songWithRecordData.push(combinedData)
+        }
+      })
+      setData(songWithRecordData); 
+    } catch (err) {
+      console.log(err)
     }
+  }
+
+  useEffect(()=>{
+    // const fetchData = async () => {
+    //   try {
+    //     let songList = await axios.get(`${API_URL}/musicInfo/${selectedKeyCaps}/${selectedLevel}/list`)
+    //     let recordList = await axios.get(`${API_URL}/musicInfo/${selectedKeyCaps}/${selectedLevel}/record`, {
+    //       headers: {
+    //         Authorization: `Bearer ${AT}`
+    //       }
+    //     })
+    //     let songWithRecordData = []
+
+    //     songList = songList.data.data;
+    //     recordList = recordList.data.data
+    //     songList.forEach((singleSong) => {
+    //       let matchIdWithRecord = recordList.find(singleRecord => singleRecord.musicInfoId === singleSong.id)
+    //       if(matchIdWithRecord){
+    //         let combinedData = {...singleSong, ...matchIdWithRecord}
+    //         songWithRecordData.push(combinedData)
+    //       } else {
+    //         let combinedData = {...singleSong}
+    //         songWithRecordData.push(combinedData)
+    //       }
+    //     })
+    //     setData(songWithRecordData); 
+    //   } catch (err) {
+    //     console.log(err)
+    //   }
+    // }
 
     if (selectedKey && selectedLevel) {
       fetchData();
     }
   }, [selectedKey, selectedLevel])
+
+  useEffect(()=>{
+    if(isAllCool){setIsAllCombo(true)}
+  }, [isAllCool])
 
   const rankToDisplayRank = (rank) => {
     switch(rank){
@@ -86,36 +125,19 @@ const AchievementList = () => {
     }
   }
 
-  // const getPlayStatusClass = (songinfo) => {
-  //   const { isAllCool, isNoMiss } = songinfo
-  //   if (isAllCool) { return "all-cool" }
-  //   else if (isNoMiss) { return "all-combo" }
-  //   else if (isPlayed(songinfo)) { return "clear" }
-  //   else { return "no-play" }
-  // }
-
   const matchFilter = (songinfo) => {
     const {grade} = songinfo
     const 찾기 = selectedRank.find(선택된등급 => 선택된등급 === grade)
     if (!찾기 && selectedRank.length !== 0){ return "disabled"}
-    // const dbRank = ["SPPP","SPP","SP","S","AP","A","B","C","D","E","F"]
-    // const gradeIndex = dbRank.indexOf(grade);
-    // const selectedRankIndex = dbRank.indexOf(selectedRank);
-
-    // if (selectedRankView === "동일" && selectedRank !== grade){return "disabled"} 
-    // else if (selectedRankView === "초과" && selectedRankIndex <= gradeIndex){return "disabled"}
-    // else if (selectedRankView === "이상" && selectedRankIndex < gradeIndex){return "disabled"}
-    // else if (selectedRankView === "이하" && selectedRankIndex > gradeIndex){return "disabled"}
-    // else if (selectedRankView === "미만" && selectedRankIndex >= gradeIndex){return "disabled"}
-    // else {return ""}
   }
 
   const 보여지는퍼센트뒷쪽영빼기 = (퍼센트) => {
     const 스텝1 = parseFloat(퍼센트).toFixed(2)
-    // const 스텝1 = "99.90"
     const 스텝1분리 = (num) => 스텝1.split(".")[num]
    
-    if(스텝1분리(1)?.charAt(스텝1분리(1).length - 1) === "0"){
+    if(!퍼센트){
+      return "-"
+    } else if(스텝1분리(1)?.charAt(스텝1분리(1).length - 1) === "0"){
       if(스텝1분리(1)?.charAt(스텝1분리(1).length - 2) === "0"){
         return 스텝1분리(0)
       } else {
@@ -124,15 +146,6 @@ const AchievementList = () => {
     } else {
       return 스텝1 
     }
-    // if(스텝1.charAt(스텝1.length - 1 ) === "0"){
-    //   if(스텝1.charAt(스텝1.length - 2) === "0"){
-    //     return 스텝1.slice(0, 3)
-    //   } else{
-    //     return 스텝1.slice(0, 4)
-    //   }
-    // } else {
-    //   return 스텝1
-    // }
   }
 
   const isPlayed = (songinfo) => {
@@ -185,6 +198,12 @@ const AchievementList = () => {
     })
     return sorted
   }
+  
+  const maxLengthCheck = (value) => {
+    if(value.length > 7){
+      value.slice(0, 7);
+    }
+  } 
 
     return (
       <>
@@ -196,17 +215,17 @@ const AchievementList = () => {
           {/* Songs 클래스 네임 변경할것 */}
           <div className="flex-grow-1">
           { // 서열을 중심으로 순회
-            rankIndex.map((targetRank, index) => { 
+            rankIndex.map((targetRank, index1) => { 
               return data.filter(songlist => 
                 songlist.rank === targetRank[0] 
                 || songlist.rank === targetRank[1]
                 ).length !== 0
               ? 
-                <div className="order-box" key={index}>
+                <div className="order-box" key={index1}>
                   <span className="order-grade">{rankToDisplayRank(targetRank[0])}</span>
                   <div className='order-list'>
                   {sortByDifficulty(filterByDifficultyIndex(data, targetRank))
-                    .map((filteredElement, index)=>{
+                    .map((filteredElement, index2)=>{
                       const {
                         id,
                         name,
@@ -223,22 +242,47 @@ const AchievementList = () => {
                         description,
                         recordId,
                         grade,
-                        isAllCool,
                         isNoMiss,
                         score,
                         percentage
                       } = filteredElement
+                      
                       const renamed = name.toLowerCase().replace(/ /g, "").replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/ ]/g, "");
                       return (
-                        <div className="song-wrapper" key={index}>
+                        <div className="song-wrapper" key={index2}>
                           <div className="song-infobox">
                             <div className="imgbox no-drag">
-                              <img  
+                              { 스코어입력창선택한거[0] === index1 && 
+                                스코어입력창선택한거[1] === index2 && 
+                                <div className="score-input-option-wrapper">
+                                  <FontAwesomeIcon icon={faXmark} className="xmarkBtnCircle" onClick={()=>{set스코어입력창선택한거([-1, -1])}}></FontAwesomeIcon>
+                                  <FontAwesomeIcon icon={faCheck} className="checkBtnCircle" onClick={()=>{
+                                    axios
+                                      .post(`${API_URL}/record/save`,
+                                        {
+                                          "allCool": isAllCool,
+                                          "musicInfoId": id,
+                                          "noMiss": isAllCombo,
+                                          "score": scoreInputValue
+                                        },
+                                        {
+                                          headers: {
+                                            Authorization: `Bearer ${AT}`
+                                          }
+                                        },
+                                      ).then(res => res.status >= 200 && res.status < 300 
+                                        ? (set전송완료모달(true), set스코어입력창선택한거([-1, -1]), fetchData())
+                                        // 소괄호와 콤마 연산자로 여러 줄 표시 가능
+                                        : set전송실패모달(true) )
+                                      .catch(error => console.log(error))
+                                  }}></FontAwesomeIcon>
+                                  <FontAwesomeIcon icon={faStarHalf} className={`starHalfBtnCircle ${isAllCombo ? null : "no-checked"}`} onClick={()=>{setIsAllCombo(prev => !prev)}}></FontAwesomeIcon>
+                                  <FontAwesomeIcon icon={faStar} className={`starBtnCircle ${isAllCool ? null : "no-checked"}`} onClick={()=>{setIsAllCool(prev => !prev)}}></FontAwesomeIcon>
+                                </div>
+                                }
+                            <img  
                                 src={process.env.PUBLIC_URL + '/musicdiskResize/'+ renamed + '.webp'} 
-                                // 아래는 에러 테스트용.
-                                // src={process.env.PUBLIC_URL + '/musicdiskResize/'+ renamed + '.web'} 
                                 alt={name}
-                                // onLoad={()=>{console.log("로드완료")}}
                                 onError={handleImgError}
                                 className={`${getPlayStatusClass(filteredElement)} ${matchFilter(filteredElement)} small-border theme-pp-shadow`}
                                 onClick={()=>{achievementModalOpen(filteredElement, renamed)}}
@@ -251,18 +295,35 @@ const AchievementList = () => {
                                 onClick={()=>{achievementModalOpen(filteredElement, renamed)}}
                               >{difficulty}</span>
                               <div 
-                                className={`test2 ${isPlayed(filteredElement) ? "" : "hidden"}`}
-                                onClick={()=>{achievementModalOpen(filteredElement, renamed)}}
+                                className="test2"
                               >
                                 <img 
-                                  src={process.env.PUBLIC_URL + '/rankImg/'+ grade + '.png'} 
+                                  src={process.env.PUBLIC_URL + '/gradeImg/'+ returnGrade(grade) + '.png'} 
                                   className="test3"
                                 ></img>
                                 <p 
-                                 className="test4"
-                                // >{Math.round(percentage * 10) / 10}%
-                                >{보여지는퍼센트뒷쪽영빼기(percentage)}%
+                                  className="test4"
+                                  onClick={()=>{set스코어입력창선택한거([index1, index2])}}
+                                  style={grade === "AP" ? {marginRight : "5px"} : null }
+                                >{score ? (score / 10000).toFixed(2) : "-%"}
                                 </p>
+                                {
+                                스코어입력창선택한거[0] === index1 && 
+                                스코어입력창선택한거[1] === index2 && 
+                                <input 
+                                  type="number" 
+                                  name="score" 
+                                  step="1000" 
+                                  onInput={(e) => {
+                                    if (e.target.value.length > e.target.maxLength)
+                                      e.target.value = e.target.value.slice(0, e.target.maxLength);
+                                    setScoreInputValue(e.target.value)
+                                  }}
+                                  max={`${bestScore}`}
+                                  min="0" 
+                                  maxLength={7}
+                                  defaultValue={`${score}`}
+                                ></input>}
                               </div>
                             </div>
                             <div className="hoverbox no-drag">
@@ -278,16 +339,6 @@ const AchievementList = () => {
                                   <div className="hoverbox-title">
                                     <h5 className="animation-paused">{name}</h5>
                                   </div>
-                              }
-                              {
-                                // artist.length > 24
-                                // ? <div className="hoverbox-subtitle" style={{width:`${artist.length*20}px`}}>
-                                //     <span className="width-50">{artist}</span>
-                                //     <span className="width-50">{artist}</span>
-                                //   </div>
-                                // : <div className="hoverbox-subtitle">
-                                //     <span className="animation-paused">{artist}</span>
-                                //   </div>
                               }
                                 <table>
                                   <tbody>
