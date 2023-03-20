@@ -26,7 +26,8 @@ const RankOrderList = (props) => {
   useEffect(()=>{
     const getAndSetSongs = (key) => {
       axios
-        .get(`${API_URL}/rank/list/${key}/${urlLevel}`)
+        // .get(`${API_URL}/rank/list/${key}/${urlLevel}`)
+        .get(`${API_URL}/musicInfo/${key}/${urlLevel}/list`)
         .then((res) => { return setList(res.data.data) })
         .catch((err) => { console.log(err) })
     }

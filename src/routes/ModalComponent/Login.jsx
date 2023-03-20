@@ -31,10 +31,11 @@ const Login = () => {
           }
         }) 
         .then((res) => {
-          dispatch(setUserName(res.data.data.name))
-          dispatch(setUserId(res.data.data.userId))
-          dispatch(setUserAuth(res.data.data.authority))
-          dispatch(setUserAddTime(res.data.data.addTime))
+          const { name, userId, authority, addTime } = res.data.data
+          dispatch(setUserName(name))
+          dispatch(setUserId(userId))
+          dispatch(setUserAuth(authority))
+          dispatch(setUserAddTime(addTime))
         })
       window.location.reload();
     })

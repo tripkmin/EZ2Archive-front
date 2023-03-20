@@ -26,7 +26,6 @@ input[type=number] {
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 14px;
-  font-weight: 600;
   text-align: center;
   
 }
@@ -206,8 +205,7 @@ textarea {
 }
 
 input[type="text"]:focus,
-input[type="password"]:focus,
-textarea:focus {
+input[type="password"]:focus {
   border: 1px solid #911eef;
   transition: all 0.1s;
   font-size: 13px;
@@ -1376,9 +1374,16 @@ html, body, #root {
   margin-left:15px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-end;
 }
 
+.achievement-modal-song-header-right>div {
+  display:flex;
+}
+
+.achievement-modal-song-header-right h3:nth-child(1) {
+  margin-right: 7.5px;
+}
 .achievement-modal-song-header h3,
 .achievement-modal-song-header h5 {
   line-height: 120%;
@@ -1450,13 +1455,54 @@ html, body, #root {
   border-bottom:1px solid #ccc;
 }
 
+.achievement-history-table button {
+  padding: 0;
+}
+
+.achievement-history-table button:hover {
+  color:#614dab
+}
+
+.achievement-history-table input[type="number"]{
+  width:76%;
+  font-size:16px;
+}
+
+.alertBox {
+  background-color: #e6dfff;
+  border-radius: 10px;
+  padding: 5px 20px;
+  margin: 0px 50px;
+}
+
+.testborder {
+  border: 1px solid #911eef;
+  font-size: 13px;
+  box-shadow: 0px 10px 15px rgba(113, 75, 255, 0.15);
+}
+
+.testborder2 {
+  border: 1px solid crimson;
+  font-size: 13px;
+  box-shadow: 0px 10px 15px rgba(220, 20, 60, 0.15);
+}
+
+.achievement-modal-history-write-btn {
+  vertical-align: middle;
+}
+
 .achievement-history-table td {
   padding: 5px 0px;
+}
+
+.achievement-modal-history-write { 
+ background-color: #eee;
 }
 
 .achievement-modal-wrapper textarea {
   font-size:16px;
   height:5rem;
+  transition: all 0.3s;
 }
 
 .history-delete-btn {
@@ -1467,6 +1513,20 @@ html, body, #root {
 .history-delete-btn:hover {
   color:crimson;
 }
+
+.user-memo-btn-group {
+  display:flex;
+  justify-content: space-between;
+}
+
+.user-memo-btn-group button:nth-child(1):hover {
+  color:crimson;
+}
+
+.user-memo-btn-group button:nth-child(2):hover {
+  color:#614dab
+}
+
 /****************************** 서열표 키/난이도 선택 컴포넌트 관련 ******************************/
 
 .pleaseSelectBox {
@@ -1838,7 +1898,9 @@ input:checked + .slider:before {
 }
 
 .xmarkBtnCircle {
-  background: hotpink;
+  /* border: 1px solid #e3dbff; */
+  border: 1px solid #473395;
+  background: white;
   padding: 3px 6px;
   border-radius: 50%;
   cursor:pointer;
@@ -1846,7 +1908,9 @@ input:checked + .slider:before {
 }
 
 .checkBtnCircle {
-  background: lightskyblue;
+  border: 1px solid rgba(0,0,0, 0.25);
+  background: #473395;
+  color:white;
   padding:3px;
   border-radius: 50%;
   cursor:pointer;
@@ -1854,7 +1918,8 @@ input:checked + .slider:before {
 }
 
 .starHalfBtnCircle{
-  background: rgb(215, 250, 135);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: #feffb4;
   padding:3px;
   border-radius: 50%;
   cursor:pointer;
@@ -1862,13 +1927,16 @@ input:checked + .slider:before {
 }
 
 .starBtnCircle{
-  background: rgb(250, 152, 135);
+  border: 1px solid rgba(0,0,0, 0.25);
+  background-image: linear-gradient(90deg, rgba(252,101,87,1) 0%, rgba(255,232,4,1) 51%, rgba(50,255,232,1) 100%);
+  background-clip: padding-box;
   padding:3px;
   border-radius: 50%;
   cursor:pointer;
 }
 
 .no-checked {
+  border: 1px solid #ccc;
   background: #eee;
 }
 .test2 {
@@ -1879,7 +1947,6 @@ input:checked + .slider:before {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  cursor:text
 }
 
 .test2>input {
@@ -1887,6 +1954,7 @@ input:checked + .slider:before {
   bottom:-2.5px;
   width:60px;
   opacity: 1;
+  font-weight:600
 }
 
 .test2>button {
@@ -1896,6 +1964,7 @@ input:checked + .slider:before {
   height:30px;
   background-color: #383838;
   border-radius:10px;
+  cursor:pointer;
 }
 
 .test3 {
@@ -1905,6 +1974,7 @@ input:checked + .slider:before {
 
 .test4 {
   /* color:white; */
+  cursor:text;
   color:black;
   font-size:14px;
   font-weight: 600;

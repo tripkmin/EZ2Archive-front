@@ -14,9 +14,7 @@ const Footer = () => {
 
   
   return(
-    <footer 
-    // className={`${disabled}`}
-    >
+    <footer >
       <div className="container">
         <div className="footer">
           <div>

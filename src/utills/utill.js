@@ -55,18 +55,25 @@ export const gradeConvert = (dbGrade) => {
 }
 
 export const getPlayStatusClass = (songinfo) => {
-  const { isAllCool, isNoMiss } = songinfo
-  if (isAllCool) { return "all-cool" }
-  else if (isNoMiss) { return "all-combo" }
-  else if (isPlayed(songinfo)) { return "clear" }
-  else { return "no-play" }
+  if(songinfo.userRecordData){
+    const { isAllCool, isNoMiss } = songinfo.userRecordData
+
+    if (isAllCool) { return "all-cool" }
+    else if (isNoMiss) { return "all-combo" }
+    else { return "clear" }
+  } else { return "no-play" }
 }
 
-export const isPlayed = (songinfo) => {
-  const { score, percentage, id, grade } = songinfo
-  if (percentage > 0 && id > 0 && score > 0 && grade){ return true }
-  else { return false }
+export const getPlayStatusText = (songinfo) => {
+  if(songinfo.userRecordData){
+    const { isAllCool, isNoMiss } = songinfo.userRecordData
+
+    if (isAllCool) { return "All Cool" }
+    else if (isNoMiss) { return "All Combo" }
+    else { return "Played" }
+  } else { return "Not Played" }
 }
+
 
 export const returnGrade = (grade) => {
   if(grade){

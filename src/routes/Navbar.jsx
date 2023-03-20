@@ -29,7 +29,6 @@ function Navbar(){
           })
         .then((res) => {
           setUserInfo(res)
-          // window.location.reload();
         })
         // .catch((error) => {
         //   if (error.response.status >= 400 && error.repsonse.status < 500) {

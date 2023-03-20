@@ -21,15 +21,6 @@ const CustomizeBtn = () => {
     }
   }
 
-  // useEffect(()=>{
-  //   if (state.userinfo.manageMode){setShow(false);}
-  //   else {setShow(true);}
-  // }, [state.userinfo.manageMode])
-
-  // useEffect(()=>{
-  //   if (show){setShowClass("")} else {setShowClass("display-none")}
-  // }, [show])
-
   useEffect(()=>{
     if (isOpen){setCustomClass("customize-show")} else { setCustomClass("customize-close") }
   }, [isOpen])
