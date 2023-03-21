@@ -1,3 +1,5 @@
+/*eslint-disable*/
+
 export const keyCapsToNumKey = (keyCaps) => {
   switch(keyCaps){
     case 'FOUR':
@@ -55,9 +57,9 @@ export const gradeConvert = (dbGrade) => {
 }
 
 export const getPlayStatusClass = (songinfo) => {
-  if(songinfo.userRecordData){
+  if(Object.keys(songinfo.userRecordData).length !== 0){
     const { isAllCool, isNoMiss } = songinfo.userRecordData
-
+    
     if (isAllCool) { return "all-cool" }
     else if (isNoMiss) { return "all-combo" }
     else { return "clear" }
@@ -65,7 +67,7 @@ export const getPlayStatusClass = (songinfo) => {
 }
 
 export const getPlayStatusText = (songinfo) => {
-  if(songinfo.userRecordData){
+  if(Object.keys(songinfo.userRecordData).length !== 0){
     const { isAllCool, isNoMiss } = songinfo.userRecordData
 
     if (isAllCool) { return "All Cool" }
@@ -118,3 +120,6 @@ export const formatPercent = (percent) => {
     return numString;
   }
 }
+
+export const renamed = name => name.toLowerCase().replace(/ /g, "").replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/ ]/g, "");
+

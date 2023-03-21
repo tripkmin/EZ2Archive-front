@@ -72,8 +72,6 @@ const achievementUserSelected = createSlice({
       state.selectedLevel = action.payload;
     },
     setAchievementRank(state, action){
-      // if(state.selectedRank === action.payload){state.selectedRank = ""}
-      // else{state.selectedRank = action.payload}
       const index = state.selectedRank.indexOf(action.payload)
       if (index !== -1){
         state.selectedRank.splice(index, 1)
@@ -82,31 +80,31 @@ const achievementUserSelected = createSlice({
     setAchievementRankDefault(state){
       state.selectedRank = [];
     },
-    setSelectedRankView(state, action){
-      if(state.selectedRankView === action.payload){state.selectedRankView = ""}
-      else{state.selectedRankView = action.payload}
-    }
-    ,
     setAchievementClean(state){
       state.selectedKey = "";
       state.selectedKeyCaps = "";
       state.selectedLevel = 0;
       state.selectedRank = [];
-      // state.selectedRank = "";
     }
   }
 })
 
 const achievementSongInfo = createSlice({
   name : "achievementSongInfo",
-  initialState : {songInfo: {}, imgFindName: ""},
+  initialState : {테스트: [], songInfo: {}, filteredElementIdx: -1},
   reducers : {
+    set테스트(state, action){
+      state.테스트 = action.payload
+    },
     setSongInfo(state, action){
       state.songInfo = action.payload
     },
-    setImgFindName(state, action){
-      state.imgFindName = action.payload
+    setFilteredElementIdx(state, action){
+      state.filteredElementIdx = action.payload
     },
+    set테스트clean(state){
+      state.테스트 = []
+    }
   }
 })
 
@@ -197,8 +195,8 @@ export default configureStore({
 export const { setUserName, setUserId, setUserAuth, setUserAddTime, setManageMode, setDefault } = userinfo.actions
 export const { switchModalOpen, setModalStep, setModalDefault } = modal.actions
 // export const { switchLoginModal } = userLogin.actions
-export const { setTitleView, setDescending, setAchievementKey, setAchievementLevel, setAchievementRank, setAchievementRankDefault, setAchievementClean, setSelectedRankView } = achievementUserSelected.actions
-export const { setImgFindName, setSongInfo } = achievementSongInfo.actions
+export const { setTitleView, setDescending, setAchievementKey, setAchievementLevel, setAchievementRank, setAchievementRankDefault, setAchievementClean } = achievementUserSelected.actions
+export const { set테스트, set테스트clean, setFilteredElementIdx, setSongInfo } = achievementSongInfo.actions
 // export const {  } = achievementSelectIndex.actions
 export const { setRankTitleView, setRankKeyAndLevel, setRankDescending, setRankCleanKeyAndLevel } = rankUserSelected.actions
 export const { setClass, cleanClass } = selectIndex.actions

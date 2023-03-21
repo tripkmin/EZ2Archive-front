@@ -4,17 +4,19 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { API_URL } from "../../services/temp";
-import { gradeConvert, keyCapsToNumKey, rankFilter, getPlayStatusClass, returnGrade, getPlayStatusText } from "../../utills/utill";
+import { gradeConvert, keyCapsToNumKey, rankFilter, getPlayStatusClass, returnGrade, getPlayStatusText, renamed } from "../../utills/utill";
 import { MyResponsiveLine } from "./chart";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCheck, faXmark, faStarHalf, faStar, faPencil, faPaperPlane, faTrash } from "@fortawesome/free-solid-svg-icons"
+import { setSongInfo, set테스트 } from "../../store";
+
 
 const AchievementDetail = () => {
   const state = useSelector( (state) => state )
   const dispatch = useDispatch()
   const AT = localStorage.getItem("accessToken")
-  const {songInfo} = state.achievementSongInfo
-  const {imgFindName} = state.achievementSongInfo
+  const {selectedKeyCaps, selectedLevel} = state.achievementUserSelected
+  const {테스트, songInfo, filteredElementIdx} = state.achievementSongInfo
   const {
     id,
     name,
@@ -29,7 +31,7 @@ const AchievementDetail = () => {
     bpm,
     addTime,
     description,
-    userRecordData = {}
+    userRecordData
   } = state.achievementSongInfo.songInfo
   const {
     recordId,
@@ -91,6 +93,10 @@ const AchievementDetail = () => {
       clearTimeout(timeoutId);
     };
   }, [memoSendComplete, memoDeleteComplete]);
+
+  useEffect(()=>{
+    dispatch(setSongInfo(테스트[filteredElementIdx]))
+  }, [테스트])
 
   const calculateScoreDifference = () => {
     const newDifference = []
@@ -186,7 +192,7 @@ const AchievementDetail = () => {
   // 선택한 곡에 기록한 히스토리를 모두 요청 후 state에 저장
   const getHistory = () => {
     axios
-      .get(`${API_URL}/musicInfo/${musicInfoId}/history`, {
+      .get(`${API_URL}/musicInfo/${id}/history`, {
         headers: {
           Authorization: `Bearer ${AT}`
         }
@@ -233,6 +239,7 @@ const AchievementDetail = () => {
       .then(res => {
         if(res.status >= 200 && res.status < 300){
           setIsHistoryWrite(false)
+          fetchUserAchievementData()
           getHistory()
         }
       })
@@ -245,12 +252,57 @@ const AchievementDetail = () => {
     else { return ""}
   }
 
+  const fetchUserAchievementData = async () => {
+    try {
+      // 유저가 택한 곡의 단순 목록과 유저가 기록한 리스트를 가져옴.
+      let songList = await axios.get(`${API_URL}/musicInfo/${selectedKeyCaps}/${selectedLevel}/list`)
+      let recordList = await axios.get(`${API_URL}/musicInfo/${selectedKeyCaps}/${selectedLevel}/record`, {
+        headers: {
+          Authorization: `Bearer ${AT}`
+        }
+      })
+      let songWithRecordData = []
+
+      songList = songList.data.data;
+      recordList = recordList.data.data
+      // 유저가 플레이한 곡의 정보와 단순 곡 정보를 합치고, 
+      // 유저가 플레이하지 않은 곡은 단순 곡 정보만 갖고 userAchievementData에 넣음
+      songList.forEach((singleSong) => {
+        let userRecordData = recordList.find(singleRecord => singleRecord.musicInfoId === singleSong.id)
+        if(userRecordData){
+          let combinedData = {...singleSong, userRecordData}
+          songWithRecordData.push(combinedData)
+        } else {
+          let combinedData = {...singleSong, userRecordData: {}}
+          songWithRecordData.push(combinedData)
+        }
+      })
+      dispatch(set테스트(songWithRecordData))
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  const deleteHistory = (recordHistoryId) => {
+    axios
+    .delete(`${API_URL}/record/${recordHistoryId}/delete`, {
+      headers: {
+        Authorization: `Bearer ${AT}`
+      }
+    })
+    .then(res => {
+      getHistory()
+      fetchUserAchievementData()
+    })
+    .catch(err => console.log(err))
+  }
+
   return (
     <div className="achievement-modal-wrapper">
       <div className="achievement-modal-info">
         <div className="achievement-modal-diskimg">
           <img  
-            src={process.env.PUBLIC_URL + '/musicdisk/'+ imgFindName + '.webp'} 
+            src={process.env.PUBLIC_URL + '/musicdisk/'+ renamed(name) + '.webp'} 
             alt={name}
             className={` ${getPlayStatusClass(songInfo)} big-border`}
             // onError={handleImgError}
@@ -311,22 +363,20 @@ const AchievementDetail = () => {
       <div className="user-memo-btn-group">
         <button onClick={()=>{
           axios
-          .post(`${API_URL}/musicInfo/${musicInfoId}/memo/save`, {
-            content: tempMemo
-          }, {
-            headers: {
-              Authorization: `Bearer ${AT}`
-            },
-            })
+            .delete(`${API_URL}/musicInfo/${id}/memo/delete`, {
+                headers: {
+                  Authorization: `Bearer ${AT}`
+                },
+              })
             .then(res => res.status >= 200 && res.status < 300 && 
               setMemoDeleteComplete(true),
               setTempMemo("")
               )
-              .catch(err => console.log(err))
+            .catch(err => console.log(err))
           }}><FontAwesomeIcon icon={faTrash} /></button>
         <button onClick={()=>{
           axios
-            .post(`${API_URL}/musicInfo/${musicInfoId}/memo/save`, {
+            .post(`${API_URL}/musicInfo/${id}/memo/save`, {
               content: tempMemo
             }, {
               headers: {
@@ -428,16 +478,13 @@ const AchievementDetail = () => {
                   <td>{scoreDifference[i]}</td>
                   <td>{gradeConvert(el.grade)}</td>
                   <td>{scoreToNextGrade[i]}</td>
-                  <td><FontAwesomeIcon icon={faXmark} className="history-delete-btn" onClick={()=>{
-                    axios
-                      .delete(`${API_URL}/record/${el.recordHistoryId}/delete`, {
-                        headers: {
-                          Authorization: `Bearer ${AT}`
-                        }
-                      })
-                      .then(res => getHistory())
-                      .catch(err => console.log(err))
-                  }}></FontAwesomeIcon></td>
+                  <td>
+                    <FontAwesomeIcon 
+                      icon={faXmark} 
+                      className="history-delete-btn" 
+                      onClick={()=>{deleteHistory(el.recordHistoryId)}}
+                    ></FontAwesomeIcon>
+                  </td>
                 </tr>
               );
             })
