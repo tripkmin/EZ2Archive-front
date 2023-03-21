@@ -82,7 +82,7 @@ const AchievementSelector = () => {
     const percentage에서undefined뺀거 = 임시percentage.filter(el => el !== undefined)
     const spppCount = grades.filter(el => el === "SPPP").length
     const sppCount = spppCount + grades.filter(el => el === "SPP").length
-    const spCount = spppCount + sppCount + grades.filter(el => el === "SP").length
+    const spCount = sppCount + grades.filter(el => el === "SP").length
 
     const getAvg = (numsArray, toFixedNums) => {
       if (numsArray.length !== 0){
