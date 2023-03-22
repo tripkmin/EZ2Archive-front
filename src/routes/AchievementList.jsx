@@ -3,14 +3,14 @@
 import axios from "axios"
 import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react"
+import { useEffect, useLayoutEffect, useState } from "react"
 import { API_URL } from "../services/temp";
 import { setAchievementKey, setAchievementLevel, switchModalOpen, setModalStep, setSongInfo, set테스트, setFilteredElementIdx  } from "../store"
 import defaultProfile from './../imagenone.webp'
 import { getPlayStatusClass, returnGrade, rankFilter, renamed } from "../utills/utill";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCheck, faXmark, faStarHalf, faStar } from "@fortawesome/free-solid-svg-icons"
-
+import { flushSync } from 'react-dom';
 
 const AchievementList = () => {
   const state = useSelector( (state) => state )
@@ -28,6 +28,7 @@ const AchievementList = () => {
   const [isWriteAllCool, setIsWriteAllCool] = useState(false)
   const [isWriteAllCombo, setIsWriteAllCombo] = useState(false)
   const [scoreInputValue, setScoreInputValue] = useState(-1)
+  const [isAllSelected, setIsAllSelected] = useState(false)
   // const [filteredElementIdx, setFilteredElementIdx] = useState(-1)
   const [msg, setMsg] = useState("")
   const [isMsgBoxVisible, SetIsMsgBoxVisible] = useState(false)
@@ -44,12 +45,25 @@ const AchievementList = () => {
     dispatch(setAchievementLevel(urlLevel))  
   }, [])
 
+  useEffect(()=>{
+    setSelectedScoreInput([-1, -1])
+  }, [urlKey, urlLevel])
+
   // 키와 난이도가 전부 선택되었을 때 데이터 요청을 실시 
   useEffect(()=>{
     if (selectedKey && selectedLevel) {
-      fetchUserAchievementData();
+      setTimeout(()=>{setIsAllSelected(true);}, 0)
+    }
+    return ()=>{ 
+      setIsAllSelected(false);
     }
   }, [selectedKey, selectedLevel])
+
+  useEffect(()=>{
+    if (isAllSelected) {
+      fetchUserAchievementData();
+    }
+  }, [isAllSelected])
 
   useEffect(()=>{
     dispatch(setSongInfo(테스트[filteredElementIdx]))
