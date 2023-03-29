@@ -3,14 +3,14 @@
 import axios from "axios"
 import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
-import { useEffect, useLayoutEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { API_URL } from "../services/temp";
-import { setAchievementKey, setAchievementLevel, switchModalOpen, setModalStep, setSongInfo, set테스트, setFilteredElementIdx  } from "../store"
+import { setAchievementKey, setAchievementLevel, switchModalOpen, setModalStep, setSongInfo, setSongList, setFilteredElementIdx  } from "../store"
 import defaultProfile from './../imagenone.webp'
 import { getPlayStatusClass, returnGrade, rankFilter, renamed } from "../utills/utill";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCheck, faXmark, faStarHalf, faStar } from "@fortawesome/free-solid-svg-icons"
-import { flushSync } from 'react-dom';
+import { getUserAchievementData, postScore, reIssue } from "../utills/axios";
 
 const AchievementList = () => {
   const state = useSelector( (state) => state )
@@ -23,7 +23,7 @@ const AchievementList = () => {
     selectedRank, 
     songTitleView, 
     isDescending} = state.achievementUserSelected
-  const {테스트, filteredElementIdx} = state.achievementSongInfo
+  const {songList, filteredElementIdx} = state.achievementSongInfo
   const [selectedScoreInput, setSelectedScoreInput] = useState([-1, -1])
   const [isWriteAllCool, setIsWriteAllCool] = useState(false)
   const [isWriteAllCombo, setIsWriteAllCombo] = useState(false)
@@ -61,13 +61,13 @@ const AchievementList = () => {
 
   useEffect(()=>{
     if (isAllSelected) {
-      fetchUserAchievementData();
+      getUserAchievementDataProcess();
     }
   }, [isAllSelected])
 
   useEffect(()=>{
-    dispatch(setSongInfo(테스트[filteredElementIdx]))
-  }, [테스트])  
+    dispatch(setSongInfo(songList[filteredElementIdx]))
+  }, [songList])  
 
   // 리스트 간편 수기 입력창에서 All Cool이 켜지면 All Combo가 자동으로 켜지게 함
   useEffect(()=>{
@@ -90,36 +90,20 @@ const AchievementList = () => {
     return ()=>{clearTimeout(alertOpen)}
   }, [msg])
 
-  const fetchUserAchievementData = async () => {
+  const getUserAchievementDataProcess = async () => {
     try {
-      // 유저가 택한 곡의 단순 목록과 유저가 기록한 리스트를 가져옴.
-      let songList = await axios.get(`${API_URL}/musicInfo/${selectedKeyCaps}/${selectedLevel}/list`)
-      let recordList = await axios.get(`${API_URL}/musicInfo/${selectedKeyCaps}/${selectedLevel}/record`, {
-        headers: {
-          Authorization: `Bearer ${AT}`
-        }
-      })
-      let songWithRecordData = []
-
-      songList = songList.data.data;
-      recordList = recordList.data.data
-      // 유저가 플레이한 곡의 정보와 단순 곡 정보를 합치고, 
-      // 유저가 플레이하지 않은 곡은 단순 곡 정보만 갖고 userAchievementData에 넣음
-      songList.forEach((singleSong) => {
-        let userRecordData = recordList.find(singleRecord => singleRecord.musicInfoId === singleSong.id)
-        if(userRecordData){
-          let combinedData = {...singleSong, userRecordData}
-          songWithRecordData.push(combinedData)
-        } else {
-          let combinedData = {...singleSong, userRecordData: {}}
-          songWithRecordData.push(combinedData)
-        }
-      })
-      dispatch(set테스트(songWithRecordData))
-    } catch (err) {
-      console.log(err)
+      const response = await getUserAchievementData(selectedKeyCaps, selectedLevel);
+      dispatch(setSongList(response));
+    } catch (error) {
+      try {
+        await reIssue();
+        const responseAfterReIssue = await getUserAchievementData(selectedKeyCaps, selectedLevel);
+        dispatch(setSongList(responseAfterReIssue));
+      } catch (error) {
+        // 에러처리 할 것
+      }
     }
-  }
+  };
 
   const matchFilter = (songinfo) => {
     if(songinfo.userRecordData){
@@ -137,7 +121,7 @@ const AchievementList = () => {
     dispatch(switchModalOpen())
     dispatch(setModalStep(4))
     dispatch(setSongInfo(filteredElement))
-    dispatch(setFilteredElementIdx(테스트.findIndex(el => el.id === filteredElement.id)))
+    dispatch(setFilteredElementIdx(songList.findIndex(el => el.id === filteredElement.id)))
   }
 
   /** 곡 리스트와 rankIndex 단일 요소를 넣으면 그 기준에 맞는 곡만 반환 */ 
@@ -150,7 +134,7 @@ const AchievementList = () => {
   
   /** 곡 리스트들을 난이도를 기준으로 정렬함. 내림차순, 오름차순 옵션이 반영됨. */
   const sortByDifficulty = (data) => {
-    /** 난이도를 숫자화시켜 정렬에 용이하도록 만들어줌 */
+    /** 난이도를 숫자화시켜 정렬할 수 있게 만들어줌 */
     const getDifficultyScore = (difficulty) => {
       switch (difficulty) {
         case "EZ":
@@ -173,29 +157,20 @@ const AchievementList = () => {
     return sorted
   }
 
-  const scorePostReq = (id) => {
-    axios
-    .post(`${API_URL}/record/save`,
-      {
-        "allCool": isWriteAllCool,
-        "musicInfoId": id,
-        "noMiss": isWriteAllCombo,
-        "score": scoreInputValue
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${AT}`
-        }
-      })
-    .then(res => {
-      if(res.status >= 200 && res.status < 300){
-        setSelectedScoreInput([-1, -1])
-        fetchUserAchievementData()
-        setMsg("저장 완료")
-      }
-    })
-    .catch(error => setMsg(error.response.data.message))
-
+  const postScoreProcess = async (id) => {
+    const postScoreAndReset = async () => {
+      await postScore(id, isWriteAllCool, isWriteAllCombo, scoreInputValue)
+      await getUserAchievementDataProcess()
+      setSelectedScoreInput([-1, -1])
+      getUserAchievementDataProcess()
+      setMsg("저장 완료")
+    }
+    try {
+      postScoreAndReset()
+    } catch {
+      await reIssue()
+      postScoreAndReset()
+    }               
   }
 
     return (
@@ -210,7 +185,7 @@ const AchievementList = () => {
           { // 서열을 중심으로 순회
             rankIndex.map((targetRank, rowIdx) => { 
               // return userAchievementData.filter(songlist => 
-              return 테스트.filter(songlist => 
+              return songList.filter(songlist => 
                 songlist.rank === targetRank[0] 
                 || songlist.rank === targetRank[1]
                 ).length !== 0
@@ -219,7 +194,7 @@ const AchievementList = () => {
                   <span className="order-grade">{rankFilter(targetRank[0])}</span>
                   <div className='order-list'>
                   {/* {sortByDifficulty(filterByDifficultyIndex(userAchievementData, targetRank)) */}
-                  {sortByDifficulty(filterByDifficultyIndex(테스트, targetRank))
+                  {sortByDifficulty(filterByDifficultyIndex(songList, targetRank))
                     .map((filteredElement, columnIdx)=>{
                       const {
                         artist,
@@ -253,7 +228,7 @@ const AchievementList = () => {
                                 selectedScoreInput[1] === columnIdx && 
                                 <div className="score-input-option-wrapper">
                                   <FontAwesomeIcon icon={faXmark} className="xmarkBtnCircle" onClick={()=>{setSelectedScoreInput([-1, -1])}}></FontAwesomeIcon>
-                                  <FontAwesomeIcon icon={faCheck} className="checkBtnCircle" onClick={()=>{scorePostReq(id)}}></FontAwesomeIcon>
+                                  <FontAwesomeIcon icon={faCheck} className="checkBtnCircle" onClick={()=>{postScoreProcess(id)}}></FontAwesomeIcon>
                                   <FontAwesomeIcon icon={faStarHalf} className={`starHalfBtnCircle ${isWriteAllCombo ? null : "no-checked"}`} onClick={()=>{setIsWriteAllCombo(prev => !prev)}}></FontAwesomeIcon>
                                   <FontAwesomeIcon icon={faStar} className={`starBtnCircle ${isWriteAllCool ? null : "no-checked"}`} onClick={()=>{setIsWriteAllCool(prev => !prev)}}></FontAwesomeIcon>
                                 </div>
@@ -275,16 +250,15 @@ const AchievementList = () => {
                                 onClick={()=>{achievementModalOpen(filteredElement)}}
                               >{difficulty}</span>
                               <div 
-                                className="test2"
+                                className="user-score-container"
                               >
                                 <img 
                                   src={process.env.PUBLIC_URL + '/gradeImg/'+ returnGrade(grade) + '.png'} 
-                                  className="test3"
                                   onClick={()=>{achievementModalOpen(filteredElement)}}
                                 ></img>
                                 <p 
-                                  className="test4"
                                   onClick={()=>{setSelectedScoreInput([rowIdx, columnIdx])}}
+                                  // A+ 이미지 간격이 안 맞아서 우측 마진 조금 더 줌.
                                   style={grade === "AP" ? {marginRight : "5px"} : null }
                                 >{score ? (Math.floor(score/100)/100).toFixed(2) : "-"}
                                 </p>

@@ -1,6 +1,7 @@
 /*eslint-disable*/
 
 const NotFound = () => {
+
   return (
     <div className="notfound">
       <img src={process.env.PUBLIC_URL + '/source/notFound.png'} alt="PleaseSelect"></img>

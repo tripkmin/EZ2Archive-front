@@ -3,16 +3,16 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react"
-import { setTitleView, setDescending, setAchievementKey, setAchievementLevel, setAchievementRank, setAchievementRankDefault, setAchievementClean, set테스트clean } from "../store"
+import { setTitleView, setDescending, setAchievementKey, setAchievementLevel, setAchievementRank, setAchievementRankDefault, setAchievementClean, cleanSongList } from "../store"
 
 const AchievementSelector = () => {
 
   const state = useSelector((state) => state)
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const {selectedKey, selectedLevel, selectedRank, selectedRankView, songTitleView, isDescending} = state.achievementUserSelected
+  const {selectedKey, selectedLevel, selectedRank: selectedGrade, selectedRankView, songTitleView, isDescending} = state.achievementUserSelected
   const {userName} = state.userinfo
-  const {테스트} = state.achievementSongInfo
+  const {songList} = state.achievementSongInfo
   const [overall, setOverall] = useState([
     { name : "rateAvg", data : 0, convertName : "AVERAGE RATE"},
     { name : "allCoolCnt", data : 0, convertName : "ALL COOL" },
@@ -25,17 +25,15 @@ const AchievementSelector = () => {
 
   const [keyIndex, setKeyIndex] = useState(null)
   const [levelIndex, setLevelIndex] = useState(null)
-  const [rankIndex, setRankIndex] = useState([])
+  const [gradeIndex, setGradeIndex] = useState([])
   const [titleIndex, setTitleIndex] = useState(null)
   const [descIndex, setDescIndex] = useState(null)
   const [filterShow, setFilterShow] = useState(true)
 
   const barLength = 700
-
-  // 임시 영역
-  const 키목록 = ['4k', '5k', '6k', '8k']
-  const 레벨목록 = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
-  const 등급목록 = [
+  const keyList = ['4k', '5k', '6k', '8k']
+  const levelList = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
+  const gradeList = [
     {dbGrade : "SPPP", convertName : "S⁺⁺⁺"},
     {dbGrade : "SPP", convertName : "S⁺⁺"},
     {dbGrade : "SP", convertName : "S⁺"},
@@ -48,11 +46,11 @@ const AchievementSelector = () => {
     {dbGrade : "E", convertName : "E"},
     {dbGrade : "F", convertName : "F"},
   ]
-  const 타이틀목록 = [
+  const titleViewList = [
     {convertName : "ON", value: true}, 
     {convertName :  "OFF", value: false}
   ]
-  const 내림차순목록 = [
+  const descViewList = [
     {convertName : "ON", value: true}, 
     {convertName :  "OFF", value: false}
   ]
@@ -60,29 +58,29 @@ const AchievementSelector = () => {
   // 세부 옵션을 선택하면 선택한 곳의 index를 알아내기 위해 설정함.
   useEffect(()=>{
     // 등급 필터로 선택한 등급을 배열에 넣어 표시함.
-    const 인덱스넣을배열 = []
-    selectedRank.map(등급 => {
-      const index = 등급목록.findIndex(등급목록 => 등급목록.dbGrade === 등급)
-      인덱스넣을배열.push(index)
+    const newGradeIndexArray = []
+    selectedGrade.map(grade => {
+      const index = gradeList.findIndex(gradeList => gradeList.dbGrade === grade)
+      newGradeIndexArray.push(index)
     })
 
-    setKeyIndex(키목록.indexOf(selectedKey))
-    setLevelIndex(레벨목록.indexOf(parseInt(selectedLevel)))
-    setRankIndex(인덱스넣을배열)
+    setKeyIndex(keyList.indexOf(selectedKey))
+    setLevelIndex(levelList.indexOf(parseInt(selectedLevel)))
+    setGradeIndex(newGradeIndexArray)
     setTitleIndex(songTitleView ? 0 : 1)
     setDescIndex(isDescending ? 0 : 1)
-  }, [selectedKey, selectedLevel, selectedRank, selectedRankView, songTitleView, isDescending])
+  }, [selectedKey, selectedLevel, selectedGrade, selectedRankView, songTitleView, isDescending])
 
   useEffect(()=>{
-    const 임시percentage = 테스트.map(el => el.userRecordData.percentage)
-    const grades = 테스트.map(el => el.userRecordData.grade)
-    const allCoolData = 테스트.filter(el => el.userRecordData.isAllCool)
-    const noMissData = 테스트.filter(el => el.userRecordData.isNoMiss)
+    const percentageArrayWithUndefined = songList.map(el => el.userRecordData.percentage)
+    const gradeArray = songList.map(el => el.userRecordData.grade)
+    const allCoolArray = songList.filter(el => el.userRecordData.isAllCool)
+    const noMissArray = songList.filter(el => el.userRecordData.isNoMiss)
     
-    const percentage에서undefined뺀거 = 임시percentage.filter(el => el !== undefined)
-    const spppCount = grades.filter(el => el === "SPPP").length
-    const sppCount = spppCount + grades.filter(el => el === "SPP").length
-    const spCount = sppCount + grades.filter(el => el === "SP").length
+    const percentageArray = percentageArrayWithUndefined.filter(el => el !== undefined)
+    const spppCount = gradeArray.filter(el => el === "SPPP").length
+    const sppCount = spppCount + gradeArray.filter(el => el === "SPP").length
+    const spCount = sppCount + gradeArray.filter(el => el === "SP").length
 
     const getAvg = (numsArray, toFixedNums) => {
       if (numsArray.length !== 0){
@@ -94,15 +92,15 @@ const AchievementSelector = () => {
     }
 
     setOverall([
-      { name : "rateAvg", data : getAvg(percentage에서undefined뺀거, 2), convertName : "AVERAGE RATE"},
-      { name : "allCoolCnt", data : allCoolData.length, convertName : "ALL COOL" },
-      { name : "noMissCnt", data : noMissData.length, convertName : "NO MISS"},
+      { name : "rateAvg", data : getAvg(percentageArray, 2), convertName : "AVERAGE RATE"},
+      { name : "allCoolCnt", data : allCoolArray.length, convertName : "ALL COOL" },
+      { name : "noMissCnt", data : noMissArray.length, convertName : "NO MISS"},
       { name : "spppCnt", data : spppCount, convertName : "S⁺⁺⁺"},
       { name : "sppCnt", data : sppCount, convertName : "S⁺⁺"},
       { name : "spCnt", data : spCount, convertName : "S⁺"},
     ]);
-    setSongCount(테스트.length)
-  }, [테스트])
+    setSongCount(songList.length)
+  }, [songList])
 
   useEffect(()=>{
     if (selectedKey && selectedLevel){
@@ -113,15 +111,15 @@ const AchievementSelector = () => {
   useEffect(()=>{
     return () => {
       dispatch(setAchievementClean())
-      dispatch(set테스트clean())
+      dispatch(cleanSongList())
     };
   }, [])
 
-
-  const 오버올이름이평균아니고데이터가아예0일때 = (obj, songCount) => {
+  const convertPercentage = (obj, songCount) => {
     const {name, data} = obj
     if(name === "rateAvg"){
       return `${data}%`
+      // 0일 경우 NaN이 뜨는 걸 막기 위해 작성
     } else if (data === 0){
       return `${data}%`
     } else {
@@ -164,7 +162,7 @@ const AchievementSelector = () => {
                   <tbody key={i}>
                     <tr>
                       <td>
-                        {오버올이름이평균아니고데이터가아예0일때(overall, songCount)}
+                        {convertPercentage(overall, songCount)}
                       </td>
                       <td>{ overall.name === "rateAvg" 
                       ? overall.data.toFixed(0) + "/" + 100 
@@ -199,7 +197,7 @@ const AchievementSelector = () => {
       <div>
         <h4 className="theme-pp">KEY</h4>
         {
-          키목록.map((el, i) => {
+          keyList.map((el, i) => {
             return (
               <li 
                 className={`achievement-filter-element ${i === keyIndex ? "achievement-filter-element-active" : ""}`} 
@@ -213,7 +211,7 @@ const AchievementSelector = () => {
       <div>
         <h4 className="theme-pp">LEVEL</h4>
         {
-          레벨목록.map((el, i) => {
+          levelList.map((el, i) => {
             return (
               <li 
               className={`achievement-filter-element ${i === levelIndex ? "achievement-filter-element-active" : ""}`} 
@@ -227,14 +225,21 @@ const AchievementSelector = () => {
       <div>
       <h4 className="theme-pp">RANK</h4>
       {
-        등급목록.map((el, i) => {
-          let 등급인덱스안에있는지 = rankIndex.find(el => el === i)
+        gradeList.map((el, i) => {
+          let findGradeList = gradeIndex.find(el => el === i)
           return (
             // rankIndex에서 i가 있는지 확인. true면 클래스부착, 아니면 떼기
             // rankIndex.find(el => el === i)
             <li 
             // className={`achievement-filter-element ${i === rankIndex ? "achievement-filter-element-active" : ""}`} 
-            className={`achievement-filter-element ${등급인덱스안에있는지 !== undefined ? "achievement-filter-element-active" : ""}`} 
+            className={
+              `achievement-filter-element
+              ${
+                findGradeList !== undefined 
+                ? "achievement-filter-element-active" 
+                : ""
+              }`
+            } 
             key={i} 
             onClick={()=>{dispatch(setAchievementRank(el.dbGrade))}}
             >{el.convertName}</li>
@@ -248,7 +253,7 @@ const AchievementSelector = () => {
       <div>
         <h4 className="theme-pp">TITLE</h4>
         {
-          타이틀목록.map((el, i) => {
+          titleViewList.map((el, i) => {
             return (
               <li 
                 className={`achievement-filter-element ${i === titleIndex ? "achievement-filter-element-active" : ""}`} 
@@ -262,7 +267,7 @@ const AchievementSelector = () => {
       <div>
         <h4 className="theme-pp">내림차순</h4>
         {
-          내림차순목록.map((el, i) => {
+          descViewList.map((el, i) => {
             return (
               <li 
                 className={`achievement-filter-element ${i === descIndex ? "achievement-filter-element-active" : "" }`} 

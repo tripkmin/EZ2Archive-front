@@ -4,51 +4,52 @@ import axios from "axios";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { API_URL } from "../../services/temp";
-import { setModalStep, setUserName, setUserId, setUserAuth, setUserAddTime } from "../../store";
+import { setModalStep, setUserName, setUserId, setUserAuth, setUserAddTime, setModalDefault } from "../../store";
 
 const Login = () => {
   const dispatch = useDispatch()
-
   const [id, setId] = useState("")
   const [password, setPassword] = useState("")
   const [errorMsg, setErrorMsg] = useState("")
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    axios.post(`${API_URL}/login`, {
-      "password": password,
-      "userId": id
-    }, {
-      withCredentials: true
-    })
-    .then((res) => {
-      const AT = localStorage.getItem("accessToken")
-      localStorage.setItem("accessToken", res.data.data.accessToken);
-      axios
-        .get(`${API_URL}/login`, {
-          headers: {
-            Authorization: `Bearer ${AT}`
-          }
-        }) 
-        .then((res) => {
-          const { name, userId, authority, addTime } = res.data.data
-          dispatch(setUserName(name))
-          dispatch(setUserId(userId))
-          dispatch(setUserAuth(authority))
-          dispatch(setUserAddTime(addTime))
-        })
-      window.location.reload();
-    })
-    .catch((error) => {
+    try {
+      const loginResponse = await axios.post(`${API_URL}/login`, {
+        "userId": id,
+        "password": password,
+      }, {
+        withCredentials: true
+      });
+  
+      const AT = loginResponse.data.data.accessToken;
+      localStorage.setItem("accessToken", AT);
+  
+      const userInfoResponse = await axios.get(`${API_URL}/members/myInfo`, {
+        headers: {
+          Authorization: `Bearer ${AT}`
+        }
+      });
+
+      const { name, userId, authority, addTime } = userInfoResponse.data.data;
+      dispatch(setUserName(name));
+      dispatch(setUserId(userId));
+      dispatch(setUserAuth(authority));
+      dispatch(setUserAddTime(addTime));
+  
+      // 나중에 reload 대신 다른 걸로 변경하기.
+      dispatch(setModalDefault())
+
+    } catch (error) {
       if (error.response.status >= 400 && error.response.status < 500) {
-        setErrorMsg(error.response.data.message)
-        console.log(errorMsg)
+        setErrorMsg(error.response.data.message);
+        console.log(errorMsg);
       } else if (error.response.status === 500){
-        setErrorMsg("서버 오류입니다. 관리자에게 문의하십시오.")
-        console.log(errorMsg)
+        setErrorMsg("서버 오류입니다. 관리자에게 문의하십시오.");
+        console.log(errorMsg);
       }
-    });
-  };
+    }
+  }
 
   return (
     <div className="login-body">

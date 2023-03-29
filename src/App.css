@@ -1348,7 +1348,7 @@ html, body, #root {
   border-bottom: 2px solid #e6dfff;
   box-shadow: 0px 10px 5px -4px rgba(113, 75, 255, 0.15);
   border-radius: 20px;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 }
 
 .achievement-modal-diskimg {
@@ -1492,13 +1492,13 @@ html, body, #root {
   font-size:16px;
 }
 
-.testborder {
+.send-complete {
   border: 1px solid #911eef;
   font-size: 13px;
   box-shadow: 0px 10px 15px rgba(113, 75, 255, 0.15);
 }
 
-.testborder2 {
+.delete-complete {
   border: 1px solid crimson;
   font-size: 13px;
   box-shadow: 0px 10px 15px rgba(220, 20, 60, 0.15);
@@ -1534,6 +1534,10 @@ html, body, #root {
 .user-memo-btn-group {
   display:flex;
   justify-content: space-between;
+}
+
+.user-memo-btn-group button {
+  padding: 10px 15px;
 }
 
 .user-memo-btn-group button:nth-child(1):hover {
@@ -1956,7 +1960,8 @@ input:checked + .slider:before {
   border: 1px solid #ccc;
   background: #eee;
 }
-.test2 {
+
+.user-score-container {
   position:absolute;
   bottom:0;
   left:0;
@@ -1966,7 +1971,7 @@ input:checked + .slider:before {
   align-items: center;
 }
 
-.test2>input {
+.user-score-container>input {
   position: absolute;
   bottom:-2.5px;
   width:60px;
@@ -1974,7 +1979,7 @@ input:checked + .slider:before {
   font-weight:600
 }
 
-.test2>button {
+.user-score-container>button {
   position: absolute;
   bottom:-30pxl;
   width:30px;
@@ -1984,12 +1989,12 @@ input:checked + .slider:before {
   cursor:pointer;
 }
 
-.test3 {
+.user-score-container>img {
   height:50px;
   margin-bottom:2.5px;
 }
 
-.test4 {
+.user-score-container>p {
   /* color:white; */
   cursor:text;
   color:black;
@@ -2102,7 +2107,7 @@ input:checked + .slider:before {
   margin:0;
   position: absolute;
   top:-20px;
-  left:-17px;
+  left:-18px;
   border: 1px solid #e6dfff;
   visibility: hidden;
   text-align: left;

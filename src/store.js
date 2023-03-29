@@ -19,7 +19,7 @@ const userinfo = createSlice({
     setManageMode(state, action){
       state.manageMode = action.payload;
     },
-    setDefault(state){
+    setUserDefault(state){
       state.userName = "";
       state.userId = "";
       state.userAuth = "";
@@ -91,10 +91,10 @@ const achievementUserSelected = createSlice({
 
 const achievementSongInfo = createSlice({
   name : "achievementSongInfo",
-  initialState : {테스트: [], songInfo: {}, filteredElementIdx: -1},
+  initialState : {songList: [], songInfo: {}, filteredElementIdx: -1},
   reducers : {
-    set테스트(state, action){
-      state.테스트 = action.payload
+    setSongList(state, action){
+      state.songList = action.payload
     },
     setSongInfo(state, action){
       state.songInfo = action.payload
@@ -102,39 +102,10 @@ const achievementSongInfo = createSlice({
     setFilteredElementIdx(state, action){
       state.filteredElementIdx = action.payload
     },
-    set테스트clean(state){
-      state.테스트 = []
+    cleanSongList(state){
+      state.songList = []
     }
   }
-})
-
-const achievementSelectIndex = createSlice({
-  name : "achievementSelectIndex",
-  initialState : [
-    {
-      key: '4k', 
-      level : Array.from({length: 20}, (_, i) => i + 1), 
-      dbRank : ["SPPP","SPP","SP","S","AP","A","B","C","D","E","F",],
-      convertName : ["S⁺⁺⁺","S⁺⁺","S⁺","S","A⁺","A","B","C","D","E","F",],
-      class: ["", "", "", "", ""]}, 
-    {
-      key: '5k', 
-      level : Array.from({length: 20}, (_, i) => i + 1), 
-      dbRank : ["SPPP","SPP","SP","S","AP","A","B","C","D","E","F",],
-      convertName : ["S⁺⁺⁺","S⁺⁺","S⁺","S","A⁺","A","B","C","D","E","F",],
-      class: ["", "", "", "", ""]}, 
-    {
-      key: '6k', 
-      level : Array.from({length: 20}, (_, i) => i + 1), 
-      dbRank : ["SPPP","SPP","SP","S","AP","A","B","C","D","E","F",],
-      convertName : ["S⁺⁺⁺","S⁺⁺","S⁺","S","A⁺","A","B","C","D","E","F",],
-      class: ["", "", "", "", ""]}, 
-    {
-      key: '8k', 
-      level : Array.from({length: 20}, (_, i) => i + 1), 
-      dbRank : ["SPPP","SPP","SP","S","AP","A","B","C","D","E","F",],
-      convertName : ["S⁺⁺⁺","S⁺⁺","S⁺","S","A⁺","A","B","C","D","E","F",],
-      class: ["", "", "", "", ""]}],
 })
 
 const rankUserSelected = createSlice({
@@ -186,17 +157,16 @@ export default configureStore({
     modal : modal.reducer,
     achievementUserSelected : achievementUserSelected.reducer,
     achievementSongInfo : achievementSongInfo.reducer,
-    achievementSelectIndex : achievementSelectIndex.reducer,
     rankUserSelected : rankUserSelected.reducer,
     selectIndex : selectIndex.reducer,
    }
 }) 
 
-export const { setUserName, setUserId, setUserAuth, setUserAddTime, setManageMode, setDefault } = userinfo.actions
+export const { setUserName, setUserId, setUserAuth, setUserAddTime, setManageMode, setUserDefault } = userinfo.actions
 export const { switchModalOpen, setModalStep, setModalDefault } = modal.actions
 // export const { switchLoginModal } = userLogin.actions
 export const { setTitleView, setDescending, setAchievementKey, setAchievementLevel, setAchievementRank, setAchievementRankDefault, setAchievementClean } = achievementUserSelected.actions
-export const { set테스트, set테스트clean, setFilteredElementIdx, setSongInfo } = achievementSongInfo.actions
+export const { setSongList, cleanSongList, setFilteredElementIdx, setSongInfo } = achievementSongInfo.actions
 // export const {  } = achievementSelectIndex.actions
 export const { setRankTitleView, setRankKeyAndLevel, setRankDescending, setRankCleanKeyAndLevel } = rankUserSelected.actions
 export const { setClass, cleanClass } = selectIndex.actions

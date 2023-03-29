@@ -1,70 +1,66 @@
 /*eslint-disable*/
 
 import axios from "axios"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom"
-import { switchModalOpen, setModalStep, setUserName, setUserId, setUserAuth, setUserAddTime } from "../store"
-import { API_URL } from "../services/temp";
+import { switchModalOpen, setModalStep, setUserName, setUserId, setUserAuth, setUserAddTime, setUserDefault } from "../store"
+import { API_URL, AT } from "../services/temp";
+import { getMyInfo, logout, reIssue } from "../utills/axios"
 
 function Navbar(){
   const navigate = useNavigate()
   const state = useSelector((state) => state)
   const dispatch = useDispatch()
 
-  useEffect(()=>{
-    const AT = localStorage.getItem("accessToken");
-    const setUserInfo = (res) => {
-      dispatch(setUserName(res.data.data.name))
-      dispatch(setUserId(res.data.data.userId))
-      dispatch(setUserAuth(res.data.data.authority))
-      dispatch(setUserAddTime(res.data.data.addTime))
+  useEffect(() => {
+    const dispatchUserData = (myInfoResponse) => {
+      dispatch(setUserName(myInfoResponse.name));
+      dispatch(setUserId(myInfoResponse.userId));
+      dispatch(setUserAuth(myInfoResponse.authority));
+      dispatch(setUserAddTime(myInfoResponse.addTime));
     }
-    if (AT) {
-        axios
-          .get(`${API_URL}/members/myInfo` , {
-            headers: {
-              Authorization: `Bearer ${AT}`
-            }
-          })
-        .then((res) => {
-          setUserInfo(res)
-        })
-        // .catch((error) => {
-        //   if (error.response.status >= 400 && error.repsonse.status < 500) {
-        //     axios
-        //       .post(`${API_URL}/reIssue`, {}, {
-        //         withCredentials: true
-        //       })
-        //     .then((res) => {
-        //       setUserInfo(res)
-        //       // window.location.reload();
-        //     })
-        //   } else {
-        //     console.error(error);
-        //   }
-        // });
-    }
-  }, [])
 
-  const logout = () => {
-    axios
-      .post(`${API_URL}/logout`, {}, {
-        withCredentials: true
-      })
-      .then((res) => {
-        localStorage.removeItem("accessToken");
-        window.location.reload(); 
-      })
-      .catch((error) => {
-        if (error.response.status >= 400 && error.response.status < 500) {
-          console.log(error.response.data.message)
-        } else if (error.response.status === 500){
-          console.log("서버 오류입니다. 관리자에게 문의하십시오.")
+    const myInfoProcess = async () => {
+      try {
+        const myInfoResponse = await getMyInfo();
+        dispatchUserData(myInfoResponse)
+      } catch (error) {
+        try {
+          await reIssue();
+          const myInfoResponseAfterReIssue = await getMyInfo();
+          dispatchUserData(myInfoResponseAfterReIssue)
+        } catch (error) {
+          // 리프레시 토큰 만료로 인한 처리
+          // 로컬 스토리지도 삭제하고 쿠키도 삭제시켜야 함
         }
-        console.log(error)
-      });
+      }
+    };
+  
+    if (AT) {
+      myInfoProcess();
+    } else {
+      dispatch(setUserDefault());
+    }
+  }, [AT]);
+  
+
+  const logoutProcess = async () => {
+    try {
+      logout()
+      localStorage.removeItem("accessToken");
+      dispatch(setUserDefault());
+      window.location.href = '/';
+    } catch (error) {
+      if (error.response.status >= 400 && error.response.status < 500) {
+        console.log(error.response.data.message)
+      } else if (error.response.status === 500){
+        console.log("서버 오류입니다. 관리자에게 문의하십시오.")
+      }
+      console.log(error)
+    }
   };
+
 
   return (
     <header>
@@ -88,7 +84,7 @@ function Navbar(){
               }
               {
                 state.userinfo.userName !== ""
-                ? <span className="category-link" onClick={logout}>로그아웃</span>
+                ? <span className="category-link" onClick={logoutProcess}>로그아웃</span>
                 : <span className="category-link" onClick={()=>{ dispatch(switchModalOpen()); dispatch(setModalStep(2)) }}>회원가입</span>
               }
               {

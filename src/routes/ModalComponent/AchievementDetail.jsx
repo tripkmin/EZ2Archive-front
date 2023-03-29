@@ -8,7 +8,8 @@ import { gradeConvert, keyCapsToNumKey, rankFilter, getPlayStatusClass, returnGr
 import { MyResponsiveLine } from "./chart";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCheck, faXmark, faStarHalf, faStar, faPencil, faPaperPlane, faTrash } from "@fortawesome/free-solid-svg-icons"
-import { setSongInfo, set테스트 } from "../../store";
+import { setSongInfo, setSongList } from "../../store";
+import { deleteHistory, deleteMemo, getUserAchievementData, getHistory, getMemo, postMemo, reIssue, postScore } from "../../utills/axios";
 
 
 const AchievementDetail = () => {
@@ -16,7 +17,7 @@ const AchievementDetail = () => {
   const dispatch = useDispatch()
   const AT = localStorage.getItem("accessToken")
   const {selectedKeyCaps, selectedLevel} = state.achievementUserSelected
-  const {테스트, songInfo, filteredElementIdx} = state.achievementSongInfo
+  const {songList, songInfo, filteredElementIdx} = state.achievementSongInfo
   const {
     id,
     name,
@@ -45,9 +46,9 @@ const AchievementDetail = () => {
   const [achievementSongHistory, setAchievementSongHistory] = useState([])
   const [scoreDifference, setScoreDifference] = useState([])
   const [scoreToNextGrade, setScoreToNextGrade] = useState([])
-  const [임시차트용데이터, set임시차트용데이터] = useState([])
-  const [수정된addtime, set수정된addtime] = useState([])
-  const [memo, setMemo] = useState("")
+  const [chartData, setChartData] = useState([])
+  const [addtimeHistory, setAddtimeHistory] = useState([])
+  const [fetchedMemo, setFetchedMemo] = useState("")
   const [memoPlaceholder, setMemoPlaceholder] = useState("")
   const [tempMemo, setTempMemo] = useState("")
   const [isHistoryWrite, setIsHistoryWrite] = useState(false)
@@ -56,15 +57,18 @@ const AchievementDetail = () => {
   const [scoreInputValue, setScoreInputValue] = useState(-1)
   const [memoSendComplete, setMemoSendComplete] = useState(false)
   const [memoDeleteComplete, setMemoDeleteComplete] = useState(false)
-  // 처음 컴포넌트가 로드된 후, 
+  const [버튼클릭수, set버튼클릭수] = useState(0)
+
+  // userRecordData가 없다 === 아직 플레이 하지 않았다 === history 정보를 가져오지 않는다.
   useEffect(()=>{
-    if(userRecordData){
-      getHistory()
+    const setting = async () => {
+      await getMemoProcess()
+      if (userRecordData) {
+        await setHistory()
+      }
     }
-  }, [])
-  
-  useEffect(()=>{
-    getMemo()
+
+    setting()
   }, [])
 
   useEffect(()=>{
@@ -95,8 +99,8 @@ const AchievementDetail = () => {
   }, [memoSendComplete, memoDeleteComplete]);
 
   useEffect(()=>{
-    dispatch(setSongInfo(테스트[filteredElementIdx]))
-  }, [테스트])
+    dispatch(setSongInfo(songList[filteredElementIdx]))
+  }, [songList])
 
   const calculateScoreDifference = () => {
     const newDifference = []
@@ -146,23 +150,13 @@ const AchievementDetail = () => {
     setScoreToNextGrade(newNextGrade)
   }
 
-  // const returnStatus = (songInfo) => {
-  //   const {isAllCool, isNoMiss, recordId, grade, score, percentage} = songInfo
-  //   if(isAllCool){return "All Cool"}
-  //   else if(isNoMiss){return "All Combo"}
-  //   else if(recordId && grade && score && percentage){return "Played"}
-  //   else {return "Not Played"}
-  // }
-
-  // 컴포넌트 로드때부터 바로 실행되도록 useMemo나 다른 기술 사용할 것.
-  // 배열의 가장 마지막부터 x는 addTime으로, y는 percentage로
   useEffect(()=>{
-    const 임시배열 = []
-    const addTime가공 = []
+    const newArray = []
+    const addTimeHistoryArray = []
 
     for (let i = 0; i < achievementSongHistory.length; i++){
       var dateObj = new Date(achievementSongHistory[i].addTime)
-      var year = dateObj.getFullYear().toString().substr(-2); // 년도의 마지막 2자리 추출
+      var year = dateObj.getFullYear().toString().slice(-2); // 년도의 마지막 2자리 추출
       var month = ('0' + (dateObj.getMonth() + 1)).slice(-2); // 월 (0부터 시작하므로 +1을 해줌)의 두 자리로 표시
       var day = ('0' + dateObj.getDate()).slice(-2); // 일의 두 자리로 표시
       var hour = ('0' + dateObj.getHours()).slice(-2); // 시의 두 자리로 표시
@@ -171,130 +165,148 @@ const AchievementDetail = () => {
       
       // 문자열 조합
       var str = year + '. ' + month + '. ' + day + ' ' + hour + ':' + minute + ':' + second;
-      addTime가공.push(str)
+      addTimeHistoryArray.push(str)
     }
   
     for(let i = achievementSongHistory.length - 1; i >= 0; i--){
-      임시배열.push({ x : addTime가공[i], y : achievementSongHistory[i].percentage })
+      newArray.push({ x : addTimeHistoryArray[i], y : achievementSongHistory[i].percentage })
     }
 
-    const test = [
+    const newChartData = [
       {
-      "id": "기록",
+      "id": "record",
       "color": "hsl(253, 100%, 93%)",
-      "data": 임시배열
+      "data": newArray
       }  
     ]
-    set임시차트용데이터(test)
-    set수정된addtime(addTime가공)
+    setChartData(newChartData)
+    setAddtimeHistory(addTimeHistoryArray)
   }, [achievementSongHistory])
   
-  // 선택한 곡에 기록한 히스토리를 모두 요청 후 state에 저장
-  const getHistory = () => {
-    axios
-      .get(`${API_URL}/musicInfo/${id}/history`, {
-        headers: {
-          Authorization: `Bearer ${AT}`
-        }
-      })
-      .then((res)=>{
-        const {data} = res.data
-        setAchievementSongHistory(data)
-      })
-  }
-  
-  // 선택한 곡에 기록한 메모를 요청 후 state에 저장
-  const getMemo = async () => {
+  const setHistory = async () => {
+    const historyData = await getHistory(id)
     try {
-      let memo = await axios.get(`${API_URL}/musicInfo/${id}/memo`, {
-        headers: {
-          Authorization: `Bearer ${AT}`
-        }
-      })
-
-      memo = memo.data.data.content
-      setMemo(memo)
+      setAchievementSongHistory(historyData)
     }
-    catch (err) {
-      if (err.response && err.response.status === 404) {
-        setMemoPlaceholder("아직 작성된 메모가 없습니다.");
+    catch {
+      try {
+        await reIssue()
+        setAchievementSongHistory(historyData)
+      } catch {
+        // reIssue 에러 처리
       }
     }
   }
 
-  const write = () => {
-    axios
-      .post(`${API_URL}/record/save`,
-        {
-          "allCool": isWriteAllCool,
-          "musicInfoId": id,
-          "noMiss": isWriteAllCombo,
-          "score": scoreInputValue
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${AT}`
-          }
-        })
-      .then(res => {
-        if(res.status >= 200 && res.status < 300){
-          setIsHistoryWrite(false)
-          fetchUserAchievementData()
-          getHistory()
+  // 선택한 곡에 기록한 메모를 요청 후 state에 저장
+  const getMemoProcess = async () => {
+    try {
+      setFetchedMemo(await getMemo(id))
+    }
+    catch (error) {
+      if (error.response.status === 404) {
+        setMemoPlaceholder("아직 작성된 메모가 없습니다.");
+      } else {
+        try {
+          await reIssue()
+          setFetchedMemo(await getMemo(id))
+        } catch {
+        // reIssue 에러 처리
         }
-      })
-      .catch(error => console.log(error))                   
+      }
+    }
+  }
+
+  const postScoreProcess = async () => {
+    const postScoreAndReset = async () => {
+      await postScore(id, isWriteAllCool, isWriteAllCombo, scoreInputValue)
+      await getUserAchievementDataProcess()
+      setIsHistoryWrite(false)
+      setHistory()
+    }
+    try {
+      postScoreAndReset()
+    } catch {
+      await reIssue()
+      postScoreAndReset()
+    }               
   }
 
   const memoBorder = () => {
-    if (memoSendComplete){return "testborder"}
-    else if (memoDeleteComplete){return "testborder2"}
+    if (memoSendComplete){return "send-complete"}
+    else if (memoDeleteComplete){return "delete-complete"}
     else { return ""}
   }
 
-  const fetchUserAchievementData = async () => {
+  const getUserAchievementDataProcess = async () => {
+    const response = await getUserAchievementData(selectedKeyCaps, selectedLevel)
     try {
-      // 유저가 택한 곡의 단순 목록과 유저가 기록한 리스트를 가져옴.
-      let songList = await axios.get(`${API_URL}/musicInfo/${selectedKeyCaps}/${selectedLevel}/list`)
-      let recordList = await axios.get(`${API_URL}/musicInfo/${selectedKeyCaps}/${selectedLevel}/record`, {
-        headers: {
-          Authorization: `Bearer ${AT}`
-        }
-      })
-      let songWithRecordData = []
-
-      songList = songList.data.data;
-      recordList = recordList.data.data
-      // 유저가 플레이한 곡의 정보와 단순 곡 정보를 합치고, 
-      // 유저가 플레이하지 않은 곡은 단순 곡 정보만 갖고 userAchievementData에 넣음
-      songList.forEach((singleSong) => {
-        let userRecordData = recordList.find(singleRecord => singleRecord.musicInfoId === singleSong.id)
-        if(userRecordData){
-          let combinedData = {...singleSong, userRecordData}
-          songWithRecordData.push(combinedData)
-        } else {
-          let combinedData = {...singleSong, userRecordData: {}}
-          songWithRecordData.push(combinedData)
-        }
-      })
-      dispatch(set테스트(songWithRecordData))
-    } catch (err) {
-      console.log(err)
+      dispatch(setSongList(response))
+    } catch (error) {
+      try {
+        await reIssue()
+        dispatch(setSongList(response))
+      } catch (error) {
+        // 에러처리 할 것
+      }
     }
   }
 
-  const deleteHistory = (recordHistoryId) => {
-    axios
-    .delete(`${API_URL}/record/${recordHistoryId}/delete`, {
-      headers: {
-        Authorization: `Bearer ${AT}`
+  const deleteHistoryProcess = async (recordHistoryId) => {
+    const deleteHistoryAndResetState = async () => {
+      await deleteHistory(recordHistoryId)
+      await getUserAchievementDataProcess()
+      await setHistory()
+    }
+
+    try {
+      deleteHistoryAndResetState()
+    } catch (error) {
+      try {
+        await reIssue()
+        deleteHistoryAndResetState()
+      } catch (error) {
+        // reIssue 에러 처리
       }
-    })
-    .then(res => {
-      getHistory()
-      fetchUserAchievementData()
-    })
-    .catch(err => console.log(err))
+    }
+  }
+
+  const deleteMemoProcess = async (id) => {
+    const deleteMemoAndReset = async () => {
+      await deleteMemo(id);
+      setMemoDeleteComplete(true);
+      setTempMemo("");
+    }
+    
+    try {
+      await deleteMemoAndReset()
+    } catch (error) {
+      try {
+        await reIssue()
+        await deleteMemoAndReset()  
+      } catch (error) {
+        // reIssue 에러 처리
+      }
+    }
+  }
+
+  const postMemoProcess = async (id, tempMemo) => {
+    const postMemoAndReset = async () => {
+      await postMemo(id, tempMemo)
+      setMemoSendComplete(true),
+      setFetchedMemo("")
+    }
+
+    try {
+      postMemoAndReset()
+    } catch (error) {
+      await reIssue()
+      try {
+        postMemoAndReset()
+      } catch (error) {
+        // reIssue 에러 처리
+      }
+    }
   }
 
   return (
@@ -356,51 +368,24 @@ const AchievementDetail = () => {
       <textarea 
         className={`${memoBorder()}`}
         maxLength={255} 
-        defaultValue={memo}
+        defaultValue={fetchedMemo}
         placeholder={memoPlaceholder}
         onChange={(e)=>{setTempMemo(e.target.value);}}
       ></textarea>
       <div className="user-memo-btn-group">
-        <button onClick={()=>{
-          axios
-            .delete(`${API_URL}/musicInfo/${id}/memo/delete`, {
-                headers: {
-                  Authorization: `Bearer ${AT}`
-                },
-              })
-            .then(res => res.status >= 200 && res.status < 300 && 
-              setMemoDeleteComplete(true),
-              setTempMemo("")
-              )
-            .catch(err => console.log(err))
-          }}><FontAwesomeIcon icon={faTrash} /></button>
-        <button onClick={()=>{
-          axios
-            .post(`${API_URL}/musicInfo/${id}/memo/save`, {
-              content: tempMemo
-            }, {
-              headers: {
-                Authorization: `Bearer ${AT}`
-              },
-            })
-            .then(res => res.status >= 200 && res.status < 300 && 
-              setMemoSendComplete(true),
-              setMemo("")
-            )
-            // 여기 체크
-            .catch(err => err.response.status === 404 ? console.log("없음") : null)
-        }}><FontAwesomeIcon icon={faPaperPlane} /></button>
+        <button onClick={()=>{deleteMemoProcess(id)}}>{<FontAwesomeIcon icon={faTrash} />}</button>
+        <button onClick={()=>{postMemoProcess(id, tempMemo)}}><FontAwesomeIcon icon={faPaperPlane} /></button>
       </div>
       {/* 임시차트용데이터가 [{id, color, data: [], [], [] ...}] 형태로 되어있음. */}
       {/* 임시차트용데이터가 아예 없을 수 있음. */}
-          { 임시차트용데이터[0]?.data.length <= 1 && 
+          { chartData[0]?.data.length <= 1 && 
             <div className="no-visible-data">
               <h4>차트는 두 개 이상의 기록이 있을 때부터 보여집니다.</h4>
             </div>
           }
-          { 임시차트용데이터[0]?.data.length > 1 && 
+          { chartData[0]?.data.length > 1 && 
             <div className="linetest">
-              <MyResponsiveLine data={임시차트용데이터}/>
+              <MyResponsiveLine data={chartData}/>
             </div>
           }
       <table className="achievement-history-table">
@@ -444,7 +429,7 @@ const AchievementDetail = () => {
                   <FontAwesomeIcon 
                     icon={faCheck} 
                     className="checkBtnCircle" 
-                    onClick={()=>{write()}}
+                    onClick={()=>{postScoreProcess()}}
                     ></FontAwesomeIcon>
                   <FontAwesomeIcon 
                     icon={faStarHalf} 
@@ -472,7 +457,7 @@ const AchievementDetail = () => {
             achievementSongHistory.map((el, i) => {
               return (
                 <tr key={i}>
-                  <td>{수정된addtime[i]}</td>
+                  <td>{addtimeHistory[i]}</td>
                   {/* <td></td> */}
                   <td>{el.score}</td>
                   <td>{scoreDifference[i]}</td>
@@ -482,7 +467,7 @@ const AchievementDetail = () => {
                     <FontAwesomeIcon 
                       icon={faXmark} 
                       className="history-delete-btn" 
-                      onClick={()=>{deleteHistory(el.recordHistoryId)}}
+                      onClick={()=>{deleteHistoryProcess(el.recordHistoryId)}}
                     ></FontAwesomeIcon>
                   </td>
                 </tr>
