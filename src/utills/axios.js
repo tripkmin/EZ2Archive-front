@@ -23,7 +23,9 @@ export const login = async (id, password) => {
 
 export const logout = async () => {
   try {
-    axios.post(`${API_URL}/logout`, {}, { withCredentials: true })
+    axios.post(`${API_URL}/logout`, {}, {
+      withCredentials: true
+    })
   } catch (error) {
     throw error
   }
@@ -33,17 +35,17 @@ export const getMyInfo = async () => {
   try {
     const response = await axios.get(
       `${API_URL}/members/myInfo`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-      }
-    })
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+        }
+      })
     return response.data.data
   } catch (error) {
     throw error
   }
 }
 
-export const reIssue = async() => {
+export const reIssue = async () => {
   try {
     // 액세스 토큰이 만료되었을 경우 갖고있는 리프레시 토큰을 통해 액세스 토큰 재발급 요청
     const newAccessToken = await axios.post(`${API_URL}/reIssue`, {}, {
@@ -54,7 +56,7 @@ export const reIssue = async() => {
     // 리프레시 토큰 만료시에는 ?코드 발생. 500은 리프레시 토큰이 없을 경우 발생.
     // 일단 에러가 뜨는 경우에는 로그아웃을 하는 걸로 하고, 나중에 보충하는 걸로.
     localStorage.removeItem("accessToken")
-    alert('로그인이 필요합니다 or 리프레시 토큰이 만료되어 재로그인이 필요합니다')
+    // alert('로그인이 필요합니다 or 리프레시 토큰이 만료되어 재로그인이 필요합니다')
   }
 }
 
@@ -71,7 +73,7 @@ export const getHistory = async (id) => {
     return response.data.data
   } catch (error) {
     throw error
-  }  
+  }
 }
 
 export const deleteHistory = async (recordHistoryId) => {
@@ -96,7 +98,7 @@ export const getMemo = async (id) => {
     })
     return memo.data.data.content
   } catch (error) {
-    throw error 
+    throw error
   }
 }
 
@@ -132,19 +134,17 @@ export const deleteMemo = async (id) => {
 
 export const postScore = async (id, isWriteAllCool, isWriteAllCombo, scoreInputValue) => {
   try {
-    axios.post(
-    `${API_URL}/record/save`,
-    {
-      "allCool": isWriteAllCool,
-      "musicInfoId": id,
-      "noMiss": isWriteAllCombo,
-      "score": scoreInputValue
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-      }
-    })
+    await axios.post(
+      `${API_URL}/record/save`, {
+        "allCool": isWriteAllCool,
+        "musicInfoId": id,
+        "noMiss": isWriteAllCombo,
+        "score": scoreInputValue
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+        }
+      })
   } catch (error) {
     throw error
   }
@@ -167,11 +167,17 @@ export const getUserAchievementData = async (selectedKeyCaps, selectedLevel) => 
     // 유저가 플레이하지 않은 곡은 단순 곡 정보만 갖고 userAchievementData에 넣음
     songList.forEach((singleSong) => {
       let userRecordData = recordList.find(singleRecord => singleRecord.musicInfoId === singleSong.id)
-      if(userRecordData){
-        let combinedData = {...singleSong, userRecordData}
+      if (userRecordData) {
+        let combinedData = {
+          ...singleSong,
+          userRecordData
+        }
         songWithRecordData.push(combinedData)
       } else {
-        let combinedData = {...singleSong, userRecordData: {}}
+        let combinedData = {
+          ...singleSong,
+          userRecordData: {}
+        }
         songWithRecordData.push(combinedData)
       }
     })
