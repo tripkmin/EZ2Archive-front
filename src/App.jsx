@@ -55,7 +55,7 @@ function App() {
                 </>
               }
             ></Route>
-            <Route
+            {/* <Route
               path=":urlKey/:urlLevel"
               element={
                 <>
@@ -78,7 +78,7 @@ function App() {
                   <AchievementList />
                 </>
               }
-            ></Route>
+            ></Route> */}
           </Route>
           <Route
             path="/tier"
@@ -100,6 +100,14 @@ function App() {
           >
             <Route index element={<PleaseSelectRank />}></Route>
             <Route
+              path=":urlKey/:urlLevel"
+              element={
+                <>
+                  <RankOrderList selectedKey="4k" />
+                </>
+              }
+            ></Route>
+            {/* <Route
               path="4k/:urlLevel"
               element={
                 <>
@@ -130,7 +138,7 @@ function App() {
                   <RankOrderList selectedKey="8k" />
                 </>
               }
-            ></Route>
+            ></Route> */}
           </Route>
           <Route path="/manage" element={<Manage />}></Route>
           <Route path="*" element={<NotFound />} />

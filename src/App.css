@@ -847,6 +847,10 @@ body,
   cursor: not-allowed;
 }
 
+.pointer {
+  cursor: pointer;
+}
+
 /****************************** 자주 쓰는 기능(?) 관련 ******************************/
 
 .alert-box {
@@ -1739,6 +1743,47 @@ body,
   font-weight: 600;
 }
 
+.rank-filter-wrapper {
+  height: 250px;
+  width: 100%;
+  margin: 0 auto;
+  border-right: 3px solid #e3dbff;
+  border-bottom: 3px solid #e3dbff;
+  border-left: 3px solid #e3dbff;
+  border-radius: 0px 0px 40px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 40px 50px;
+  transition: all 0.1s;
+  transform: translateY();
+  /* background-color: #f9f8ff; */
+  box-shadow: 0px 10px 15px rgba(113, 75, 255, 0.15);
+  opacity: 1;
+  overflow: hidden;
+}
+
+/* .rank-filter-wrapper > div:nth-child(-n + 2) {
+  display: inline-block;
+} */
+
+.achievement-filter-deactivate {
+  opacity: 0;
+  height: 0;
+  padding: 0 40px;
+}
+
+.rank-filter-wrapper h3,
+.rank-filter-wrapper h4,
+.rank-filter-wrapper li {
+  display: inline-block;
+}
+
+.rank-filter-wrapper h3:nth-child(1),
+.rank-filter-wrapper h4:nth-child(1) {
+  width: 100px;
+}
+
 .rank-order-selector-wrapper {
   width: 100%;
   height: 230px;
@@ -1864,6 +1909,11 @@ input:checked + .slider:before {
   padding: 15px;
   font-weight: 300;
   margin-top: 35px;
+  /* transition: background-color 0.2s; */
+}
+
+.pleaseWait-alert-background {
+  background-color: #ffe4e1;
 }
 
 /* 임시 관련 끝*/
@@ -1947,7 +1997,7 @@ input:checked + .slider:before {
   transition: all 0.5s;
   text-align: center;
   transition: all 0.1s;
-  cursor: pointer;
+  /* cursor: pointer; */
 }
 
 .imgbox > img {
@@ -2545,7 +2595,7 @@ input:checked + .slider:before {
 }
 
 @keyframes send-feedback {
-  50% {
+  30% {
     background-color: #614dab;
     color: white;
     box-shadow: 0px 10px 15px rgba(113, 75, 255, 0.15);
@@ -2553,7 +2603,7 @@ input:checked + .slider:before {
 }
 
 @keyframes delete-feedback {
-  50% {
+  30% {
     background-color: #ff2f2f;
     color: white;
     box-shadow: 0px 10px 15px rgba(220, 20, 60, 0.15);

@@ -76,7 +76,6 @@ const AchievementSelector = () => {
   ]
 
   // 비로그인 시 보여줄 화면 세팅
-
   useEffect(() => {
     if (isLoginTried && !userName && !userId && !userAuth && !userAddTime) {
       setFilterShow(false)

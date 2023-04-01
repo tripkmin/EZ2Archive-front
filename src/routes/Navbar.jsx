@@ -64,7 +64,8 @@ function Navbar() {
       logout()
       localStorage.removeItem('accessToken')
       dispatch(setUserDefault())
-      window.location.href = '/'
+      // window.location.href = '/'
+      navigate('/')
     } catch (error) {
       if (error.response.status >= 400 && error.response.status < 500) {
         console.log(error.response.data.message)

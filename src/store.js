@@ -150,26 +150,49 @@ const rankUserSelected = createSlice({
   name: "rankUserSelected",
   initialState: {
     selectedKey: "",
+    selectedKeyCaps: "",
     selectedLevel: 0,
     songTitleView: true,
     isDescending: true
   },
   reducers: {
-    setRankTitleView(state, action) {
-      state.songTitleView = action.payload
+    setRankKey(state, action) {
+      state.selectedKey = action.payload;
+      switch (action.payload) {
+        case '4k':
+          state.selectedKeyCaps = "FOUR";
+          break;
+        case '5k':
+          state.selectedKeyCaps = "FIVE";
+          break;
+        case '6k':
+          state.selectedKeyCaps = "SIX";
+          break;
+        case '8k':
+          state.selectedKeyCaps = "EIGHT";
+          break;
+        default: // nothing
+      }
     },
-    setRankDescending(state, action) {
-      state.isDescending = action.payload
+    setRankLevel(state, action) {
+      state.selectedLevel = action.payload;
     },
     setRankKeyAndLevel(state, action) {
       state.selectedKey = action.payload.key;
       state.selectedLevel = action.payload.level;
       // RankOrderSelector에서 특정 키, 난이도 선택했을 때 실행 되도록 함.
     },
-    setRankCleanKeyAndLevel(state) {
+    setRankTitleView(state, action) {
+      state.songTitleView = action.payload
+    },
+    setRankDescending(state, action) {
+      state.isDescending = action.payload
+    },
+    setRankClean(state) {
       state.selectedKey = "";
       state.selectedLevel = 0;
-    }
+    },
+
   }
 })
 
@@ -177,23 +200,23 @@ const selectIndex = createSlice({
   name: "selectIndex",
   initialState: [{
       key: '4k',
-      level: [20, 19, 18, 17, 16],
-      class: ["", "", "", "", ""]
+      level: [20, 19, 18, 17, 16, 15, 14],
+      class: ["", "", "", "", "", "", ""]
     },
     {
       key: '5k',
-      level: [20, 19, 18, 17, 16],
-      class: ["", "", "", "", ""]
+      level: [20, 19, 18, 17, 16, 15],
+      class: ["", "", "", "", "", ""]
     },
     {
       key: '6k',
-      level: [20, 19, 18, 17, 16],
-      class: ["", "", "", "", ""]
+      level: [20, 19, 18, 17, 16, 15],
+      class: ["", "", "", "", "", ""]
     },
     {
       key: '8k',
-      level: [20, 19, 18, 17, 16],
-      class: ["", "", "", "", ""]
+      level: [20, 19, 18, 17, 16, 15],
+      class: ["", "", "", "", "", ""]
     }
   ],
   reducers: {
@@ -202,7 +225,7 @@ const selectIndex = createSlice({
     },
     cleanClass(state) {
       for (let i = 0; i < 4; i++) {
-        for (let j = 0; j < 5; j++) {
+        for (let j = 0; j < 7; j++) {
           state[i].class[j] = ""
         }
       }
@@ -253,10 +276,12 @@ export const {
 } = achievementSongInfo.actions
 // export const {  } = achievementSelectIndex.actions
 export const {
+  setRankKey,
+  setRankLevel,
+  setRankKeyAndLevel, // 삭제 예정
   setRankTitleView,
-  setRankKeyAndLevel,
   setRankDescending,
-  setRankCleanKeyAndLevel
+  setRankClean
 } = rankUserSelected.actions
 export const {
   setClass,

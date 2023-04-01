@@ -90,6 +90,18 @@ const AchievementList = () => {
 
   ////////// 초기 설정이 완료되면 //////////
 
+  // 키와 난이도가 전부 선택되었을 때 데이터 요청 실시에 참고하는 변수를 조작
+  useEffect(() => {
+    if (selectedKey && selectedLevel) {
+      setTimeout(() => {
+        setIsAllSelected(true)
+      }, 0)
+    }
+    return () => {
+      setIsAllSelected(false)
+    }
+  }, [selectedKey, selectedLevel])
+
   // 키와 난이도가 모두 선택되었다면 axios 요청을 전송함.
   useEffect(() => {
     if (isAllSelected) {
@@ -122,18 +134,6 @@ const AchievementList = () => {
   useEffect(() => {
     dispatch(setSongInfo(songList[filteredElementIdx]))
   }, [songList])
-
-  // 키와 난이도가 전부 선택되었을 때 데이터 요청을 실시
-  useEffect(() => {
-    if (selectedKey && selectedLevel) {
-      setTimeout(() => {
-        setIsAllSelected(true)
-      }, 0)
-    }
-    return () => {
-      setIsAllSelected(false)
-    }
-  }, [selectedKey, selectedLevel])
 
   ////////// 우측 하단 팝업창 관련 //////////
 
@@ -292,218 +292,210 @@ const AchievementList = () => {
       </div>
       {/* Songs 클래스 네임 변경할것 */}
       <div className="flex-grow-1">
-        {
-          // 서열을 중심으로 순회
-          rankIndex.map((targetRank, rowIdx) => {
-            // return userAchievementData.filter(songlist =>
-            return songList.filter(
-              songlist =>
-                songlist.rank === targetRank[0] ||
-                songlist.rank === targetRank[1]
-            ).length !== 0 ? (
-              <div className="order-box" key={rowIdx}>
-                <span className="order-grade">{rankFilter(targetRank[0])}</span>
-                <div className="order-list">
-                  {/* {sortByDifficulty(filterByDifficultyIndex(userAchievementData, targetRank)) */}
-                  {sortByDifficulty(
-                    filterByDifficultyIndex(songList, targetRank)
-                  ).map((filteredElement, columnIdx) => {
-                    const {
-                      artist,
-                      bestScore,
-                      bpm,
-                      category,
-                      description,
-                      difficulty,
-                      id,
-                      keyType,
-                      level,
-                      name,
-                      rank,
-                      totalNote,
-                      userRecordData,
-                      // userRecordData가 없을 경우에는 기본값으로 빈 객체를 줌
-                    } = filteredElement
-                    const {
-                      recordId,
-                      grade,
-                      isAllCool,
-                      isNoMiss,
-                      score,
-                      percentage,
-                    } = userRecordData
-                    return (
-                      <div className="song-wrapper" key={columnIdx}>
-                        <div className="song-infobox">
-                          <div className="imgbox no-drag">
-                            {selectedScoreInput[0] === rowIdx &&
-                              selectedScoreInput[1] === columnIdx && (
-                                <div className="score-input-option-wrapper">
-                                  <FontAwesomeIcon
-                                    icon={faXmark}
-                                    className="xmarkBtnCircle"
-                                    onClick={() => {
-                                      setSelectedScoreInput([-1, -1])
-                                    }}
-                                  ></FontAwesomeIcon>
-                                  <FontAwesomeIcon
-                                    icon={faCheck}
-                                    className="checkBtnCircle"
-                                    onClick={() => {
-                                      postScoreProcess(id)
-                                    }}
-                                  ></FontAwesomeIcon>
-                                  <FontAwesomeIcon
-                                    icon={faStarHalf}
-                                    className={`starHalfBtnCircle ${
-                                      isWriteAllCombo ? null : 'no-checked'
-                                    }`}
-                                    onClick={() => {
-                                      setIsWriteAllCombo(prev => !prev)
-                                    }}
-                                  ></FontAwesomeIcon>
-                                  <FontAwesomeIcon
-                                    icon={faStar}
-                                    className={`starBtnCircle ${
-                                      isWriteAllCool ? null : 'no-checked'
-                                    }`}
-                                    onClick={() => {
-                                      setIsWriteAllCool(prev => !prev)
-                                    }}
-                                  ></FontAwesomeIcon>
-                                </div>
-                              )}
+        {rankIndex.map((targetRank, rowIdx) => {
+          return songList.filter(
+            songlist =>
+              songlist.rank === targetRank[0] || songlist.rank === targetRank[1]
+          ).length !== 0 ? (
+            <div className="order-box" key={rowIdx}>
+              <span className="order-grade">{rankFilter(targetRank[0])}</span>
+              <div className="order-list">
+                {/* {sortByDifficulty(filterByDifficultyIndex(userAchievementData, targetRank)) */}
+                {sortByDifficulty(
+                  filterByDifficultyIndex(songList, targetRank)
+                ).map((filteredElement, columnIdx) => {
+                  const {
+                    artist,
+                    bestScore,
+                    bpm,
+                    category,
+                    description,
+                    difficulty,
+                    id,
+                    keyType,
+                    level,
+                    name,
+                    rank,
+                    totalNote,
+                    userRecordData,
+                    // userRecordData가 없을 경우에는 기본값으로 빈 객체를 줌
+                  } = filteredElement
+                  const {
+                    recordId,
+                    grade,
+                    isAllCool,
+                    isNoMiss,
+                    score,
+                    percentage,
+                  } = userRecordData
+                  return (
+                    <div className="song-wrapper" key={columnIdx}>
+                      <div className="song-infobox">
+                        <div className="imgbox no-drag pointer">
+                          {selectedScoreInput[0] === rowIdx &&
+                            selectedScoreInput[1] === columnIdx && (
+                              <div className="score-input-option-wrapper">
+                                <FontAwesomeIcon
+                                  icon={faXmark}
+                                  className="xmarkBtnCircle"
+                                  onClick={() => {
+                                    setSelectedScoreInput([-1, -1])
+                                  }}
+                                ></FontAwesomeIcon>
+                                <FontAwesomeIcon
+                                  icon={faCheck}
+                                  className="checkBtnCircle"
+                                  onClick={() => {
+                                    postScoreProcess(id)
+                                  }}
+                                ></FontAwesomeIcon>
+                                <FontAwesomeIcon
+                                  icon={faStarHalf}
+                                  className={`starHalfBtnCircle ${
+                                    isWriteAllCombo ? null : 'no-checked'
+                                  }`}
+                                  onClick={() => {
+                                    setIsWriteAllCombo(prev => !prev)
+                                  }}
+                                ></FontAwesomeIcon>
+                                <FontAwesomeIcon
+                                  icon={faStar}
+                                  className={`starBtnCircle ${
+                                    isWriteAllCool ? null : 'no-checked'
+                                  }`}
+                                  onClick={() => {
+                                    setIsWriteAllCool(prev => !prev)
+                                  }}
+                                ></FontAwesomeIcon>
+                              </div>
+                            )}
+                          <img
+                            src={
+                              process.env.PUBLIC_URL +
+                              '/musicdiskResize/' +
+                              renamed(name) +
+                              '.webp'
+                            }
+                            alt={name}
+                            onError={handleImgError}
+                            // 문제발생
+                            className={`${getPlayStatusClass(
+                              filteredElement
+                            )} ${matchFilter(
+                              filteredElement
+                            )} small-border theme-pp-shadow`}
+                            // 문제발생 끝
+                            onClick={() => {
+                              achievementModalOpen(filteredElement)
+                            }}
+                          ></img>
+                          <div
+                            className={`shadowbox ${matchFilter(
+                              filteredElement
+                            )}`}
+                            onClick={() => {
+                              achievementModalOpen(filteredElement)
+                            }}
+                          ></div>
+                          <span
+                            className={`level-badge ${difficulty}`}
+                            onClick={() => {
+                              achievementModalOpen(filteredElement)
+                            }}
+                          >
+                            {difficulty}
+                          </span>
+                          <div className="user-score-container">
                             <img
                               src={
                                 process.env.PUBLIC_URL +
-                                '/musicdiskResize/' +
-                                renamed(name) +
-                                '.webp'
+                                '/gradeImg/' +
+                                returnGrade(grade) +
+                                '.png'
                               }
-                              alt={name}
-                              onError={handleImgError}
-                              // 문제발생
-                              className={`${getPlayStatusClass(
-                                filteredElement
-                              )} ${matchFilter(
-                                filteredElement
-                              )} small-border theme-pp-shadow`}
-                              // 문제발생 끝
                               onClick={() => {
                                 achievementModalOpen(filteredElement)
                               }}
                             ></img>
-                            <div
-                              className={`shadowbox ${matchFilter(
-                                filteredElement
-                              )}`}
+                            <p
                               onClick={() => {
-                                achievementModalOpen(filteredElement)
+                                setSelectedScoreInput([rowIdx, columnIdx])
                               }}
-                            ></div>
-                            <span
-                              className={`level-badge ${difficulty}`}
-                              onClick={() => {
-                                achievementModalOpen(filteredElement)
-                              }}
+                              // A+ 이미지 간격이 안 맞아서 우측 마진 조금 더 줌.
+                              style={
+                                grade === 'AP' ? { marginRight: '5px' } : null
+                              }
                             >
-                              {difficulty}
-                            </span>
-                            <div className="user-score-container">
-                              <img
-                                src={
-                                  process.env.PUBLIC_URL +
-                                  '/gradeImg/' +
-                                  returnGrade(grade) +
-                                  '.png'
-                                }
-                                onClick={() => {
-                                  achievementModalOpen(filteredElement)
-                                }}
-                              ></img>
-                              <p
-                                onClick={() => {
-                                  setSelectedScoreInput([rowIdx, columnIdx])
-                                }}
-                                // A+ 이미지 간격이 안 맞아서 우측 마진 조금 더 줌.
-                                style={
-                                  grade === 'AP' ? { marginRight: '5px' } : null
-                                }
-                              >
-                                {score
-                                  ? (Math.floor(score / 100) / 100).toFixed(2)
-                                  : '-'}
-                              </p>
-                              {selectedScoreInput[0] === rowIdx &&
-                                selectedScoreInput[1] === columnIdx && (
-                                  <input
-                                    type="number"
-                                    name="score"
-                                    step="1000"
-                                    onInput={e => {
-                                      if (
-                                        e.target.value.length >
+                              {score
+                                ? (Math.floor(score / 100) / 100).toFixed(2)
+                                : '-'}
+                            </p>
+                            {selectedScoreInput[0] === rowIdx &&
+                              selectedScoreInput[1] === columnIdx && (
+                                <input
+                                  type="number"
+                                  name="score"
+                                  step="1000"
+                                  onInput={e => {
+                                    if (
+                                      e.target.value.length > e.target.maxLength
+                                    )
+                                      e.target.value = e.target.value.slice(
+                                        0,
                                         e.target.maxLength
                                       )
-                                        e.target.value = e.target.value.slice(
-                                          0,
-                                          e.target.maxLength
-                                        )
-                                      setScoreInputValue(e.target.value)
-                                    }}
-                                    max={`${bestScore}`}
-                                    min="0"
-                                    maxLength={7}
-                                    defaultValue={`${score}`}
-                                  ></input>
-                                )}
-                            </div>
-                          </div>
-                          <div className="hoverbox no-drag">
-                            <div className="hoverbox-contents">
-                              {name.length > 13 ? (
-                                <div
-                                  className="hoverbox-title"
-                                  style={{ width: `${name.length * 30}px` }}
-                                >
-                                  <h5 className="width-50">{name}</h5>
-                                  <h5 className="width-50">{name}</h5>
-                                </div>
-                              ) : (
-                                <div className="hoverbox-title">
-                                  <h5 className="animation-paused">{name}</h5>
-                                </div>
+                                    setScoreInputValue(e.target.value)
+                                  }}
+                                  max={`${bestScore}`}
+                                  min="0"
+                                  maxLength={7}
+                                  defaultValue={`${score}`}
+                                ></input>
                               )}
-                              <table>
-                                <tbody>
-                                  <tr>
-                                    <td>SCORE</td>
-                                    <td>{score}</td>
-                                  </tr>
-                                  <tr>
-                                    <td>곡 코드</td>
-                                    <td>{id}</td>
-                                  </tr>
-                                  <tr>
-                                    <td>노트 수</td>
-                                    <td>{totalNote} </td>
-                                  </tr>
-                                </tbody>
-                              </table>
-                            </div>
                           </div>
-                          {songTitleView && (
-                            <p className="song-title">{name}</p>
-                          )}
                         </div>
+                        <div className="hoverbox no-drag">
+                          <div className="hoverbox-contents">
+                            {name.length > 13 ? (
+                              <div
+                                className="hoverbox-title"
+                                style={{ width: `${name.length * 30}px` }}
+                              >
+                                <h5 className="width-50">{name}</h5>
+                                <h5 className="width-50">{name}</h5>
+                              </div>
+                            ) : (
+                              <div className="hoverbox-title">
+                                <h5 className="animation-paused">{name}</h5>
+                              </div>
+                            )}
+                            <table>
+                              <tbody>
+                                <tr>
+                                  <td>SCORE</td>
+                                  <td>{score}</td>
+                                </tr>
+                                <tr>
+                                  <td>곡 코드</td>
+                                  <td>{id}</td>
+                                </tr>
+                                <tr>
+                                  <td>노트 수</td>
+                                  <td>{totalNote} </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                        {songTitleView && <p className="song-title">{name}</p>}
                       </div>
-                    )
-                  })}
-                </div>
+                    </div>
+                  )
+                })}
               </div>
-            ) : null
-          })
-        }
+            </div>
+          ) : null
+        })}
       </div>
       {isMsgBoxVisible && (
         <div className={`alert-box ${alertboxAnimation}`}>

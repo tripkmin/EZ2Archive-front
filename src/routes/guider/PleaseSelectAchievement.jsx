@@ -2,14 +2,19 @@
 
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { setAchievementClean } from '../../store'
+import { useParams } from 'react-router-dom'
 
 const PleaseSelectAchievement = () => {
   const state = useSelector(state => state)
   const dispatch = useDispatch()
   const { userName, userId, userAuth, userAddTime } = state.userinfo
+  const { urlKey, urlLevel } = useParams()
 
   useEffect(() => {
-    console.log('선택안내문')
+    if (!urlKey && !urlLevel) {
+      dispatch(setAchievementClean())
+    }
   }, [])
 
   const checkUserInformation = (userName, userId, userAuth, userAddTime) => {

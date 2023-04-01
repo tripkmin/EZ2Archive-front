@@ -60,6 +60,18 @@ export const reIssue = async () => {
   }
 }
 
+// RankOrderList 컴포넌트에서 사용하는 함수들
+
+export const getRankList = async (selectedKeyCaps, selectedLevel) => {
+  try {
+    let songList = await axios.get(`${API_URL}/musicInfo/${selectedKeyCaps}/${selectedLevel}/list`)
+    songList = songList.data.data;
+    return songList
+  } catch (error) {
+    throw error
+  }
+}
+
 // Achievement Detail 컴포넌트에서 사용하는 axios 함수들
 
 export const getHistory = async (id) => {
