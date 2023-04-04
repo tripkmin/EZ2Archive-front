@@ -1,9 +1,9 @@
 /*eslint-disable*/
 
-import axios from 'axios'
-import { useEffect, useRef, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { API_URL } from '../../services/temp'
+import { useEffect, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   gradeConvert,
   keyCapsToNumKey,
@@ -12,9 +12,9 @@ import {
   returnGrade,
   getPlayStatusText,
   renamed,
-} from '../../utills/utill'
-import { MyResponsiveLine } from './chart'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+} from '../../utills/utill';
+import { MyResponsiveLine } from './chart';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCheck,
   faXmark,
@@ -24,8 +24,8 @@ import {
   faPaperPlane,
   faTrash,
   faRotateLeft,
-} from '@fortawesome/free-solid-svg-icons'
-import { setSongInfo, setSongList } from '../../store'
+} from '@fortawesome/free-solid-svg-icons';
+import { setSongInfo, setSongList, setUserDefault } from '../../store';
 import {
   deleteHistory,
   deleteMemo,
@@ -35,15 +35,15 @@ import {
   postMemo,
   reIssue,
   postScore,
-} from '../../utills/axios'
-import { flushSync } from 'react-dom'
+  refreshTokenExpired,
+} from '../../utills/axios';
 
 const AchievementDetail = () => {
-  const state = useSelector(state => state)
-  const dispatch = useDispatch()
-  const AT = localStorage.getItem('accessToken')
-  const { selectedKeyCaps, selectedLevel } = state.achievementUserSelected
-  const { songList, songInfo, filteredElementIdx } = state.achievementSongInfo
+  const navigate = useNavigate();
+  const state = useSelector(state => state);
+  const dispatch = useDispatch();
+  const { selectedKeyCaps, selectedLevel } = state.achievementUserSelected;
+  const { songList, songInfo, filteredElementIdx } = state.achievementSongInfo;
   const {
     id,
     name,
@@ -59,247 +59,255 @@ const AchievementDetail = () => {
     addTime,
     description,
     userRecordData,
-  } = state.achievementSongInfo.songInfo
-  const {
-    recordId,
-    musicInfoId,
-    grade,
-    isAllCool,
-    isNoMiss,
-    score,
-    percentage,
-  } = userRecordData
-  const [msg, setMsg] = useState('')
-  const [isMsgBoxVisible, setIsMsgBoxVisible] = useState(false)
-  const [isScorePostSuccess, setIsScorePostSuccess] = useState(false)
-  const [alertboxAnimation, setAlertboxAnimation] = useState('')
-  const [achievementSongHistory, setAchievementSongHistory] = useState([])
-  const [scoreDifference, setScoreDifference] = useState([])
-  const [scoreToNextGrade, setScoreToNextGrade] = useState([])
-  const [chartData, setChartData] = useState([])
-  const [addtimeHistory, setAddtimeHistory] = useState([])
-  const [tempMemo, setTempMemo] = useState('')
-  const [isHistoryWrite, setIsHistoryWrite] = useState(false)
-  const [isWriteAllCombo, setIsWriteAllCombo] = useState(false)
-  const [isWriteAllCool, setIsWriteAllCool] = useState(false)
-  const [scoreInputValue, setScoreInputValue] = useState(-1)
-  const [memoSendComplete, setMemoSendComplete] = useState(false)
-  const [memoDeleteComplete, setMemoDeleteComplete] = useState(false)
-  const [isDeleteConfirm, setIsDeleteConfirm] = useState(false)
-  const [confirmAnimation, setConfirmAnimation] = useState('')
-  const clickRef = useRef()
+  } = state.achievementSongInfo.songInfo;
+  const { recordId, musicInfoId, grade, isAllCool, isNoMiss, score, percentage } =
+    userRecordData;
+  const [msg, setMsg] = useState('');
+  const [isMsgBoxVisible, setIsMsgBoxVisible] = useState(false);
+  const [isScorePostSuccess, setIsScorePostSuccess] = useState(false);
+  const [alertboxAnimation, setAlertboxAnimation] = useState('');
+  const [achievementSongHistory, setAchievementSongHistory] = useState([]);
+  const [scoreDifference, setScoreDifference] = useState([]);
+  const [scoreToNextGrade, setScoreToNextGrade] = useState([]);
+  const [chartData, setChartData] = useState([]);
+  const [addtimeHistory, setAddtimeHistory] = useState([]);
+  const [tempMemo, setTempMemo] = useState('');
+  const [isHistoryWrite, setIsHistoryWrite] = useState(false);
+  const [isWriteAllCombo, setIsWriteAllCombo] = useState(false);
+  const [isWriteAllCool, setIsWriteAllCool] = useState(false);
+  const [scoreInputValue, setScoreInputValue] = useState(-1);
+  const [memoSendComplete, setMemoSendComplete] = useState(false);
+  const [memoDeleteComplete, setMemoDeleteComplete] = useState(false);
+  const [isDeleteConfirm, setIsDeleteConfirm] = useState(false);
+  const [confirmAnimation, setConfirmAnimation] = useState('');
+  const clickRef = useRef();
 
   ////////// 초기 설정 관련 //////////
   // userRecordData가 없다 === 아직 플레이 하지 않았다 === history 정보를 가져오지 않는다.
   useEffect(() => {
     const setting = async () => {
-      await getMemoProcess()
+      await getMemoProcess();
       if (userRecordData) {
-        await setHistory()
+        await setHistory();
       }
-    }
-    setting()
-  }, [])
+    };
+    setting();
+  }, []);
 
   // 성과 입력으로 인해 songList가 갱신될 때 현재 선택된 곡의 정보를 state에 저장.
   // 그 state 정보를 바탕으로 리스트에서 바로 정보를 가지고 옴.
   useEffect(() => {
-    dispatch(setSongInfo(songList[filteredElementIdx]))
-  }, [songList])
+    dispatch(setSongInfo(songList[filteredElementIdx]));
+  }, [songList]);
 
   // 선택한 곡에 기록한 메모를 요청 후 state에 저장
   const getMemoProcess = async () => {
     try {
-      const memoContents = await getMemo(id)
-      if (memoContents) {
-        // setFetchedMemo(memoContents)
-        setTempMemo(memoContents)
-      } else {
-        // setMemoPlaceholder("아직 작성된 메모가 없습니다.");
-      }
+      const memoContents = await getMemo(id);
+      setTempMemo(memoContents);
     } catch (error) {
-      if (error.response.status === 404) {
-        // setMemoPlaceholder("아직 작성된 메모가 없습니다.");
-      } else {
-        try {
-          await reIssue()
-          if (memoContents) {
-            // setFetchedMemo(memoContents)
-            setTempMemo(memoContents)
-          } else {
-            // setMemoPlaceholder("아직 작성된 메모가 없습니다.");
-          }
-        } catch {
-          // reIssue 에러 처리
-        }
+      try {
+        await reIssue();
+        const memoContents = await getMemo(id);
+        setTempMemo(memoContents);
+      } catch {
+        refreshTokenExpired();
+        navigate('/');
+        dispatch(setUserDefault());
       }
     }
-  }
+  };
 
   ////////// 메모 기능 관련 //////////
 
   // 메모 저장시 일어나는 일련의 과정
   const postMemoProcess = async (id, tempMemo) => {
     const postMemoAndReset = async () => {
-      await postMemo(id, tempMemo)
-      setMemoSendComplete(true)
-      // setFetchedMemo("")
-    }
-    try {
-      if (tempMemo) {
-        await postMemoAndReset()
-        flushSync(() => {
-          setIsMsgBoxVisible(false)
-          setIsScorePostSuccess(false)
-        })
-        flushSync(() => {
-          setIsMsgBoxVisible(true)
-          setIsScorePostSuccess(true)
-        })
-        setMsg('메모가 저장되었습니다.')
-      } else {
-        flushSync(() => {
-          setIsMsgBoxVisible(false)
-          setIsScorePostSuccess(false)
-        })
-        flushSync(() => {
-          setIsMsgBoxVisible(true)
-          setIsScorePostSuccess(false)
-        })
-        setMsg('빈 메모는 저장할 수 없습니다.')
-      }
-    } catch (error) {
+      await postMemo(id, tempMemo);
+      setMemoSendComplete(true);
+    };
+    if (tempMemo) {
       try {
-        await reIssue()
-        await postMemoAndReset()
+        console.log('포스트메모 실행함');
+        await postMemoAndReset();
+        flushSync(() => {
+          setIsMsgBoxVisible(false);
+          setIsScorePostSuccess(false);
+        });
+        flushSync(() => {
+          setIsMsgBoxVisible(true);
+          setIsScorePostSuccess(true);
+        });
+        setMsg('메모가 저장되었습니다.');
       } catch (error) {
-        // reIssue 에러 처리
+        console.log('실패후 넘어옴');
+        try {
+          await reIssue();
+          await postMemoAndReset();
+          flushSync(() => {
+            setIsMsgBoxVisible(false);
+            setIsScorePostSuccess(false);
+          });
+          flushSync(() => {
+            setIsMsgBoxVisible(true);
+            setIsScorePostSuccess(true);
+          });
+          setMsg('메모가 저장되었습니다.');
+        } catch (error) {
+          refreshTokenExpired();
+          navigate('/');
+          dispatch(setUserDefault());
+        }
       }
+    } else {
+      flushSync(() => {
+        setIsMsgBoxVisible(false);
+        setIsScorePostSuccess(false);
+      });
+      flushSync(() => {
+        setIsMsgBoxVisible(true);
+        setIsScorePostSuccess(false);
+      });
+      setMsg('빈 메모는 저장할 수 없습니다.');
     }
-  }
+  };
 
   // 메모 삭제시 일어나는 일련의 과정
   const deleteMemoProcess = async id => {
     const deleteMemoAndReset = async () => {
-      await deleteMemo(id)
-      setMemoDeleteComplete(true)
-      setTempMemo('')
-    }
+      await deleteMemo(id);
+      setMemoDeleteComplete(true);
+      setTempMemo('');
+    };
     try {
-      await deleteMemoAndReset()
+      await deleteMemoAndReset();
       flushSync(() => {
-        setIsMsgBoxVisible(false)
-        setIsScorePostSuccess(false)
-      })
+        setIsMsgBoxVisible(false);
+        setIsScorePostSuccess(false);
+      });
       flushSync(() => {
-        setIsMsgBoxVisible(true)
-        setIsScorePostSuccess(true)
-      })
-      setMsg('메모가 삭제되었습니다.')
+        setIsMsgBoxVisible(true);
+        setIsScorePostSuccess(true);
+      });
+      setMsg('메모가 삭제되었습니다.');
     } catch (error) {
       try {
-        await reIssue()
-        await deleteMemoAndReset()
+        if (error.response.status === 404) {
+          flushSync(() => {
+            setIsMsgBoxVisible(false);
+            setIsScorePostSuccess(false);
+          });
+          flushSync(() => {
+            setIsMsgBoxVisible(true);
+            setIsScorePostSuccess(false);
+          });
+          setMsg('빈 메모는 삭제할 수 없습니다.');
+        } else {
+          await reIssue();
+          await deleteMemoAndReset();
+          flushSync(() => {
+            setIsMsgBoxVisible(false);
+            setIsScorePostSuccess(false);
+          });
+          flushSync(() => {
+            setIsMsgBoxVisible(true);
+            setIsScorePostSuccess(true);
+          });
+          setMsg('메모가 삭제되었습니다.');
+        }
       } catch (error) {
         if (error.response.status === 404) {
           flushSync(() => {
-            setIsMsgBoxVisible(false)
-            setIsScorePostSuccess(false)
-          })
+            setIsMsgBoxVisible(false);
+            setIsScorePostSuccess(false);
+          });
           flushSync(() => {
-            setIsMsgBoxVisible(true)
-            setIsScorePostSuccess(false)
-          })
-          setMsg('빈 메모는 삭제할 수 없습니다.')
+            setIsMsgBoxVisible(true);
+            setIsScorePostSuccess(false);
+          });
+          setMsg('빈 메모는 삭제할 수 없습니다.');
+        } else {
+          refreshTokenExpired();
+          navigate('/');
+          dispatch(setUserDefault());
         }
-        // reIssue 에러 처리
       }
     }
-  }
+  };
 
   // 메모 삭제 확인 창 바깥을 클릭했을 때 확인 창을 닫게 함.
   const clickOutside = e => {
     if (isDeleteConfirm && !clickRef.current.contains(e.target)) {
-      setIsDeleteConfirm(false)
+      setIsDeleteConfirm(false);
     }
-  }
+  };
 
   useEffect(() => {
-    document.addEventListener('mousedown', clickOutside)
+    document.addEventListener('mousedown', clickOutside);
     return () => {
-      document.removeEventListener('mousedown', clickOutside)
-    }
-  })
+      document.removeEventListener('mousedown', clickOutside);
+    };
+  });
 
   // 메모 삭제 전 확인하는 창을 띄우는 기능 관련
   useEffect(() => {
     if (isDeleteConfirm) {
       setTimeout(() => {
-        setConfirmAnimation('fade-in')
-      }, 10)
+        setConfirmAnimation('fade-in');
+      }, 10);
     } else {
-      setConfirmAnimation('')
+      setConfirmAnimation('');
     }
-  }, [isDeleteConfirm])
+  }, [isDeleteConfirm]);
 
   // 메모가 저장될 경우
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      setMemoSendComplete(false)
-    }, 500)
+      setMemoSendComplete(false);
+    }, 500);
 
     return () => {
-      clearTimeout(timeoutId)
-    }
-  }, [memoSendComplete])
+      clearTimeout(timeoutId);
+    };
+  }, [memoSendComplete]);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      setMemoDeleteComplete(false)
-    }, 500)
+      setMemoDeleteComplete(false);
+    }, 500);
 
     return () => {
-      clearTimeout(timeoutId)
-    }
-  }, [memoDeleteComplete])
+      clearTimeout(timeoutId);
+    };
+  }, [memoDeleteComplete]);
 
   ////////// 히스토리 관련 //////////
 
   // 서버에서 받은 시간을 가공해서 보여주고, 차트에 들어갈 정보를 가공함
   useEffect(() => {
-    const newArray = []
-    const addTimeHistoryArray = []
+    const newArray = [];
+    const addTimeHistoryArray = [];
 
     for (let i = 0; i < achievementSongHistory.length; i++) {
-      var dateObj = new Date(achievementSongHistory[i].addTime)
-      var year = dateObj.getFullYear().toString().slice(-2) // 년도의 마지막 2자리 추출
-      var month = ('0' + (dateObj.getMonth() + 1)).slice(-2) // 월 (0부터 시작하므로 +1을 해줌)의 두 자리로 표시
-      var day = ('0' + dateObj.getDate()).slice(-2) // 일의 두 자리로 표시
-      var hour = ('0' + dateObj.getHours()).slice(-2) // 시의 두 자리로 표시
-      var minute = ('0' + dateObj.getMinutes()).slice(-2) // 분의 두 자리로 표시
-      var second = ('0' + dateObj.getSeconds()).slice(-2) // 초의 두 자리로 표시
+      var dateObj = new Date(achievementSongHistory[i].addTime);
+      var year = dateObj.getFullYear().toString().slice(-2); // 년도의 마지막 2자리 추출
+      var month = ('0' + (dateObj.getMonth() + 1)).slice(-2); // 월 (0부터 시작하므로 +1을 해줌)의 두 자리로 표시
+      var day = ('0' + dateObj.getDate()).slice(-2); // 일의 두 자리로 표시
+      var hour = ('0' + dateObj.getHours()).slice(-2); // 시의 두 자리로 표시
+      var minute = ('0' + dateObj.getMinutes()).slice(-2); // 분의 두 자리로 표시
+      var second = ('0' + dateObj.getSeconds()).slice(-2); // 초의 두 자리로 표시
 
       // 문자열 조합
       var str =
-        year +
-        '. ' +
-        month +
-        '. ' +
-        day +
-        ' ' +
-        hour +
-        ':' +
-        minute +
-        ':' +
-        second
-      addTimeHistoryArray.push(str)
+        year + '. ' + month + '. ' + day + ' ' + hour + ':' + minute + ':' + second;
+      addTimeHistoryArray.push(str);
     }
 
     for (let i = achievementSongHistory.length - 1; i >= 0; i--) {
       newArray.push({
         x: addTimeHistoryArray[i],
         y: achievementSongHistory[i].percentage,
-      })
+      });
     }
 
     const newChartData = [
@@ -308,231 +316,220 @@ const AchievementDetail = () => {
         color: 'hsl(253, 100%, 93%)',
         data: newArray,
       },
-    ]
-    setChartData(newChartData)
-    setAddtimeHistory(addTimeHistoryArray)
-  }, [achievementSongHistory])
+    ];
+    setChartData(newChartData);
+    setAddtimeHistory(addTimeHistoryArray);
+  }, [achievementSongHistory]);
 
   // 직전 점수와의 차이와 다음 등급까지의 점수를 구해서 히스토리 표에 뿌려줌
   useEffect(() => {
-    calculateScoreDifference()
-    calculateNextGrade()
-  }, [achievementSongHistory])
+    calculateScoreDifference();
+    calculateNextGrade();
+  }, [achievementSongHistory]);
 
   const calculateScoreDifference = () => {
-    const newDifference = []
+    const newDifference = [];
     for (let i = 0; i < achievementSongHistory.length; i++) {
       if (i < achievementSongHistory.length - 1) {
         newDifference.push(
           achievementSongHistory[i].score - achievementSongHistory[i + 1].score
-        )
+        );
       } else {
-        newDifference.push('-')
+        newDifference.push('-');
       }
     }
-    setScoreDifference(newDifference)
-  }
+    setScoreDifference(newDifference);
+  };
 
   const calculateNextGrade = () => {
-    const newNextGrade = []
+    const newNextGrade = [];
     const remainNextGradeScore = (grade, currentScore) => {
       switch (grade) {
         case 'SPPP':
-          return '-'
+          return '-';
         case 'SPP':
-          return 1090000 - currentScore
+          return 1090000 - currentScore;
         case 'SP':
-          return 1050000 - currentScore
+          return 1050000 - currentScore;
         case 'S':
-          return 1025000 - currentScore
+          return 1025000 - currentScore;
         case 'AP':
-          return 1000000 - currentScore
+          return 1000000 - currentScore;
         case 'A':
-          return 950000 - currentScore
+          return 950000 - currentScore;
         case 'B':
-          return 900000 - currentScore
+          return 900000 - currentScore;
         case 'C':
-          return 850000 - currentScore
+          return 850000 - currentScore;
         case 'D':
-          return 750000 - currentScore
+          return 750000 - currentScore;
         case 'E':
-          return 650000 - currentScore
+          return 650000 - currentScore;
         case 'F':
-          return 550000 - currentScore
+          return 550000 - currentScore;
         default:
         // nothing
       }
-    }
+    };
     for (let i = 0; i < achievementSongHistory.length; i++) {
       newNextGrade.push(
         remainNextGradeScore(
           achievementSongHistory[i].grade,
           achievementSongHistory[i].score
         )
-      )
+      );
     }
-    setScoreToNextGrade(newNextGrade)
-  }
+    setScoreToNextGrade(newNextGrade);
+  };
 
   // 리스트 간편 수기 입력창에서 All Cool이 켜지면 All Combo가 자동으로 켜지게 함
   useEffect(() => {
     if (isWriteAllCool) {
-      setIsWriteAllCombo(true)
+      setIsWriteAllCombo(true);
     }
-  }, [isWriteAllCool])
+  }, [isWriteAllCool]);
 
   // 리스트 간편 수기 입력창에서 All Combo가 꺼지면 All Cool이 자동으로 꺼지게 함
   useEffect(() => {
     if (!isWriteAllCombo) {
-      setIsWriteAllCool(false)
+      setIsWriteAllCool(false);
     }
-  }, [isWriteAllCombo])
+  }, [isWriteAllCombo]);
 
   const setHistory = async () => {
-    const historyData = await getHistory(id)
+    const historyData = await getHistory(id);
     try {
-      setAchievementSongHistory(historyData)
+      setAchievementSongHistory(historyData);
     } catch {
       try {
-        await reIssue()
-        setAchievementSongHistory(historyData)
+        await reIssue();
+        setAchievementSongHistory(historyData);
       } catch {
-        // reIssue 에러 처리
+        refreshTokenExpired();
+        navigate('/');
+        dispatch(setUserDefault());
       }
     }
-  }
-
-  // 성과 입력시 일어나는 일련의 과정들
-  // const postScoreProcess = async () => {
-  //   const postScoreAndReset = async () => {
-  //     await postScore(id, isWriteAllCool, isWriteAllCombo, scoreInputValue)
-  //     await getUserAchievementDataProcess()
-  //     setIsHistoryWrite(false)
-  //     setHistory()
-  //   }
-  //   try {
-  //     postScoreAndReset()
-  //   } catch {
-  //     await reIssue()
-  //     postScoreAndReset()
-  //   }
-  // }
+  };
 
   const postScoreProcess = async id => {
     const postScoreAndRefresh = async () => {
-      await postScore(id, isWriteAllCool, isWriteAllCombo, scoreInputValue)
-      await getUserAchievementDataProcess()
-      setIsHistoryWrite(false)
-      setHistory()
-    }
+      await postScore(id, isWriteAllCool, isWriteAllCombo, scoreInputValue);
+      await getUserAchievementDataProcess();
+      setIsHistoryWrite(false);
+      setHistory();
+    };
     try {
-      await postScoreAndRefresh()
+      await postScoreAndRefresh();
       flushSync(() => {
-        setIsMsgBoxVisible(false)
-        setIsScorePostSuccess(false)
-      })
+        setIsMsgBoxVisible(false);
+        setIsScorePostSuccess(false);
+      });
       flushSync(() => {
-        setIsMsgBoxVisible(true)
-        setIsScorePostSuccess(true)
-      })
-      setMsg('저장이 완료되었습니다')
+        setIsMsgBoxVisible(true);
+        setIsScorePostSuccess(true);
+      });
+      setMsg('저장이 완료되었습니다');
     } catch (error) {
       if (error.response.status === 400) {
         flushSync(() => {
-          setIsMsgBoxVisible(false)
-          setIsScorePostSuccess(false)
-        })
+          setIsMsgBoxVisible(false);
+          setIsScorePostSuccess(false);
+        });
         flushSync(() => {
-          setIsMsgBoxVisible(true)
-          setIsScorePostSuccess(false)
-        })
-        setMsg(error.response.data.message)
+          setIsMsgBoxVisible(true);
+          setIsScorePostSuccess(false);
+        });
+        setMsg(error.response.data.message);
       } else {
         try {
-          await reIssue()
-          await postScoreAndRefresh()
+          await reIssue();
+          await postScoreAndRefresh();
         } catch (error) {
-          console.log(error)
+          refreshTokenExpired();
+          navigate('/');
+          dispatch(setUserDefault());
         }
       }
     }
-  }
+  };
 
   // Achievement List에 들어갈 정보를 가공함.
   const getUserAchievementDataProcess = async () => {
-    const response = await getUserAchievementData(
-      selectedKeyCaps,
-      selectedLevel
-    )
+    const response = await getUserAchievementData(selectedKeyCaps, selectedLevel);
     try {
-      dispatch(setSongList(response))
+      dispatch(setSongList(response));
     } catch (error) {
       try {
-        await reIssue()
-        dispatch(setSongList(response))
+        await reIssue();
+        dispatch(setSongList(response));
       } catch (error) {
-        // 에러처리 할 것
+        refreshTokenExpired();
+        navigate('/');
+        dispatch(setUserDefault());
       }
     }
-  }
+  };
 
   // 성과 삭제시 일어나는 일련의 과정들
   const deleteHistoryProcess = async recordHistoryId => {
     const deleteHistoryAndResetState = async () => {
-      await deleteHistory(recordHistoryId)
-      await getUserAchievementDataProcess()
-      await setHistory()
-    }
+      await deleteHistory(recordHistoryId);
+      await getUserAchievementDataProcess();
+      await setHistory();
+    };
     try {
-      deleteHistoryAndResetState()
+      await deleteHistoryAndResetState();
       flushSync(() => {
-        setIsMsgBoxVisible(false)
-        setIsScorePostSuccess(false)
-      })
+        setIsMsgBoxVisible(false);
+        setIsScorePostSuccess(false);
+      });
       flushSync(() => {
-        setIsMsgBoxVisible(true)
-        setIsScorePostSuccess(true)
-      })
-      setMsg('기록이 삭제되었습니다.')
+        setIsMsgBoxVisible(true);
+        setIsScorePostSuccess(true);
+      });
+      setMsg('기록이 삭제되었습니다.');
     } catch (error) {
       try {
-        await reIssue()
-        deleteHistoryAndResetState()
+        await reIssue();
+        await deleteHistoryAndResetState();
       } catch (error) {
-        // reIssue 에러 처리
+        refreshTokenExpired();
+        navigate('/');
+        dispatch(setUserDefault());
       }
     }
-  }
+  };
 
-  ////////// 메시지 박스 관련
+  ////////// 메시지 박스 관련 ///////////
 
   useEffect(() => {
-    let animationTimer
+    let animationTimer;
 
     if (isMsgBoxVisible) {
       animationTimer = setTimeout(() => {
-        setAlertboxAnimation('modal-alert-box-show')
-      }, 10)
+        setAlertboxAnimation('modal-alert-box-show');
+      }, 10);
     }
 
     return () => {
-      clearTimeout(animationTimer)
-      setAlertboxAnimation('')
-    }
-  }, [isMsgBoxVisible])
+      clearTimeout(animationTimer);
+      setAlertboxAnimation('');
+    };
+  }, [isMsgBoxVisible]);
 
   useEffect(() => {
-    let alertOpen
+    let alertOpen;
 
     if (isMsgBoxVisible) {
       alertOpen = setTimeout(() => {
-        setIsMsgBoxVisible(false)
-      }, 3000)
+        setIsMsgBoxVisible(false);
+      }, 3000);
     }
     return () => {
-      clearTimeout(alertOpen)
-    }
-  }, [isMsgBoxVisible])
+      clearTimeout(alertOpen);
+    };
+  }, [isMsgBoxVisible]);
 
   return (
     <>
@@ -638,9 +635,7 @@ const AchievementDetail = () => {
         <div className="achievement-modal-info">
           <div className="achievement-modal-diskimg no-drag">
             <img
-              src={
-                process.env.PUBLIC_URL + '/musicdisk/' + renamed(name) + '.webp'
-              }
+              src={process.env.PUBLIC_URL + '/musicdisk/' + renamed(name) + '.webp'}
               alt={name}
               className={` ${getPlayStatusClass(songInfo)} big-border`}
               // onError={handleImgError}
@@ -672,9 +667,7 @@ const AchievementDetail = () => {
                       </tr>
                       <tr>
                         <td className="theme-pp">BEST RATE</td>
-                        <td>
-                          {percentage ? `${percentage.toFixed(2)}%` : '-'}
-                        </td>
+                        <td>{percentage ? `${percentage.toFixed(2)}%` : '-'}</td>
                       </tr>
                       <tr>
                         <td className="theme-pp">BEST SCORE</td>
@@ -690,14 +683,9 @@ const AchievementDetail = () => {
                 <div className="no-drag">
                   <img
                     src={
-                      process.env.PUBLIC_URL +
-                      '/gradeImg/' +
-                      returnGrade(grade) +
-                      '.png'
+                      process.env.PUBLIC_URL + '/gradeImg/' + returnGrade(grade) + '.png'
                     }
-                    className={`achievement-modal-song-grade ${returnGrade(
-                      grade
-                    )}`}
+                    className={`achievement-modal-song-grade ${returnGrade(grade)}`}
                   ></img>
                 </div>
               </div>
@@ -705,18 +693,12 @@ const AchievementDetail = () => {
           </div>
         </div>
         <textarea
-          // className={`${memoBorder()}`}
           maxLength={255}
-          // defaultValue={tempMemo}
-          value={tempMemo}
+          value={tempMemo ? tempMemo : ''}
           onChange={e => {
-            setTempMemo(e.target.value)
+            setTempMemo(e.target.value);
           }}
-          // placeholder={memoPlaceholder}
-          placeholder={tempMemo.length === 0 ? '작성된 메모가 없습니다.' : ''}
-          // onBlur={e => {
-          //   setTempMemo(e.target.value)
-          // }}
+          placeholder={tempMemo ? '' : '작성된 메모가 없습니다.'}
         ></textarea>
         <div className="user-memo-btn-group">
           {isDeleteConfirm && (
@@ -730,15 +712,15 @@ const AchievementDetail = () => {
               <div>
                 <button
                   onClick={() => {
-                    setIsDeleteConfirm(false)
+                    setIsDeleteConfirm(false);
                   }}
                 >
                   취소
                 </button>
                 <button
                   onClick={() => {
-                    setIsDeleteConfirm(false)
-                    deleteMemoProcess(id)
+                    setIsDeleteConfirm(false);
+                    deleteMemoProcess(id);
                   }}
                 >
                   삭제
@@ -750,7 +732,7 @@ const AchievementDetail = () => {
             <button
               className={memoDeleteComplete ? 'delete-complete' : ''}
               onClick={() => {
-                setIsDeleteConfirm(true)
+                setIsDeleteConfirm(true);
               }}
             >
               <FontAwesomeIcon icon={faTrash} />
@@ -758,7 +740,7 @@ const AchievementDetail = () => {
             <button
               className={memoSendComplete ? 'send-complete' : ''}
               onClick={() => {
-                postMemoProcess(id, tempMemo)
+                postMemoProcess(id, tempMemo);
                 // setFetchedMemo(tempMemo)
               }}
             >
@@ -774,7 +756,7 @@ const AchievementDetail = () => {
           </div>
         )}
         {chartData[0]?.data.length > 1 && (
-          <div className="linetest">
+          <div className="user-achievement-chart">
             <MyResponsiveLine data={chartData} />
           </div>
         )}
@@ -801,33 +783,27 @@ const AchievementDetail = () => {
                       step="1000"
                       onInput={e => {
                         if (e.target.value.length > e.target.maxLength)
-                          e.target.value = e.target.value.slice(
-                            0,
-                            e.target.maxLength
-                          )
-                        setScoreInputValue(e.target.value)
+                          e.target.value = e.target.value.slice(0, e.target.maxLength);
+                        setScoreInputValue(e.target.value);
                       }}
                       max={`${bestScore}`}
                       min="0"
                       maxLength={7}
                     ></input>
                   </td>
-                  <td
-                    colSpan={3}
-                    className="achievement-modal-history-write-btn"
-                  >
+                  <td colSpan={3} className="achievement-modal-history-write-btn">
                     <FontAwesomeIcon
                       icon={faXmark}
                       className="xmarkBtnCircle"
                       onClick={() => {
-                        setIsHistoryWrite(false)
+                        setIsHistoryWrite(false);
                       }}
                     ></FontAwesomeIcon>
                     <FontAwesomeIcon
                       icon={faCheck}
                       className="checkBtnCircle"
                       onClick={() => {
-                        postScoreProcess(id)
+                        postScoreProcess(id);
                       }}
                     ></FontAwesomeIcon>
                     <FontAwesomeIcon
@@ -836,16 +812,14 @@ const AchievementDetail = () => {
                         isWriteAllCombo ? null : 'no-checked'
                       }`}
                       onClick={() => {
-                        setIsWriteAllCombo(prev => !prev)
+                        setIsWriteAllCombo(prev => !prev);
                       }}
                     ></FontAwesomeIcon>
                     <FontAwesomeIcon
                       icon={faStar}
-                      className={`starBtnCircle ${
-                        isWriteAllCool ? null : 'no-checked'
-                      }`}
+                      className={`starBtnCircle ${isWriteAllCool ? null : 'no-checked'}`}
                       onClick={() => {
-                        setIsWriteAllCool(prev => !prev)
+                        setIsWriteAllCool(prev => !prev);
                       }}
                     ></FontAwesomeIcon>
                   </td>
@@ -855,7 +829,7 @@ const AchievementDetail = () => {
                 <td className="achievement-modal-history-write" colSpan={6}>
                   <button
                     onClick={() => {
-                      setIsHistoryWrite(prev => !prev)
+                      setIsHistoryWrite(prev => !prev);
                     }}
                   >
                     <FontAwesomeIcon icon={faPencil}></FontAwesomeIcon> 기록하기
@@ -882,19 +856,19 @@ const AchievementDetail = () => {
                         icon={faXmark}
                         className="history-delete-btn"
                         onClick={() => {
-                          deleteHistoryProcess(el.recordHistoryId)
+                          deleteHistoryProcess(el.recordHistoryId);
                         }}
                       ></FontAwesomeIcon>
                     </td>
                   </tr>
-                )
+                );
               })
             )}
           </tbody>
         </table>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default AchievementDetail
+export default AchievementDetail;

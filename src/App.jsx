@@ -1,33 +1,27 @@
 /*eslint-disable*/
 
-import './App.css'
-import { Routes, Route, Outlet } from 'react-router-dom'
-import { useSelector, useDispatch } from 'react-redux'
-import { useCookies } from 'react-cookie'
-import { useEffect } from 'react'
-import { setUserName } from './store'
+import './App.css';
+import { Routes, Route, Outlet } from 'react-router-dom';
 
-import Main from './routes/Main'
-import RankOrderSelector from './routes/RankOrderSelector'
-import RankOrderList from './routes/RankOrderList'
-import Footer from './routes/Footer'
-import MyTier from './routes/MyTier'
-import CustomizeBtn from './routes/CustomizeBtn'
-import PleaseSelectAchievement from './routes/guider/PleaseSelectAchievement'
-import PleaseSelectRank from './routes/guider/PleaseSelectRank'
-import PleaseWaiting from './routes/guider/PleaseWaiting'
-import Navbar from './routes/Navbar'
-import Modal from './routes/Modal'
-import NotFound from './routes/Announce/404'
-import Manage from './routes/Manage'
-import AchievementSelector from './routes/AchievementSelector'
-import AchievementList from './routes/AchievementList'
+import Main from './routes/Main';
+import RankOrderSelector from './routes/RankOrderSelector';
+import RankOrderList from './routes/RankOrderList';
+import Footer from './routes/Footer';
+import MyTier from './routes/MyTier';
+import CustomizeBtn from './routes/CustomizeBtn';
+import PleaseSelectAchievement from './routes/guider/PleaseSelectAchievement';
+import PleaseSelectRank from './routes/guider/PleaseSelectRank';
+import PleaseWaiting from './routes/guider/PleaseWaiting';
+import Navbar from './routes/Navbar';
+import Modal from './routes/Modal';
+import NotFound from './routes/Announce/404';
+import Manage from './routes/Manage';
+import AchievementSelector from './routes/AchievementSelector';
+import AchievementList from './routes/AchievementList';
+import { useNavigate } from 'react-router-dom';
 
 function App() {
-  const state = useSelector(state => state)
-  const dispatch = useDispatch()
-  const { isLoginTried, userName, userId, userAuth, userAddTime } =
-    state.userinfo
+  const navigate = useNavigate();
 
   return (
     <>
@@ -47,38 +41,7 @@ function App() {
             }
           >
             <Route index element={<PleaseSelectAchievement />}></Route>
-            <Route
-              path=":urlKey/:urlLevel"
-              element={
-                <>
-                  <AchievementList />
-                </>
-              }
-            ></Route>
-            {/* <Route
-              path=":urlKey/:urlLevel"
-              element={
-                <>
-                  <AchievementList />
-                </>
-              }
-            ></Route>
-            <Route
-              path=":urlKey/:urlLevel"
-              element={
-                <>
-                  <AchievementList />
-                </>
-              }
-            ></Route>
-            <Route
-              path=":urlKey/:urlLevel"
-              element={
-                <>
-                  <AchievementList />
-                </>
-              }
-            ></Route> */}
+            <Route path=":urlKey/:urlLevel" element={<AchievementList />}></Route>
           </Route>
           <Route
             path="/tier"
@@ -99,46 +62,19 @@ function App() {
             }
           >
             <Route index element={<PleaseSelectRank />}></Route>
-            <Route
+            {/* <Route
               path=":urlKey/:urlLevel"
               element={
-                <>
-                  <RankOrderList selectedKey="4k" />
-                </>
-              }
-            ></Route>
-            {/* <Route
-              path="4k/:urlLevel"
-              element={
-                <>
-                  <RankOrderList selectedKey="4k" />
-                </>
-              }
-            ></Route>
-            <Route
-              path="5k/:urlLevel"
-              element={
-                <>
-                  <RankOrderList selectedKey="5k" />
-                </>
-              }
-            ></Route>
-            <Route
-              path="6k/:urlLevel"
-              element={
-                <>
-                  <RankOrderList selectedKey="6k" />
-                </>
-              }
-            ></Route>
-            <Route
-              path="8k/:urlLevel"
-              element={
-                <>
-                  <RankOrderList selectedKey="8k" />
-                </>
+                ['4k', '5k', '6k', '8k'].includes(urlKey) &&
+                parseInt(urlLevel) >= 14 &&
+                parseInt(urlLevel) <= 20 ? (
+                  <RankOrderList />
+                ) : (
+                  <NotFound /> 
+                )
               }
             ></Route> */}
+            <Route path=":urlKey/:urlLevel" element={<RankOrderList />}></Route>
           </Route>
           <Route path="/manage" element={<Manage />}></Route>
           <Route path="*" element={<NotFound />} />
@@ -147,7 +83,7 @@ function App() {
       <Footer />
       <CustomizeBtn />
     </>
-  )
+  );
 }
 
-export default App
+export default App;

@@ -52,10 +52,11 @@ export const reIssue = async () => {
       withCredentials: true
     })
     localStorage.setItem("accessToken", newAccessToken.data.data.accessToken)
-  } catch {
+  } catch (error) {
+    throw error
     // 리프레시 토큰 만료시에는 ?코드 발생. 500은 리프레시 토큰이 없을 경우 발생.
     // 일단 에러가 뜨는 경우에는 로그아웃을 하는 걸로 하고, 나중에 보충하는 걸로.
-    localStorage.removeItem("accessToken")
+    // localStorage.removeItem("accessToken")
     // alert('로그인이 필요합니다 or 리프레시 토큰이 만료되어 재로그인이 필요합니다')
   }
 }
@@ -90,11 +91,12 @@ export const getHistory = async (id) => {
 
 export const deleteHistory = async (recordHistoryId) => {
   try {
-    axios.delete(`${API_URL}/record/${recordHistoryId}/delete`, {
+    const response = await axios.delete(`${API_URL}/record/${recordHistoryId}/delete`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`
       }
     })
+    return response.data
   } catch (error) {
     throw error
   }
@@ -114,19 +116,35 @@ export const getMemo = async (id) => {
   }
 }
 
+// export const postMemo = async (id, tempMemo) => {
+//   try {
+//     axios.post(`${API_URL}/musicInfo/${id}/memo/save`, {
+//       content: tempMemo
+//     }, {
+//       headers: {
+//         Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+//       },
+//     })
+//   } catch (error) {
+//     throw error
+//   }
+// }
+
 export const postMemo = async (id, tempMemo) => {
   try {
-    axios.post(`${API_URL}/musicInfo/${id}/memo/save`, {
+    const response = await axios.post(`${API_URL}/musicInfo/${id}/memo/save`, {
       content: tempMemo
     }, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`
       },
-    })
+    });
+    return response.data;
   } catch (error) {
     throw error
   }
 }
+
 
 export const deleteMemo = async (id) => {
   try {
@@ -198,4 +216,8 @@ export const getUserAchievementData = async (selectedKeyCaps, selectedLevel) => 
   } catch (error) {
     throw error
   }
+}
+
+export const refreshTokenExpired = () => {
+  alert('리프레시 토큰 만료로 재로그인하셈')
 }

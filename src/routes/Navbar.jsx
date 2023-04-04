@@ -15,7 +15,12 @@ import {
   setIsLoginTried,
 } from '../store'
 import { API_URL, AT } from '../services/temp'
-import { getMyInfo, logout, reIssue } from '../utills/axios'
+import {
+  getMyInfo,
+  logout,
+  reIssue,
+  refreshTokenExpired,
+} from '../utills/axios'
 
 function Navbar() {
   const navigate = useNavigate()
@@ -41,8 +46,9 @@ function Navbar() {
           const myInfoResponseAfterReIssue = await getMyInfo()
           dispatchUserData(myInfoResponseAfterReIssue)
         } catch (error) {
-          // 리프레시 토큰 만료로 인한 처리
-          // 로컬 스토리지도 삭제하고 쿠키도 삭제시켜야 함
+          refreshTokenExpired()
+          navigate('/')
+          setUserDefault()
         }
       }
     }

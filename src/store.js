@@ -70,8 +70,7 @@ const achievementUserSelected = createSlice({
     selectedKey: "",
     selectedKeyCaps: "",
     selectedLevel: 0,
-    selectedRank: [],
-    selectedRankView: "",
+    selectedGrade: [],
     songTitleView: true,
     isDescending: true,
   },
@@ -104,21 +103,21 @@ const achievementUserSelected = createSlice({
       state.selectedLevel = action.payload;
     },
     setAchievementRank(state, action) {
-      const index = state.selectedRank.indexOf(action.payload)
+      const index = state.selectedGrade.indexOf(action.payload)
       if (index !== -1) {
-        state.selectedRank.splice(index, 1)
+        state.selectedGrade.splice(index, 1)
       } else {
-        state.selectedRank.push(action.payload)
+        state.selectedGrade.push(action.payload)
       }
     },
     setAchievementRankDefault(state) {
-      state.selectedRank = [];
+      state.selectedGrade = [];
     },
     setAchievementClean(state) {
       state.selectedKey = "";
       state.selectedKeyCaps = "";
       state.selectedLevel = 0;
-      state.selectedRank = [];
+      state.selectedGrade = [];
     }
   }
 })
