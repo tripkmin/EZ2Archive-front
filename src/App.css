@@ -330,8 +330,36 @@ body {
 
 /****************************** 관리자 페이지 관련 ******************************/
 
+.verifying {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  margin-top: 50px;
+  padding: 35px 50px;
+  background-color: #eee;
+  border-radius: 20px;
+}
+
+.verifying img {
+  width: 300px;
+  margin: 20px 0px;
+  border-radius: 30px;
+  border: 7px solid #623138;
+}
+
+.verifying h5 {
+  color: #a8a8a8;
+  font-weight: 600;
+}
+
 .page-block {
   background-color: #1e8aef;
+}
+
+.open-the-door {
+  animation: binglebingle 0.5s linear normal infinite;
 }
 
 /****************************** 로그인 관련 ******************************/
@@ -641,7 +669,7 @@ body,
   /* 반응형 구현시 width 삭제할 것 */
   width: 1100px;
   flex-grow: 1;
-  margin: auto;
+  margin: 0px auto 50px auto;
   display: flex;
   flex-direction: column;
 }
@@ -1644,7 +1672,7 @@ body,
   justify-content: center;
   align-items: center;
   flex-grow: 1;
-  margin: 50px 0px;
+  margin-top: 50px;
   padding: 35px 50px;
   background-color: #eee;
   border-radius: 20px;
@@ -2562,6 +2590,12 @@ input:checked + .slider:before {
     background-color: #ff2f2f;
     color: white;
     box-shadow: 0px 10px 15px rgba(220, 20, 60, 0.15);
+  }
+}
+
+@keyframes binglebingle {
+  100% {
+    transform: rotate(360deg);
   }
 }
 

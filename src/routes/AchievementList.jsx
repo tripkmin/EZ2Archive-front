@@ -4,7 +4,6 @@ import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { API_URL } from '../services/temp';
 import {
   setAchievementKey,
   setAchievementLevel,

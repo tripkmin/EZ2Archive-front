@@ -143,6 +143,7 @@ const AchievementSelector = () => {
       }
     };
 
+    // if (songList.length !== 0) {
     setOverall([
       {
         name: 'rateAvg',
@@ -160,6 +161,25 @@ const AchievementSelector = () => {
       { name: 'spCnt', data: spCount, convertName: 'S⁺' },
     ]);
     setSongCount(songList.length);
+    // } else {
+    //   setOverall([
+    //     {
+    //       name: 'rateAvg',
+    //       data: 0,
+    //       convertName: 'AVERAGE RATE',
+    //     },
+    //     {
+    //       name: 'allCoolCnt',
+    //       data: 0,
+    //       convertName: 'ALL COOL',
+    //     },
+    //     { name: 'noMissCnt', data: 0, convertName: 'NO MISS' },
+    //     { name: 'spppCnt', data: 0, convertName: 'S⁺⁺⁺' },
+    //     { name: 'sppCnt', data: 0, convertName: 'S⁺⁺' },
+    //     { name: 'spCnt', data: 0, convertName: 'S⁺' },
+    //   ]);
+    //   setSongCount(0);
+    // }
   }, [songList]);
 
   useEffect(() => {
@@ -187,7 +207,7 @@ const AchievementSelector = () => {
     }
   };
 
-  const 유저정보검증 = () => {
+  const verifyUser = () => {
     if (userName && userId && userAuth && userAddTime) {
       return true;
     } else {
@@ -273,7 +293,7 @@ const AchievementSelector = () => {
           <div
             className="achievement-option-box"
             onClick={() => {
-              유저정보검증() ? setFilterShow(!filterShow) : null;
+              verifyUser() ? setFilterShow(!filterShow) : null;
             }}
           >
             <span className="bold">필터 {filterShow ? '숨기기' : '보기'}</span>
@@ -295,7 +315,7 @@ const AchievementSelector = () => {
                 }`}
                 key={i}
                 onClick={() => {
-                  유저정보검증() ? dispatch(setAchievementKey(el)) : null;
+                  verifyUser() ? dispatch(setAchievementKey(el)) : null;
                   // dispatch(setAchievementKey(el))
                 }}
               >
@@ -314,7 +334,7 @@ const AchievementSelector = () => {
                 }`}
                 key={i}
                 onClick={() => {
-                  유저정보검증() ? dispatch(setAchievementLevel(el)) : null;
+                  verifyUser() ? dispatch(setAchievementLevel(el)) : null;
                   // dispatch(setAchievementLevel(el))
                 }}
               >
@@ -333,7 +353,7 @@ const AchievementSelector = () => {
               ${findGradeList !== undefined ? 'achievement-filter-element-active' : ''}`}
                 key={i}
                 onClick={() => {
-                  유저정보검증() ? dispatch(setAchievementRank(el.dbGrade)) : null;
+                  verifyUser() ? dispatch(setAchievementRank(el.dbGrade)) : null;
                 }}
               >
                 {el.convertName}
@@ -343,7 +363,7 @@ const AchievementSelector = () => {
           <li
             className="achievement-filter-element"
             onClick={() => {
-              유저정보검증() ? dispatch(setAchievementRankDefault()) : null;
+              verifyUser() ? dispatch(setAchievementRankDefault()) : null;
               // dispatch(setAchievementRankDefault())
             }}
           >
@@ -377,7 +397,7 @@ const AchievementSelector = () => {
                   i === descIndex ? 'achievement-filter-element-active' : ''
                 }`}
                 onClick={() => {
-                  유저정보검증() ? dispatch(setDescending(el.value)) : null;
+                  verifyUser() ? dispatch(setDescending(el.value)) : null;
                   // dispatch(setDescending(el.value))
                 }}
                 key={i}

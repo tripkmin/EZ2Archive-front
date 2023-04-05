@@ -1,9 +1,9 @@
 /*eslint-disable*/
 
-import axios from 'axios'
-import { useEffect, useMemo, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import axios from 'axios';
+import { useEffect, useMemo, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import {
   switchModalOpen,
   setModalStep,
@@ -13,83 +13,69 @@ import {
   setUserAddTime,
   setUserDefault,
   setIsLoginTried,
-} from '../store'
-import { API_URL, AT } from '../services/temp'
-import {
-  getMyInfo,
-  logout,
-  reIssue,
-  refreshTokenExpired,
-} from '../utills/axios'
+} from '../store';
+import { API_URL, AT } from '../services/temp';
+import { getMyInfo, logout, reIssue, refreshTokenExpired } from '../utills/axios';
 
 function Navbar() {
-  const navigate = useNavigate()
-  const state = useSelector(state => state)
-  const dispatch = useDispatch()
-  const { isLoggedIn, userName, userId, userAuth, userAddTime } = state.userinfo
+  const navigate = useNavigate();
+  const state = useSelector(state => state);
+  const dispatch = useDispatch();
+  const { isLoggedIn, userName, userId, userAuth, userAddTime } = state.userinfo;
 
   useEffect(() => {
-    const dispatchUserData = myInfoResponse => {
-      dispatch(setUserName(myInfoResponse.name))
-      dispatch(setUserId(myInfoResponse.userId))
-      dispatch(setUserAuth(myInfoResponse.authority))
-      dispatch(setUserAddTime(myInfoResponse.addTime))
-    }
-
     const myInfoProcess = async () => {
       try {
-        const myInfoResponse = await getMyInfo()
-        dispatchUserData(myInfoResponse)
+        await getMyInfo();
       } catch (error) {
         try {
-          await reIssue()
-          const myInfoResponseAfterReIssue = await getMyInfo()
-          dispatchUserData(myInfoResponseAfterReIssue)
+          await reIssue();
+          await getMyInfo();
         } catch (error) {
-          refreshTokenExpired()
-          navigate('/')
-          setUserDefault()
+          refreshTokenExpired();
+          navigate('/');
+          setUserDefault();
         }
       }
-    }
+    };
 
     const loginCheck = async () => {
       if (AT) {
-        await myInfoProcess()
+        await myInfoProcess();
       } else {
-        dispatch(setUserDefault())
+        dispatch(setUserDefault());
       }
-      dispatch(setIsLoginTried(true))
-    }
+      dispatch(setIsLoginTried(true));
+    };
 
-    loginCheck()
-  }, [AT])
+    loginCheck();
+  }, [AT]);
 
   const logoutProcess = async () => {
     try {
-      logout()
-      localStorage.removeItem('accessToken')
-      dispatch(setUserDefault())
+      logout();
+      localStorage.removeItem('accessToken');
+      dispatch(setUserDefault());
       // window.location.href = '/'
-      navigate('/')
+      navigate('/');
     } catch (error) {
       if (error.response.status >= 400 && error.response.status < 500) {
-        console.log(error.response.data.message)
+        console.log(error.response.data.message);
       } else if (error.response.status === 500) {
-        console.log('서버 오류입니다. 관리자에게 문의하십시오.')
+        console.log('서버 오류입니다. 관리자에게 문의하십시오.');
       }
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   const 유저맞는지1차확인 = link => {
     if (userName && userId && userAuth && userAddTime) {
-      navigate(link)
+      navigate(link);
     } else {
-      dispatch(switchModalOpen())
-      dispatch(setModalStep(1))
+      dispatch(switchModalOpen());
+      dispatch(setModalStep(1));
     }
-  }
+  };
 
   return (
     <header>
@@ -101,14 +87,14 @@ function Navbar() {
               src={process.env.PUBLIC_URL + '/navbar/ez2archive_logo.svg'}
               alt="logo"
               onClick={() => {
-                navigate('/')
+                navigate('/');
               }}
             ></img>
             <div className="category-box">
               <span
                 className="category-link"
                 onClick={() => {
-                  유저맞는지1차확인('/achievement')
+                  유저맞는지1차확인('/achievement');
                 }}
               >
                 성과표
@@ -116,7 +102,7 @@ function Navbar() {
               <span
                 className="category-link"
                 onClick={() => {
-                  navigate('/rank')
+                  navigate('/rank');
                 }}
               >
                 서열표
@@ -124,7 +110,7 @@ function Navbar() {
               <span
                 className="category-link"
                 onClick={() => {
-                  navigate('/tier')
+                  navigate('/tier');
                 }}
               >
                 티어표
@@ -132,7 +118,7 @@ function Navbar() {
               <span
                 className="category-link"
                 onClick={() => {
-                  alert('^^')
+                  alert('^^');
                 }}
               >
                 NEW 서열표
@@ -140,7 +126,7 @@ function Navbar() {
               <span
                 className="category-link"
                 onClick={() => {
-                  alert('ㅜㅜ')
+                  alert('ㅜㅜ');
                 }}
               >
                 안내
@@ -151,20 +137,18 @@ function Navbar() {
               src={process.env.PUBLIC_URL + '/navbar/Asset 1.svg'}
               alt="logo"
               onClick={() => {
-                navigate('/')
+                navigate('/');
               }}
             ></img>
             <div>
               {state.userinfo.userName !== '' ? (
-                <span className="category-link">
-                  {state.userinfo.userName}님
-                </span>
+                <span className="category-link">{state.userinfo.userName}님</span>
               ) : (
                 <span
                   className="category-link"
                   onClick={() => {
-                    dispatch(switchModalOpen())
-                    dispatch(setModalStep(1))
+                    dispatch(switchModalOpen());
+                    dispatch(setModalStep(1));
                   }}
                 >
                   로그인
@@ -178,8 +162,8 @@ function Navbar() {
                 <span
                   className="category-link"
                   onClick={() => {
-                    dispatch(switchModalOpen())
-                    dispatch(setModalStep(2))
+                    dispatch(switchModalOpen());
+                    dispatch(setModalStep(2));
                   }}
                 >
                   회원가입
@@ -189,7 +173,7 @@ function Navbar() {
                 <span
                   className="category-link"
                   onClick={() => {
-                    navigate('/manage')
+                    navigate('/manage');
                   }}
                 >
                   관리
@@ -201,7 +185,7 @@ function Navbar() {
       </nav>
       <div className="nav-blocker"></div>
     </header>
-  )
+  );
 }
 
-export default Navbar
+export default Navbar;

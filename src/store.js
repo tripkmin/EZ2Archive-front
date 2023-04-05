@@ -176,11 +176,6 @@ const rankUserSelected = createSlice({
     setRankLevel(state, action) {
       state.selectedLevel = action.payload;
     },
-    setRankKeyAndLevel(state, action) {
-      state.selectedKey = action.payload.key;
-      state.selectedLevel = action.payload.level;
-      // RankOrderSelector에서 특정 키, 난이도 선택했을 때 실행 되도록 함.
-    },
     setRankTitleView(state, action) {
       state.songTitleView = action.payload
     },
@@ -257,7 +252,6 @@ export const {
   setModalStep,
   setModalDefault
 } = modal.actions
-// export const { switchLoginModal } = userLogin.actions
 export const {
   setTitleView,
   setDescending,
@@ -273,11 +267,9 @@ export const {
   setFilteredElementIdx,
   setSongInfo
 } = achievementSongInfo.actions
-// export const {  } = achievementSelectIndex.actions
 export const {
   setRankKey,
   setRankLevel,
-  setRankKeyAndLevel, // 삭제 예정
   setRankTitleView,
   setRankDescending,
   setRankClean

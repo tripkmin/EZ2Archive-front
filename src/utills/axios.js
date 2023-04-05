@@ -1,7 +1,17 @@
 import axios from "axios"
+import store from "../store";
+import {
+  setUserName,
+  setUserId,
+  setUserAuth,
+  setUserAddTime
+} from "../store";
+import {} from "../store";
+import {} from "../store";
+import {} from "../store";
 // import { API_URL, AT } from "../services/temp"
 
-const API_URL = "https://api.blueshell.cyou"
+const API_URL = "https://api.blueshell.cyou/v1"
 // const AT = localStorage.getItem("accessToken")
 // 왜 AT는 작동하지 않고 localStorage.getItem("accessToken")는 작동하는거지?
 
@@ -15,9 +25,8 @@ export const login = async (id, password) => {
       withCredentials: true
     });
     localStorage.setItem("accessToken", loginResponse.data.data.accessToken);
-
   } catch (error) {
-
+    throw error
   }
 }
 
@@ -31,6 +40,7 @@ export const logout = async () => {
   }
 }
 
+
 export const getMyInfo = async () => {
   try {
     const response = await axios.get(
@@ -39,12 +49,19 @@ export const getMyInfo = async () => {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`
         }
       })
+    store.dispatch(setUserName(response.data.data.name))
+    store.dispatch(setUserId(response.data.data.userId))
+    store.dispatch(setUserAuth(response.data.data.authority))
+    store.dispatch(setUserAddTime(response.data.data.addTime))
     return response.data.data
   } catch (error) {
     throw error
   }
 }
 
+// export const setMyInfo = async () => {
+//   try 
+// }
 export const reIssue = async () => {
   try {
     // 액세스 토큰이 만료되었을 경우 갖고있는 리프레시 토큰을 통해 액세스 토큰 재발급 요청
@@ -58,6 +75,26 @@ export const reIssue = async () => {
     // 일단 에러가 뜨는 경우에는 로그아웃을 하는 걸로 하고, 나중에 보충하는 걸로.
     // localStorage.removeItem("accessToken")
     // alert('로그인이 필요합니다 or 리프레시 토큰이 만료되어 재로그인이 필요합니다')
+  }
+}
+
+// 회원가입 관련 요청들
+
+export const idCheck = async (id) => {
+  try {
+    const response = await axios.get(`${API_URL}/idCheck?userId=${id}`)
+    return response.data.data
+  } catch (error) {
+    throw error
+  }
+}
+
+export const emailCheck = async (email) => {
+  try {
+    const response = await axios.get(`${API_URL}/emailCheck?email=${email}`)
+    return response.data.data
+  } catch (error) {
+    throw error
   }
 }
 
@@ -219,5 +256,5 @@ export const getUserAchievementData = async (selectedKeyCaps, selectedLevel) => 
 }
 
 export const refreshTokenExpired = () => {
-  alert('리프레시 토큰 만료로 재로그인하셈')
+  alert('로그인이 만료되어 로그아웃 됩니다.')
 }

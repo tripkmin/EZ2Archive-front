@@ -6,11 +6,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import {
   setRankTitleView,
-  setRankKeyAndLevel,
   setRankClean,
   setRankDescending,
-  setClass,
-  cleanClass,
   setRankKey,
   setRankLevel,
 } from '../store';
@@ -45,20 +42,6 @@ const RankOrderSelector = () => {
     }
   }, []);
 
-  // useEffect(() => {
-  //   if (selectedKey && selectedLevel) {
-  //     if (
-  //       ['4k', '5k', '6k', '8k'].includes(selectedKey) &&
-  //       parseInt(selectedLevel) >= 14 &&
-  //       parseInt(selectedLevel) <= 20
-  //     ) {
-  //       localStorage.setItem('lastRankSelectedKey', selectedKey);
-  //       localStorage.setItem('lastRankSelectedLevel', selectedLevel);
-  //       navigate(`/rank/${selectedKey}/${selectedLevel}`);
-  //     }
-  //   }
-  // }, [selectedKey, selectedLevel]);
-
   useEffect(() => {
     const isValidKey = ['4k', '5k', '6k', '8k'].includes(selectedKey);
     const isValidLevel = parseInt(selectedLevel) >= 14 && parseInt(selectedLevel) <= 20;
@@ -75,19 +58,6 @@ const RankOrderSelector = () => {
       dispatch(setRankClean());
     };
   }, []);
-
-  // useEffect(() => {
-  //   setKeyIndex(keyList.indexOf(selectedKey));
-  // }, [selectedKey]);
-  // useEffect(() => {
-  //   setLevelIndex(levelList.indexOf(parseInt(selectedLevel)));
-  // }, [selectedLevel]);
-  // useEffect(() => {
-  //   setTitleIndex(songTitleView ? 0 : 1);
-  // }, [songTitleView]);
-  // useEffect(() => {
-  //   setDescIndex(isDescending ? 0 : 1);
-  // }, [isDescending]);
 
   useEffect(() => {
     setKeyIndex(keyList.indexOf(selectedKey));

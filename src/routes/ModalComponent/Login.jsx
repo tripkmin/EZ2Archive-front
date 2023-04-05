@@ -1,9 +1,9 @@
 /*eslint-disable*/
 
-import axios from 'axios'
-import { useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { API_URL } from '../../services/temp'
+import axios from 'axios';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { API_URL } from '../../services/temp';
 import {
   setModalStep,
   setUserName,
@@ -11,55 +11,29 @@ import {
   setUserAuth,
   setUserAddTime,
   setModalDefault,
-} from '../../store'
+} from '../../store';
+import { getMyInfo, login } from '../../utills/axios';
 
 const Login = () => {
-  const dispatch = useDispatch()
-  const [id, setId] = useState('')
-  const [password, setPassword] = useState('')
-  const [errorMsg, setErrorMsg] = useState('')
+  const dispatch = useDispatch();
+  const [id, setId] = useState('');
+  const [password, setPassword] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
 
   const onSubmit = async e => {
-    e.preventDefault()
+    e.preventDefault();
     try {
-      const loginResponse = await axios.post(
-        `${API_URL}/login`,
-        {
-          userId: id,
-          password: password,
-        },
-        {
-          withCredentials: true,
-        }
-      )
-
-      const { accessToken } = loginResponse.data.data
-      localStorage.setItem('accessToken', accessToken)
-
-      const userInfoResponse = await axios.get(`${API_URL}/members/myInfo`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-
-      const { name, userId, authority, addTime } = userInfoResponse.data.data
-      dispatch(setUserName(name))
-      dispatch(setUserId(userId))
-      dispatch(setUserAuth(authority))
-      dispatch(setUserAddTime(addTime))
-
-      // 나중에 reload 대신 다른 걸로 변경하기.
-      dispatch(setModalDefault())
+      await login(id, password);
+      await getMyInfo();
+      dispatch(setModalDefault());
     } catch (error) {
       if (error.response.status >= 400 && error.response.status < 500) {
-        setErrorMsg(error.response.data.message)
-        console.log(errorMsg)
-      } else if (error.response.status === 500) {
-        setErrorMsg('서버 오류입니다. 관리자에게 문의하십시오.')
-        console.log(errorMsg)
+        setErrorMsg(error.response.data.message);
+      } else if (error.response.status >= 500) {
+        setErrorMsg('서버 오류입니다. 관리자에게 문의하십시오.');
       }
     }
-  }
+  };
 
   return (
     <div className="login-body">
@@ -78,7 +52,7 @@ const Login = () => {
               required
               placeholder="아이디"
               onChange={e => {
-                setId(e.target.value)
+                setId(e.target.value);
               }}
             ></input>
           </div>
@@ -90,7 +64,7 @@ const Login = () => {
               required
               placeholder="비밀번호"
               onChange={e => {
-                setPassword(e.target.value)
+                setPassword(e.target.value);
               }}
             ></input>
           </div>
@@ -102,7 +76,7 @@ const Login = () => {
       <div className="login-body-sub">
         <p
           onClick={() => {
-            dispatch(setModalStep(2))
+            dispatch(setModalStep(2));
           }}
         >
           회원가입
@@ -110,7 +84,7 @@ const Login = () => {
         <p>ID/PW 찾기</p>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
