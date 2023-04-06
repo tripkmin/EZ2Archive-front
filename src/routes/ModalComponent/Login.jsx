@@ -22,32 +22,50 @@ const Login = () => {
   const [id, setId] = useState('');
   const [password, setPassword] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
-  const [아이디유효하냐, set아이디유효하냐] = useState(false);
-  const [비밀번호유효하냐, set비밀번호유효하냐] = useState(false);
-  const [캡챠통과했냐, set캡챠통과했냐] = useState(true);
-  const [로그인허용안함, set로그인허용안함] = useState(true);
+  const [isIdVaild, setIsIdVaild] = useState(false);
+  const [isPasswordVaild, setIsPasswordVaild] = useState(false);
+  const [captchaChecked, setCaptchaChecked] = useState(false);
+  const [captchaShow, setCaptchaShow] = useState(true);
+  const [loginNotAllow, setLoginNotAllow] = useState(true);
   const { loginTryCount } = state.modal;
+  const reCaptchaShowCount = 1;
 
   useEffect(() => {
-    id.length > 4 ? set아이디유효하냐(true) : set아이디유효하냐(false);
+    id.length > 4 ? setIsIdVaild(true) : setIsIdVaild(false);
   }, [id]);
 
   useEffect(() => {
-    password.length > 3 ? set비밀번호유효하냐(true) : set비밀번호유효하냐(false);
+    password.length > 3 ? setIsPasswordVaild(true) : setIsPasswordVaild(false);
   }, [password]);
 
   useEffect(() => {
-    아이디유효하냐 && 비밀번호유효하냐 && 캡챠통과했냐
-      ? set로그인허용안함(false)
-      : set로그인허용안함(true);
-  }, [아이디유효하냐, 비밀번호유효하냐, 캡챠통과했냐]);
+    if (loginTryCount <= reCaptchaShowCount) {
+      if (isIdVaild && isPasswordVaild) {
+        setLoginNotAllow(false);
+      } else {
+        setLoginNotAllow(true);
+      }
+    } else {
+      if (isIdVaild && isPasswordVaild && captchaChecked) {
+        setLoginNotAllow(false);
+      } else {
+        setLoginNotAllow(true);
+      }
+    }
+  }, [isIdVaild, isPasswordVaild, captchaChecked]);
 
   useEffect(() => {
-    loginTryCount > 2 ? set캡챠통과했냐(false) : set캡챠통과했냐(true);
+    loginTryCount > reCaptchaShowCount ? setCaptchaShow(true) : setCaptchaShow(false);
   }, [loginTryCount]);
 
+  useEffect(() => {
+    if (captchaShow) {
+      setLoginNotAllow(true);
+    }
+  }, [captchaShow]);
+
   const onChange = () => {
-    set캡챠통과했냐(true);
+    setCaptchaChecked(true);
   };
 
   const onSubmit = async e => {
@@ -100,7 +118,7 @@ const Login = () => {
               }}
             ></input>
           </div>
-          {loginTryCount > 2 ? (
+          {captchaShow ? (
             <ReCAPTCHA
               className="sign-recaptcha"
               sitekey="6Lf61GIlAAAAAHK8Ue0kYFeCAZ5i5Cj4sBUCcqPz"
@@ -108,7 +126,7 @@ const Login = () => {
               // style={{ transform: 'scale(1.11)' }}
             />
           ) : null}
-          <button disabled={로그인허용안함} type="submit" className="theme-pp-button">
+          <button disabled={loginNotAllow} type="submit" className="theme-pp-button">
             로그인
           </button>
         </fieldset>

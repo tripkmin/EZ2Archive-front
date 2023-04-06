@@ -98,7 +98,7 @@ const Modal = () => {
     <div className={`member-modal ${isModalOpen ? modalAnimation : ''}`}>
       <div
         className={`${modalStepClass} ${
-          loginTryCount > 2 && modalStep === 1 ? 'modal-captcha' : ''
+          loginTryCount > 1 && modalStep === 1 ? 'modal-captcha' : ''
         }`}
         ref={clickRef}
       >
