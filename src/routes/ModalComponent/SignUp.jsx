@@ -30,6 +30,7 @@ const SignUp = props => {
   const [agree, setAgree] = useState(false);
   const [isIdChecked, setIsIdChecked] = useState(false);
   const [isEmailChecked, setIsEmailChecked] = useState(false);
+  const [isRecaptchaChecked, setIsRecaptchaChecked] = useState(false);
   const [notAllow, setNotAllow] = useState(true);
 
   const idHandler = useCallback(
@@ -112,26 +113,26 @@ const SignUp = props => {
   });
 
   /** 모달창 닫으면 인풋 내용 초기화 되도록 함 */
-  const closeAndInputClean = useCallback(() => {
-    dispatch(switchModalOpen());
-    setSignId('');
-    setSignPassword('');
-    setSignPasswordCheck('');
-    setSignNickname('');
-    setSignEmail('');
-    setIdOnly(false);
-    setIdValid(false);
-    setPasswordValid(false);
-    setPasswordSame(false);
-    setNicknameValid(false);
-    setEmailOnly(false);
-    setEmailValid(false);
-    setAgree(false);
-    setIsIdChecked(false);
-    setIsEmailChecked(false);
-    setNotAllow(true);
-    dispatch(setModalStep(0));
-  });
+  // const closeAndInputClean = useCallback(() => {
+  //   dispatch(switchModalOpen());
+  //   setSignId('');
+  //   setSignPassword('');
+  //   setSignPasswordCheck('');
+  //   setSignNickname('');
+  //   setSignEmail('');
+  //   setIdOnly(false);
+  //   setIdValid(false);
+  //   setPasswordValid(false);
+  //   setPasswordSame(false);
+  //   setNicknameValid(false);
+  //   setEmailOnly(false);
+  //   setEmailValid(false);
+  //   setAgree(false);
+  //   setIsIdChecked(false);
+  //   setIsEmailChecked(false);
+  //   setNotAllow(true);
+  //   dispatch(setModalStep(0));
+  // });
 
   // 유효한 인풋 검증
   useEffect(() => {
@@ -188,7 +189,8 @@ const SignUp = props => {
       signId !== '' &&
       signEmail !== '' &&
       isIdChecked &&
-      isEmailChecked
+      isEmailChecked &&
+      isRecaptchaChecked
     ) {
       setNotAllow(false);
       return;
@@ -209,10 +211,11 @@ const SignUp = props => {
     isEmailChecked,
     signPassword,
     signNickname,
+    isRecaptchaChecked,
   ]);
 
   const onChange = () => {
-    console.log(1);
+    setIsRecaptchaChecked(true);
   };
 
   return (
@@ -342,10 +345,9 @@ const SignUp = props => {
           </div>
           <ReCAPTCHA
             className="sign-recaptcha"
-            sitekey="6LcEyEwlAAAAALzjKpr88d-ITtuM1z880HDH82lA"
+            sitekey="6Lf61GIlAAAAAHK8Ue0kYFeCAZ5i5Cj4sBUCcqPz"
             onChange={onChange}
           />
-          ,
           <div className="sign-button">
             <button
               disabled={notAllow}

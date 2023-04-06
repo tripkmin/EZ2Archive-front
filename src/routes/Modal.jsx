@@ -1,19 +1,15 @@
 /*eslint-disable*/
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  faArrowLeft,
-  faArrowRight,
-  faXmark,
-} from '@fortawesome/free-solid-svg-icons'
-import { useSelector, useDispatch } from 'react-redux'
-import { switchModalOpen, setModalStep, setModalDefault } from '../store'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft, faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { useSelector, useDispatch } from 'react-redux';
+import { switchModalOpen, setModalStep, setModalDefault } from '../store';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
-import EmailSent from './ModalComponent/EmailSent'
-import Login from './ModalComponent/Login'
-import SignUp from './ModalComponent/SignUp'
-import AchievementDetail from './ModalComponent/AchievementDetail'
+import EmailSent from './ModalComponent/EmailSent';
+import Login from './ModalComponent/Login';
+import SignUp from './ModalComponent/SignUp';
+import AchievementDetail from './ModalComponent/AchievementDetail';
 
 /* step 설명
     0 : 모달 사라질 때 변경될 default 창
@@ -24,93 +20,94 @@ import AchievementDetail from './ModalComponent/AchievementDetail'
   */
 
 const Modal = () => {
-  const dispatch = useDispatch()
-  const state = useSelector(state => state)
-  const clickRef = useRef()
+  const dispatch = useDispatch();
+  const state = useSelector(state => state);
+  const clickRef = useRef();
 
-  const [modalAnimation, setModalAnimation] = useState('')
-  const [modalStepClass, setModalStepClass] = useState(0)
-  const { isModalOpen, modalStep } = state.modal
+  const [modalAnimation, setModalAnimation] = useState('');
+  const [modalStepClass, setModalStepClass] = useState(0);
+  const { isModalOpen, modalStep, loginTryCount } = state.modal;
 
   // 모달창이 띄워진 상태에서 ESC를 누르면 닫히도록 설정됨
   useEffect(() => {
     const handleKeyDown = e => {
       // 회원가입 창에서는 ESC가 안 먹히도록 함.
       if (modalStep !== 2 && e.keyCode === 27) {
-        dispatch(setModalDefault())
+        dispatch(setModalDefault());
       }
-    }
-    window.addEventListener('keydown', handleKeyDown)
+    };
+    window.addEventListener('keydown', handleKeyDown);
     return () => {
-      window.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [modalStep])
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [modalStep]);
 
   // 모달창 바깥을 클릭하면 닫히도록 설정됨
   const clickOutside = e => {
     // 회원가입 창에서는 바깥쪽을 클릭해도 닫히지 않도록 설정.
-    if (
-      isModalOpen &&
-      modalStep !== 2 &&
-      !clickRef.current.contains(e.target)
-    ) {
-      dispatch(setModalDefault())
+    if (isModalOpen && modalStep !== 2 && !clickRef.current.contains(e.target)) {
+      dispatch(setModalDefault());
     }
-  }
+  };
 
   useEffect(() => {
     switch (modalStep) {
       case 0:
       case 1:
-        setModalStepClass(`modal-sm`)
-        break
+        setModalStepClass(`modal-sm`);
+        break;
       case 2:
-        setModalStepClass(`modal-md`)
-        break
+        setModalStepClass(`modal-md`);
+        break;
       case 3:
-        setModalStepClass(`modal-sm`)
-        break
+        setModalStepClass(`modal-sm`);
+        break;
       case 4:
-        setModalStepClass(`modal-lg`)
-        break
+        setModalStepClass(`modal-lg`);
+        break;
       case 5:
-        setModalStepClass(`modal-xl`)
-        break
+        setModalStepClass(`modal-xl`);
+        break;
       default: // nothing
     }
-  }, [modalStep])
+  }, [modalStep]);
 
   useEffect(() => {
-    if (isModalOpen) document.addEventListener('mousedown', clickOutside)
+    if (isModalOpen) document.addEventListener('mousedown', clickOutside);
     return () => {
-      document.removeEventListener('mousedown', clickOutside)
-    }
-  })
+      document.removeEventListener('mousedown', clickOutside);
+    };
+  });
 
   useEffect(() => {
-    let animationTimer
+    let animationTimer;
 
     if (isModalOpen) {
       animationTimer = setTimeout(() => {
-        setModalAnimation('member-modal-open')
-      }, 10)
+        setModalAnimation('member-modal-open');
+      }, 10);
     }
 
     return () => {
-      clearTimeout(animationTimer)
-      setModalAnimation('')
-    }
-  }, [isModalOpen])
+      clearTimeout(animationTimer);
+      setModalAnimation('');
+    };
+  }, [isModalOpen]);
 
   return isModalOpen ? (
     <div className={`member-modal ${isModalOpen ? modalAnimation : ''}`}>
-      <div className={`${modalStepClass}`} ref={clickRef}>
+      <div
+        className={`${modalStepClass} ${
+          loginTryCount > 2 && modalStep === 1 ? 'modal-captcha' : ''
+        }`}
+        ref={clickRef}
+      >
         <div className="member-header">
           <FontAwesomeIcon
             className="pointer"
             icon={faXmark}
             onClick={() => {
-              dispatch(setModalDefault())
+              dispatch(setModalDefault());
             }}
           ></FontAwesomeIcon>
           {
@@ -128,7 +125,7 @@ const Modal = () => {
               className="pointer"
               icon={faArrowLeft}
               onClick={() => {
-                dispatch(setModalStep(modalStep - 1))
+                dispatch(setModalStep(modalStep - 1));
               }}
             ></FontAwesomeIcon>
           ) : null}
@@ -139,11 +136,9 @@ const Modal = () => {
         {modalStep === 3 && <EmailSent />}
         {modalStep === 4 && <AchievementDetail />}
       </div>
-      <div
-        className={`login-bg ${modalStep === 2 ? 'click-forbidden' : ''}`}
-      ></div>
+      <div className={`login-bg ${modalStep === 2 ? 'click-forbidden' : ''}`}></div>
     </div>
-  ) : null
-}
+  ) : null;
+};
 
-export default Modal
+export default Modal;

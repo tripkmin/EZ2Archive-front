@@ -31,9 +31,10 @@ const RankOrderSelector = () => {
   const [levelIndex, setLevelIndex] = useState(null);
   const [titleIndex, setTitleIndex] = useState(null);
   const [descIndex, setDescIndex] = useState(null);
+  const lastSelected = JSON.parse(localStorage.getItem('lastRankSelected'));
   const [lastRankSelectedKey, lastRankSelectedLevel] = [
-    localStorage.getItem('lastRankSelectedKey'),
-    localStorage.getItem('lastRankSelectedLevel'),
+    lastSelected?.key,
+    lastSelected?.level,
   ];
 
   useEffect(() => {
@@ -47,8 +48,10 @@ const RankOrderSelector = () => {
     const isValidLevel = parseInt(selectedLevel) >= 14 && parseInt(selectedLevel) <= 20;
 
     if (isValidKey && isValidLevel) {
-      localStorage.setItem('lastRankSelectedKey', selectedKey);
-      localStorage.setItem('lastRankSelectedLevel', selectedLevel);
+      localStorage.setItem(
+        'lastRankSelected',
+        JSON.stringify({ key: selectedKey, level: selectedLevel })
+      );
       navigate(`/rank/${selectedKey}/${selectedLevel}`);
     }
   }, [selectedKey, selectedLevel]);

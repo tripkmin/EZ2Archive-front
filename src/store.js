@@ -46,7 +46,8 @@ const modal = createSlice({
   name: "memberModal",
   initialState: {
     isModalOpen: false,
-    modalStep: 0
+    modalStep: 0,
+    loginTryCount: 0
   },
   reducers: {
     switchModalOpen(state) {
@@ -54,6 +55,9 @@ const modal = createSlice({
     },
     setModalStep(state, action) {
       state.modalStep = action.payload;
+    },
+    setLoginTryCount(state, action) {
+      state.loginTryCount = action.payload
     },
     setModalDefault(state) {
       state.isModalOpen = false;
@@ -250,6 +254,7 @@ export const {
 export const {
   switchModalOpen,
   setModalStep,
+  setLoginTryCount,
   setModalDefault
 } = modal.actions
 export const {

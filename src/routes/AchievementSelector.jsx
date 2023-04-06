@@ -15,6 +15,7 @@ import {
   switchModalOpen,
   setModalStep,
 } from '../store';
+import { flushSync } from 'react-dom';
 
 const AchievementSelector = () => {
   const state = useSelector(state => state);
@@ -40,6 +41,9 @@ const AchievementSelector = () => {
   const [titleIndex, setTitleIndex] = useState(null);
   const [descIndex, setDescIndex] = useState(null);
   const [filterShow, setFilterShow] = useState(true);
+  const [isLogined, setIsLogined] = useState(true);
+  const [keySelectedAnimation, setKeySelectedAnimation] = useState(false);
+  const [levelSelectedAnimation, setLevelSelectedAnimation] = useState(false);
 
   const barLength = 700;
   const keyList = ['4k', '5k', '6k', '8k'];
@@ -79,34 +83,6 @@ const AchievementSelector = () => {
     }
   }, [isLoginTried, userName, userId, userAuth, userAddTime]);
 
-  // 성능이 오히려 더 나빠짐. 왜 일까?
-  // 세부 옵션을 선택하면 선택한 곳의 index를 알아내기 위해 설정함.
-  // useEffect(() => {
-  //   setKeyIndex(keyList.indexOf(selectedKey));
-  // }, [selectedKey]);
-
-  // useEffect(() => {
-  //   setLevelIndex(levelList.indexOf(parseInt(selectedLevel)));
-  // }, [selectedLevel]);
-
-  // useEffect(() => {
-  //   // 등급 필터로 선택한 등급을 배열에 넣어 표시함.
-  //   const newGradeIndexArray = [];
-  //   selectedGrade.map(grade => {
-  //     const index = gradeList.findIndex(gradeList => gradeList.dbGrade === grade);
-  //     newGradeIndexArray.push(index);
-  //   });
-  //   setGradeIndex(newGradeIndexArray);
-  // }, [selectedGrade]);
-
-  // useEffect(() => {
-  //   setTitleIndex(songTitleView ? 0 : 1);
-  // }, [songTitleView]);
-
-  // useEffect(() => {
-  //   setDescIndex(isDescending ? 0 : 1);
-  // }, [isDescending]);
-
   useEffect(() => {
     const newGradeIndexArray = [];
     selectedGrade.map(grade => {
@@ -143,7 +119,6 @@ const AchievementSelector = () => {
       }
     };
 
-    // if (songList.length !== 0) {
     setOverall([
       {
         name: 'rateAvg',
@@ -161,32 +136,50 @@ const AchievementSelector = () => {
       { name: 'spCnt', data: spCount, convertName: 'S⁺' },
     ]);
     setSongCount(songList.length);
-    // } else {
-    //   setOverall([
-    //     {
-    //       name: 'rateAvg',
-    //       data: 0,
-    //       convertName: 'AVERAGE RATE',
-    //     },
-    //     {
-    //       name: 'allCoolCnt',
-    //       data: 0,
-    //       convertName: 'ALL COOL',
-    //     },
-    //     { name: 'noMissCnt', data: 0, convertName: 'NO MISS' },
-    //     { name: 'spppCnt', data: 0, convertName: 'S⁺⁺⁺' },
-    //     { name: 'sppCnt', data: 0, convertName: 'S⁺⁺' },
-    //     { name: 'spCnt', data: 0, convertName: 'S⁺' },
-    //   ]);
-    //   setSongCount(0);
-    // }
   }, [songList]);
 
   useEffect(() => {
-    if (selectedKey && selectedLevel) {
-      navigate(`${selectedKey}/${selectedLevel}`);
+    if (userName && userId && userAuth && userAddTime) {
+      setIsLogined(true);
+    } else {
+      setIsLogined(false);
+    }
+  }, [userName, userId, userAuth, userAddTime]);
+
+  useEffect(() => {
+    const isValidKey = ['4k', '5k', '6k', '8k'].includes(selectedKey);
+    const isValidLevel = parseInt(selectedLevel) >= 1 && parseInt(selectedLevel) <= 20;
+
+    if (isValidKey && isValidLevel) {
+      localStorage.setItem(
+        'lastAchievementSelected',
+        JSON.stringify({ key: selectedKey, level: selectedLevel })
+      );
+      navigate(`/achievement/${selectedKey}/${selectedLevel}`);
     }
   }, [selectedKey, selectedLevel]);
+
+  // useEffect(() => {
+  //   if (isLogined) {
+  //     localStorage.setItem(
+  //       'lastAchievementSelected',
+  //       JSON.stringify({ key: selectedKey, level: selectedLevel })
+  //     );
+  //     navigate(`/achievement/${selectedKey}/${selectedLevel}`);
+  //   }
+  // }, [selectedKey, selectedLevel]);
+
+  useEffect(() => {
+    const lastSelected = JSON.parse(localStorage.getItem('lastAchievementSelected'));
+    const [lastRankSelectedKey, lastRankSelectedLevel] = [
+      lastSelected?.key,
+      lastSelected?.level,
+    ];
+
+    if (lastRankSelectedKey && lastRankSelectedLevel && isLogined) {
+      navigate(`/achievement/${lastRankSelectedKey}/${lastRankSelectedLevel}`);
+    }
+  }, [isLogined]);
 
   useEffect(() => {
     return () => {
@@ -215,6 +208,75 @@ const AchievementSelector = () => {
     }
   };
 
+  useEffect(() => {
+    setKeySelectedAnimation(true);
+    const timer = setTimeout(() => {
+      setKeySelectedAnimation(false);
+    }, 500);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [selectedKey]);
+
+  useEffect(() => {
+    setLevelSelectedAnimation(true);
+    const timer = setTimeout(() => {
+      setLevelSelectedAnimation(false);
+    }, 500);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [selectedLevel]);
+
+  // useEffect(() => {
+  //   flushSync(() => {
+  //     setKeySelectedAnimation(true);
+  //   });
+  //   const timer = setTimeout(() => {
+  //     setKeySelectedAnimation(false);
+  //   }, 500);
+
+  //   return () => {
+  //     clearTimeout(timer);
+  //   };
+  // }, [selectedKey]);
+
+  // useEffect(() => {
+  //   console.log('true 실행 전');
+  //   setKeySelectedAnimation(true);
+  //   const timerId = setTimeout(() => {
+  //     setKeySelectedAnimation(false);
+  //     console.log('timer 종료');
+  //   }, 500);
+
+  //   return () => {
+  //     flushSync(() => {
+  //       setKeySelectedAnimation(false);
+  //     });
+  //     console.log('clearTimeout 실행 전');
+  //     clearTimeout(timerId);
+  //   };
+  // }, [selectedKey]);
+
+  // useEffect(() => {
+  //   flushSync(() => {
+  //     setKeySelectedAnimation(true);
+  //   });
+  //   // setKeySelectedAnimation(true);
+  //   const timerId = setTimeout(() => {
+  //     setKeySelectedAnimation(false);
+  //   }, 500);
+
+  //   return () => {
+  //     clearTimeout(timerId);
+  //     flushSync(() => {
+  //       setKeySelectedAnimation(false);
+  //     });
+  //   };
+  // }, [selectedKey]);
+
   /* 
   클릭 시 시나리오
   클릭한 곳에서는 무조건 현 상태와 반대가 되도록 한다. 
@@ -232,10 +294,16 @@ const AchievementSelector = () => {
         <div className="achievement-selector">
           <div className="achievement-userinfo">
             <div className="achievement-key-level">
-              <h1 className="theme-pp">
+              <h1
+                className={`theme-pp ${
+                  keySelectedAnimation ? 'head-selected-feedback' : ''
+                }`}
+              >
                 {selectedKey === '' ? '?K' : selectedKey.toUpperCase()}
               </h1>
-              <h4>{selectedLevel === 0 ? '' : selectedLevel}</h4>
+              <h4 className={`${levelSelectedAnimation ? 'head-selected-feedback' : ''}`}>
+                {selectedLevel === 0 ? '' : selectedLevel}
+              </h4>
             </div>
             <h4>{userName}</h4>
           </div>

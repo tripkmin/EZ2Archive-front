@@ -436,6 +436,10 @@ body {
   overflow: hidden;
 }
 
+.modal-captcha {
+  height: 500px;
+}
+
 .member-header {
   display: flex;
   justify-content: space-between;
@@ -525,7 +529,7 @@ body {
 }
 
 .sign-in-header {
-  padding: 20px 0px;
+  padding: 15px 0px;
   text-align: center;
   /* margin-bottom: 10px; */
 }
@@ -608,11 +612,11 @@ body {
 .sign-recaptcha {
   display: flex;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 25px;
 }
 
 .sign-button {
-  /* margin-top: 20px; */
+  margin-top: 25px;
   /* width:50%; */
   padding: 0px 75px;
 }
@@ -1191,12 +1195,18 @@ body,
   justify-content: space-between;
   width: 100%;
   height: 100%;
-  padding: 20px 45px;
+  padding: 20px 45px 20px 30px;
   position: relative;
 }
 
 .achievement-userinfo > h4 {
+  padding: 0px 10px;
   line-height: 25%;
+}
+
+.head-selected-feedback {
+  animation: blink-head;
+  animation-duration: 0.5s;
 }
 
 .achievement-key-level h1,
@@ -1205,7 +1215,13 @@ body,
 }
 
 .achievement-key-level h1 {
-  margin-right: 5px;
+  /* margin-right: 5px; */
+  border-radius: 10px;
+  padding: 0px 10px;
+}
+.achievement-key-level h4 {
+  border-radius: 5px;
+  padding: 0px 2px;
 }
 
 .achievement-detail h3,
@@ -2596,6 +2612,13 @@ input:checked + .slider:before {
 @keyframes binglebingle {
   100% {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes blink-head {
+  0% {
+    background-color: #473395;
+    color: white;
   }
 }
 

@@ -99,7 +99,7 @@ const AchievementList = () => {
 
   // 키와 난이도가 모두 선택되었다면 axios 요청을 전송함.
   useEffect(() => {
-    if (isAllSelected) {
+    if (isAllSelected && isLogined) {
       getUserAchievementDataProcess();
     }
   }, [isAllSelected, isLogined]);
@@ -192,10 +192,34 @@ const AchievementList = () => {
       await postScore(id, isWriteAllCool, isWriteAllCombo, scoreInputValue);
       await getUserAchievementDataProcess();
       setSelectedScoreInput([-1, -1]);
-      getUserAchievementDataProcess();
     };
+
+    // const postFeedbackAnimation = isSuccess => {
+    //   switch (isSuccess) {
+    //     case '[':
+    //       flushSync(() => {
+    //         setIsMsgBoxVisible(false);
+    //         setIsScorePostSuccess(false);
+    //       });
+    //       flushSync(() => {
+    //         setIsMsgBoxVisible(true);
+    //         setIsScorePostSuccess(true);
+    //       });
+    //     case 'rejected':
+    //       flushSync(() => {
+    //         setIsMsgBoxVisible(false);
+    //         setIsScorePostSuccess(false);
+    //       });
+    //       flushSync(() => {
+    //         setIsMsgBoxVisible(true);
+    //         setIsScorePostSuccess(false);
+    //       });
+    //   }
+    // };
+
     try {
       await postScoreAndRefresh();
+      // postFeedbackAnimation('succeed');
       flushSync(() => {
         setIsMsgBoxVisible(false);
         setIsScorePostSuccess(false);
@@ -221,9 +245,21 @@ const AchievementList = () => {
           await reIssue();
           await postScoreAndRefresh();
         } catch (error) {
-          refreshTokenExpired();
-          navigate('/');
-          dispatch(setUserDefault());
+          if (error.response.status === 400) {
+            flushSync(() => {
+              setIsMsgBoxVisible(false);
+              setIsScorePostSuccess(false);
+            });
+            flushSync(() => {
+              setIsMsgBoxVisible(true);
+              setIsScorePostSuccess(false);
+            });
+            setMsg(error.response.data.message);
+          } else {
+            refreshTokenExpired();
+            navigate('/');
+            dispatch(setUserDefault());
+          }
         }
       }
     }
