@@ -470,6 +470,11 @@ body {
   font-weight: 700;
 }
 
+.login-error-feedback {
+  animation-name: shaking;
+  animation-duration: 0.3s;
+}
+
 .login-bg {
   width: 100%;
   height: 100%;
@@ -2619,6 +2624,21 @@ input:checked + .slider:before {
   0% {
     background-color: #473395;
     color: white;
+  }
+}
+
+@keyframes shaking {
+  20% {
+    transform: translate(10px);
+  }
+  40% {
+    transform: translate(-10px);
+  }
+  60% {
+    transform: translate(10px);
+  }
+  80% {
+    transform: translate(-10px);
   }
 }
 

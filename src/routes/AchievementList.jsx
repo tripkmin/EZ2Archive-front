@@ -244,6 +244,15 @@ const AchievementList = () => {
         try {
           await reIssue();
           await postScoreAndRefresh();
+          flushSync(() => {
+            setIsMsgBoxVisible(false);
+            setIsScorePostSuccess(false);
+          });
+          flushSync(() => {
+            setIsMsgBoxVisible(true);
+            setIsScorePostSuccess(true);
+          });
+          setMsg('저장이 완료되었습니다');
         } catch (error) {
           if (error.response.status === 400) {
             flushSync(() => {

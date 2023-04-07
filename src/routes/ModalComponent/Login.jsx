@@ -15,6 +15,8 @@ import {
 } from '../../store';
 import { getMyInfo, login } from '../../utills/axios';
 import ReCAPTCHA from 'react-google-recaptcha';
+import { useRef } from 'react';
+import { flushSync } from 'react-dom';
 
 const Login = () => {
   const state = useSelector(state => state);
@@ -27,8 +29,10 @@ const Login = () => {
   const [captchaChecked, setCaptchaChecked] = useState(false);
   const [captchaShow, setCaptchaShow] = useState(true);
   const [loginNotAllow, setLoginNotAllow] = useState(true);
+  const [loginFeedback, setLoginFeedback] = useState(false);
   const { loginTryCount } = state.modal;
   const reCaptchaShowCount = 1;
+  const recaptchaRef = useRef();
 
   useEffect(() => {
     id.length > 4 ? setIsIdVaild(true) : setIsIdVaild(false);
@@ -77,8 +81,17 @@ const Login = () => {
       dispatch(setLoginTryCount(0));
     } catch (error) {
       if (error.response.status >= 400 && error.response.status < 500) {
+        setLoginFeedback(false);
+        setTimeout(() => {
+          setLoginFeedback(true);
+        });
+
         setErrorMsg(error.response.data.message);
         dispatch(setLoginTryCount(loginTryCount + 1));
+        if (loginTryCount > reCaptchaShowCount) {
+          window.grecaptcha.reset();
+        }
+        setCaptchaChecked(false);
       } else if (error.response.status >= 500) {
         setErrorMsg('서버 오류입니다. 관리자에게 문의하십시오.');
       }
@@ -89,7 +102,9 @@ const Login = () => {
     <div className="login-body">
       <div className="login-body-header">
         <h3 className="theme-pp">로그인</h3>
-        {<small className="login-error">{errorMsg}</small>}
+        <small className={`login-error ${loginFeedback ? 'login-error-feedback' : ''}`}>
+          {errorMsg}
+        </small>
       </div>
       <form onSubmit={onSubmit}>
         <fieldset>
@@ -120,10 +135,10 @@ const Login = () => {
           </div>
           {captchaShow ? (
             <ReCAPTCHA
+              ref={recaptchaRef}
               className="sign-recaptcha"
               sitekey="6Lf61GIlAAAAAHK8Ue0kYFeCAZ5i5Cj4sBUCcqPz"
               onChange={onChange}
-              // style={{ transform: 'scale(1.11)' }}
             />
           ) : null}
           <button disabled={loginNotAllow} type="submit" className="theme-pp-button">
@@ -131,7 +146,6 @@ const Login = () => {
           </button>
         </fieldset>
       </form>
-
       <div className="login-body-sub">
         <p
           onClick={() => {
