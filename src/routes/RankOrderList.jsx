@@ -1,188 +1,260 @@
 /*eslint-disable*/
 
-import { useSelector, useDispatch } from "react-redux";
-import axios from 'axios'
-import { useEffect, useState } from 'react'
-import { useParams } from "react-router-dom";
-import { setRankKeyAndDifficulty } from '../store.js'
+import { useSelector, useDispatch } from 'react-redux';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { setRankKey, setRankLevel } from '../store.js';
 // import Skeleton from 'react-loading-skeleton'
 // import 'react-loading-skeleton/dist/skeleton.css'
-import defaultProfile from './../imagenone.webp'
-import { API_URL } from "../services/temp";
+import defaultProfile from './../imagenone.webp';
+import { rankFilter, renamed } from '../utills/utill.js';
+import { getRankList } from '../utills/axios.js';
 
 // 컴포넌트 로드 시 선택된 키, 난이도에 해당하는 자료들을 서버에서 가져와 list 변수에 할당.
-const RankOrderList = (props) => {
-  const state = useSelector( (state) => state )
-  const dispatch = useDispatch()
-  const {selectedDifficulty} = useParams()
-  const [list, setList] = useState([])
-  let levelIndex 
+const RankOrderList = props => {
+  const state = useSelector(state => state);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { urlKey, urlLevel } = useParams();
+  const [list, setList] = useState([]);
+  const { selectedKey, selectedKeyCaps, selectedLevel, songTitleView, isDescending } =
+    state.rankUserSelected;
+  const [isAllSelected, setIsAllSelected] = useState(false);
+
+  let rankIndex;
 
   /** RankOrderSelector에서 내림차순 On/Off시 참조할 Index를 변경함. */
-  if (state.rankUserSelected.isDescending){levelIndex = [[9,8],[7,6],[5,4],[3,2],[1,0]];}
-  else {levelIndex = [[1,0],[3,2],[5,4],[7,6],[9,8]];}
-
-  /** 유저가 URL로 직접 접근시 대응 */
-  useEffect(()=>{
-    const getAndSetSongs = (key) => {
-      axios
-        .get(`${API_URL}/rank/list/${key}/${selectedDifficulty}`)
-        .then((res) => { return setList(res.data.data) })
-        .catch((err) => { console.log(err) })
-    }
-    switch(props.selectedKey) { 
-      case '4k': getAndSetSongs("FOUR"); break;
-      case '5k': getAndSetSongs("FIVE"); break;
-      case '6k': getAndSetSongs("SIX"); break;
-      case '8k': getAndSetSongs("EIGHT"); break;
-      default: // nothing
-    }
-    dispatch(setRankKeyAndDifficulty({key: props.selectedKey, difficulty: parseInt(selectedDifficulty)}))
-  }, [state.rankUserSelected.selectedDifficulty, state.rankUserSelected.selectedKey])
-
-  const detailDifficultyFilter = (detailDifficulty) => {
-      switch(detailDifficulty){
-        case 0:
-        case 1:
-          return '하';
-        case 2:
-        case 3:
-          return '중하';
-        case 4:
-        case 5:
-          return '중상';
-        case 6:
-        case 7:
-          return '상';
-        case 8:
-        case 9:
-          return '최상';
-        default: 
-          // nothing
-      }
-    }
-
-  const handleImgError = (e) => {
-    e.target.src = defaultProfile;
+  if (isDescending) {
+    rankIndex = [[9, 8], [7, 6], [5, 4], [3, 2], [1, 0], [-99]];
+  } else {
+    rankIndex = [[1, 0], [3, 2], [5, 4], [7, 6], [9, 8], [-99]];
   }
+
+  ////////// 초기 설정 //////////
+
+  // URL 직접 접근 시 해당 키/난이도를 바로 조회하도록 설정
+  useEffect(() => {
+    if (
+      !['4k', '5k', '6k', '8k'].includes(urlKey) ||
+      !(parseInt(urlLevel) >= 14 && parseInt(urlLevel) <= 20)
+    ) {
+      navigate('/404');
+    }
+  }, [urlKey, urlLevel]);
+
+  useEffect(() => {
+    dispatch(setRankKey(urlKey));
+    dispatch(setRankLevel(urlLevel));
+  }, []);
+
+  ////////// 초기 설정이 완료되면 //////////
+
+  // 키와 난이도가 전부 선택되었을 때 데이터 요청 실시에 참고하는 변수를 조작
+  const checkLevel14 = () => {
+    if (selectedKey !== '4k' && selectedLevel === 14) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  useEffect(() => {
+    checkLevel14();
+
+    if (selectedKey && selectedLevel) {
+      setTimeout(() => {
+        setIsAllSelected(true);
+      }, 0);
+    }
+    return () => {
+      setIsAllSelected(false);
+    };
+  }, [selectedKey, selectedLevel]);
+
+  /* 
+  만약 4키가 선택되면 dispatch
+  
+  */
+
+  // 키와 난이도가 모두 선택되었다면 axios 요청을 전송함.
+  useEffect(() => {
+    const getSongList = async () => {
+      if (isAllSelected) {
+        const response = await getRankList(selectedKeyCaps, selectedLevel);
+        setList(response);
+      }
+    };
+
+    getSongList();
+  }, [isAllSelected]);
+
+  // 곡 리스트와 rankIndex 단일 요소를 넣으면 그 기준에 맞는 곡만 반환
+  const filterByDifficultyIndex = (data, array) => {
+    return data.filter(
+      songlist => songlist.rank === array[0] || songlist.rank === array[1]
+    );
+  };
+
+  // 곡 리스트들을 난이도를 기준으로 정렬함. 내림차순, 오름차순 옵션이 반영됨.
+  const sortByDifficulty = data => {
+    /** 난이도를 숫자화시켜 정렬할 수 있게 만들어줌 */
+    const getDifficultyScore = difficulty => {
+      switch (difficulty) {
+        case 'EZ':
+          return 1;
+        case 'NM':
+          return 2;
+        case 'HD':
+          return 3;
+        case 'SHD':
+          return 4;
+        default:
+          return 0;
+      }
+    };
+    const sorted = data.sort((a, b) => {
+      const x = getDifficultyScore(a.difficulty);
+      const y = getDifficultyScore(b.difficulty);
+      return isDescending ? y - x : x - y;
+    });
+    return sorted;
+  };
+
+  const handleImgError = e => {
+    e.target.src = defaultProfile;
+  };
 
   return (
     <>
-      <div className="pleaseWait">
-        <p><strong>5, 6, 8키</strong>의 <strong>레벨 16</strong>곡들은 서열 투표를 진행할 예정입니다.</p>
+      <div
+        className={`pleaseWait ${checkLevel14() ? 'pleaseWait-alert-background' : ''}`}
+      >
+        {checkLevel14() ? (
+          <p>
+            <strong>{selectedKey.toUpperCase()}</strong>의
+            <strong> 레벨 {selectedLevel}</strong>는 아직 지원하지 않고 있습니다.
+          </p>
+        ) : (
+          <p>
+            본 서열표는 <strong>S⁺ 달성</strong>을 기준으로 매겨진 서열입니다.
+          </p>
+        )}
       </div>
       <div className="orderlist-wrapper">
         <div className="header">
-          <h1 className="theme-pp">{props.selectedKey.toUpperCase()} </h1>
-          <h1>{selectedDifficulty}</h1>
+          <h1 className="theme-pp">{selectedKey.toUpperCase()} </h1>
+          <h1>{selectedLevel}</h1>
         </div>
-        {/* Songs 클래스 네임 변경할것 */}
         <div className="flex-grow-1">
-        {/* 서열 9부터 0까지 내림차순으로 반환함 */}
-        {
-          levelIndex.map((detailDifficulty, index) => { 
-            const copylist = [...list]
-            // 서열값이 있는지 확인하고 있으면 JSX 출력, 없으면 null 뱉기
-            return list.filter(songlist => songlist.rank === detailDifficulty[0] || songlist.rank === detailDifficulty[1]).length !== 0
-            ? <div className="order-box" key={index}>
-                <span className="order-grade">{detailDifficultyFilter(detailDifficulty[0])}</span>
-                <div className='order-list'>
-                {/* 특정 서열(ex:19.최상 → 19.9과 19.8)에 해당하는 곡명과 이미지들 전부 출력 */}
-                {/* 오름차순이 켜져있으면 난이도(EZ,NM,HD,SHD) > 이름 순으로 정렬해서 표시하도록 할 것. 내림차순이면 (SHD,HD,NM,EZ)*/}
-                {
-                  copylist.filter(songlist => songlist.rank === detailDifficulty[0] || songlist.rank === detailDifficulty[1]).sort((a,b)=>{
-                    const x = a.difficulty;
-                    const y = b.difficulty;
-                    //내림차순이면 난이도 정렬 역시 내림차순으로 (SHD → EZ), 오름차순이면 (EZ → SHD)순으로 정렬.
-                    if(state.rankUserSelected.isDescending === true){
-                      // SHD 정렬 먼저
-                      if (x.length < y.length) return 1;
-                      if (x.length > y.length) return -1;
-                      // 그다음 EZ, NM, HD의 뒷 글자(Z, M, D)를 가지고 정렬
-                      if (x.slice(x.length-1, x.length) > y.slice(y.length-1, y.length)) return 1;
-                      if (x.slice(x.length-1, x.length) < y.slice(y.length-1, y.length)) return -1;
-                    } else {
-                      // SHD 정렬 먼저
-                      if (x.length > y.length) return 1;
-                      if (x.length < y.length) return -1;
-                      // 그다음 EZ, NM, HD의 뒷 글자(Z, M, D)를 가지고 정렬
-                      if (x.slice(x.length-1, x.length) < y.slice(y.length-1, y.length)) return 1;
-                      if (x.slice(x.length-1, x.length) > y.slice(y.length-1, y.length)) return -1;
-                    }
-                  }).map((filteredElement, index)=>{
-                    const renamed = filteredElement.name.toLowerCase().replace(/ /g, "").replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/ ]/g, "");
-                    return (
-                      <div className="song-wrapper" key={index}>
-                        <div className="song-infobox">
-                          <div className="imgbox no-drag">
-                            <img 
-                              src={process.env.PUBLIC_URL + '/musicdiskResize/'+ renamed + '.webp'} 
-                              alt={filteredElement.name} 
-                              onError={handleImgError}></img>
-                            <div className="shadowbox"></div>
-                            <span className={`level-badge ${filteredElement.difficulty}`}>{filteredElement.difficulty}</span>
-                          </div>
-                          <div className="hoverbox no-drag">
-                            <div className="hoverbox-contents">
-                            {
-                              filteredElement.name.length > 13
-                              ? 
-                                <div className="hoverbox-title" style={{width:`${filteredElement.name.length*30}px`}}>
-                                  <h5 className="width-50">{filteredElement.name}</h5>
-                                  <h5 className="width-50">{filteredElement.name}</h5>
-                                </div>
-                              : 
-                                <div className="hoverbox-title">
-                                  <h5 className="animation-paused">{filteredElement.name}</h5>
-                                </div>
-                            }
-                            {
-                              filteredElement.artist.length > 24
-                              ? <div className="hoverbox-subtitle" style={{width:`${filteredElement.artist.length*20}px`}}>
-                                  <span className="width-50">{filteredElement.artist}</span>
-                                  <span className="width-50">{filteredElement.artist}</span>
-                                </div>
-                              : <div className="hoverbox-subtitle">
-                                  <span className="animation-paused">{filteredElement.artist}</span>
-                                </div>
-                            }
-                              <table>
-                                <tbody>
-                                  <tr>
-                                    <td>NOTES</td>
-                                    <td>{filteredElement.totalNote}</td>
-                                  </tr>
-                                  <tr>
-                                    <td>BPM</td>
-                                    <td>{filteredElement.bpm}</td>
-                                  </tr>
-                                  <tr>
-                                    <td>CATEGORY</td>
-                                    <td>{filteredElement.category}</td>
-                                  </tr>
-                                </tbody>
-                              </table>
+          {rankIndex.map((targetRank, rowIdx) => {
+            return list.filter(
+              songlist =>
+                songlist.rank === targetRank[0] || songlist.rank === targetRank[1]
+            ).length !== 0 ? (
+              <div className="order-box" key={rowIdx}>
+                <span className="order-grade">{rankFilter(targetRank[0])}</span>
+                <div className="order-list">
+                  {/* {sortByDifficulty(filterByDifficultyIndex(userAchievementData, targetRank)) */}
+                  {sortByDifficulty(filterByDifficultyIndex(list, targetRank)).map(
+                    (filteredElement, columnIdx) => {
+                      const {
+                        artist,
+                        bestScore,
+                        bpm,
+                        category,
+                        description,
+                        difficulty,
+                        id,
+                        keyType,
+                        level,
+                        name,
+                        rank,
+                        totalNote,
+                        userRecordData,
+                        // userRecordData가 없을 경우에는 기본값으로 빈 객체를 줌
+                      } = filteredElement;
+                      return (
+                        <div className="song-wrapper" key={columnIdx}>
+                          <div className="song-infobox">
+                            <div className="imgbox no-drag">
+                              <img
+                                src={
+                                  process.env.PUBLIC_URL +
+                                  '/musicdiskResize/' +
+                                  renamed(name) +
+                                  '.webp'
+                                }
+                                alt={name}
+                                onError={handleImgError}
+                              ></img>
+                              <div className="shadowbox"></div>
+                              <span className={`level-badge ${difficulty}`}>
+                                {difficulty}
+                              </span>
                             </div>
+                            <div className="hoverbox no-drag">
+                              <div className="hoverbox-contents">
+                                {name.length > 13 ? (
+                                  <div
+                                    className="hoverbox-title"
+                                    style={{ width: `${name.length * 30}px` }}
+                                  >
+                                    <h5 className="width-50">{name}</h5>
+                                    <h5 className="width-50">{name}</h5>
+                                  </div>
+                                ) : (
+                                  <div className="hoverbox-title">
+                                    <h5 className="animation-paused">{name}</h5>
+                                  </div>
+                                )}
+                                {artist.length > 24 ? (
+                                  <div
+                                    className="hoverbox-subtitle"
+                                    style={{
+                                      width: `${artist.length * 20}px`,
+                                    }}
+                                  >
+                                    <span className="width-50">{artist}</span>
+                                    <span className="width-50">{artist}</span>
+                                  </div>
+                                ) : (
+                                  <div className="hoverbox-subtitle">
+                                    <span className="animation-paused">{artist}</span>
+                                  </div>
+                                )}
+                                <table>
+                                  <tbody>
+                                    <tr>
+                                      <td>NOTES</td>
+                                      <td>{totalNote}</td>
+                                    </tr>
+                                    <tr>
+                                      <td>BPM</td>
+                                      <td>{bpm}</td>
+                                    </tr>
+                                    <tr>
+                                      <td>CATEGORY</td>
+                                      <td>{category} </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                            {songTitleView && <p className="song-title">{name}</p>}
                           </div>
-                          {
-                            state.rankUserSelected.songTitleView === true
-                            ? <p className="song-title">{filteredElement.name} </p> 
-                            : null
-                          }
                         </div>
-                      </div>
-                      )
-                  })
-                }
+                      );
+                    }
+                  )}
                 </div>
               </div>
-            : null
-          })
-        }
+            ) : null;
+          })}
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default RankOrderList
+export default RankOrderList;

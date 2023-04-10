@@ -1,238 +1,634 @@
 /*eslint-disable*/
-import axios from "axios"
-import { useSelector, useDispatch } from "react-redux";
-import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react"
-import { API_URL } from "../services/temp";
-import { setAchievementKey, setAchievementDifficulty, setAchievementClean } from "../store"
-import defaultProfile from './../imagenone.webp'
+
+import axios from 'axios';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import {
+  setAchievementKey,
+  setAchievementLevel,
+  switchModalOpen,
+  setModalStep,
+  setSongInfo,
+  setSongList,
+  setFilteredElementIdx,
+  setUserDefault,
+} from '../store';
+import defaultProfile from './../imagenone.webp';
+import { getPlayStatusClass, returnGrade, rankFilter, renamed } from '../utills/utill';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheck, faXmark, faStarHalf, faStar } from '@fortawesome/free-solid-svg-icons';
+import {
+  getUserAchievementData,
+  postScore,
+  reIssue,
+  refreshTokenExpired,
+} from '../utills/axios';
+import { flushSync } from 'react-dom';
 
 const AchievementList = () => {
-  const state = useSelector( (state) => state )
-  const dispatch = useDispatch()
-  const {urlKey, urlDifficulty} = useParams()
-  const {selectedKey, selectedKeyCaps, selectedDifficulty, selectedRank, selectedRankView} = state.achievementUserSelected
-  const [list, setList] = useState([])
-  const AT = localStorage.getItem("accessToken")
-  
-  let levelIndex 
-  if (state.achievementUserSelected.isDescending){levelIndex = [[9,8],[7,6],[5,4],[3,2],[1,0]];}
-  else {levelIndex = [[1,0],[3,2],[5,4],[7,6],[9,8]];}
+  const state = useSelector(state => state);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { urlKey, urlLevel } = useParams();
+  const {
+    selectedKey,
+    selectedKeyCaps,
+    selectedLevel,
+    selectedGrade,
+    songTitleView,
+    isDescending,
+  } = state.achievementUserSelected;
+  const { songList, filteredElementIdx } = state.achievementSongInfo;
+  const { isLoginTried, userName, userId, userAuth, userAddTime } = state.userinfo;
+  const [isLogined, setIsLogined] = useState(true);
+  const [selectedScoreInput, setSelectedScoreInput] = useState([-1, -1]);
+  const [isWriteAllCool, setIsWriteAllCool] = useState(false);
+  const [isWriteAllCombo, setIsWriteAllCombo] = useState(false);
+  const [scoreInputValue, setScoreInputValue] = useState(-1);
+  const [isAllSelected, setIsAllSelected] = useState(false);
+  // const [filteredElementIdx, setFilteredElementIdx] = useState(-1)
+  const [msg, setMsg] = useState('');
+  const [isMsgBoxVisible, setIsMsgBoxVisible] = useState(false);
+  const [isScorePostSuccess, setIsScorePostSuccess] = useState(false);
+  const [alertboxAnimation, setAlertboxAnimation] = useState('');
+  const AT = localStorage.getItem('accessToken');
+
+  let rankIndex;
+  if (isDescending) {
+    rankIndex = [[9, 8], [7, 6], [5, 4], [3, 2], [1, 0], [-99]];
+  } else {
+    rankIndex = [[1, 0], [3, 2], [5, 4], [7, 6], [9, 8], [-99]];
+  }
+
+  ////////// 초기 설정 //////////
 
   // URL 직접 접근 시 해당 키/난이도를 바로 조회하도록 설정
-  useEffect(()=>{
-    dispatch(setAchievementKey(urlKey))
-    dispatch(setAchievementDifficulty(urlDifficulty))  
-  }, [])
+  useEffect(() => {
+    dispatch(setAchievementKey(urlKey));
+    dispatch(setAchievementLevel(urlLevel));
+  }, []);
 
-  // AchievementSelector에서 선택 완료 시
-  useEffect(()=>{
-    if (selectedKey && selectedDifficulty) {
-      axios
-        .get(`${API_URL}/achievement/${selectedKeyCaps}/${selectedDifficulty}/list`,
-        {
-          headers: {
-            Authorization: `Bearer ${AT}`
+  // 빠른 수기 입력 선택 index를 초기화 함.
+  useEffect(() => {
+    setSelectedScoreInput([-1, -1]);
+  }, [urlKey, urlLevel]);
+
+  // store의 userInfo를 참조하여 값이 있으면 login 했다고 판단
+  useEffect(() => {
+    if (userName && userId && userAuth && userAddTime) {
+      setIsLogined(true);
+    } else {
+      setIsLogined(false);
+    }
+  }, [userName, userId, userAuth, userAddTime]);
+
+  ////////// 초기 설정이 완료되면 //////////
+
+  // 키와 난이도가 전부 선택되었을 때 데이터 요청 실시에 참고하는 변수를 조작
+  useEffect(() => {
+    if (selectedKey && selectedLevel) {
+      setTimeout(() => {
+        setIsAllSelected(true);
+      }, 0);
+    }
+    return () => {
+      setIsAllSelected(false);
+    };
+  }, [selectedKey, selectedLevel]);
+
+  // 키와 난이도가 모두 선택되었다면 axios 요청을 전송함.
+  useEffect(() => {
+    if (isAllSelected && isLogined) {
+      getUserAchievementDataProcess();
+    }
+  }, [isAllSelected, isLogined]);
+
+  const getUserAchievementDataProcess = async () => {
+    try {
+      const response = await getUserAchievementData(selectedKeyCaps, selectedLevel);
+      dispatch(setSongList(response));
+    } catch (error) {
+      try {
+        await reIssue();
+        const responseAfterReIssue = await getUserAchievementData(
+          selectedKeyCaps,
+          selectedLevel
+        );
+        dispatch(setSongList(responseAfterReIssue));
+      } catch (error) {
+        refreshTokenExpired();
+        navigate('/');
+        dispatch(setUserDefault());
+      }
+    }
+  };
+
+  // 빠른 수기 입력이나 모달창 내부에서 곡의 정보가 변할 경우 모달창 내부로 전송되는 songInfo도 변화
+  useEffect(() => {
+    dispatch(setSongInfo(songList[filteredElementIdx]));
+  }, [songList]);
+
+  ////////// 우측 하단 팝업창 관련 //////////
+
+  // 애니메이션 관련
+  useEffect(() => {
+    let animationTimer;
+    if (isMsgBoxVisible) {
+      animationTimer = setTimeout(() => {
+        setAlertboxAnimation('alert-box-show');
+      }, 1);
+    }
+    return () => {
+      clearTimeout(animationTimer);
+      setAlertboxAnimation('');
+    };
+  }, [isMsgBoxVisible]);
+
+  // 하단 팝업창이 보일 경우 3초간의 showTime
+  useEffect(() => {
+    let alertOpen;
+
+    if (isMsgBoxVisible) {
+      alertOpen = setTimeout(() => {
+        setIsMsgBoxVisible(false);
+      }, 3000);
+    }
+    return () => {
+      clearTimeout(alertOpen);
+    };
+  }, [isMsgBoxVisible]);
+
+  ////////// 간편 수기 입력 관련 //////////
+
+  // 리스트 간편 수기 입력창에서 All Cool이 켜지면 All Combo가 자동으로 켜지게 함
+  useEffect(() => {
+    if (isWriteAllCool) {
+      setIsWriteAllCombo(true);
+    }
+  }, [isWriteAllCool]);
+
+  // 리스트 간편 수기 입력창에서 All Combo가 꺼지면 All Cool이 자동으로 꺼지게 함
+  useEffect(() => {
+    if (!isWriteAllCombo) {
+      setIsWriteAllCool(false);
+    }
+  }, [isWriteAllCombo]);
+
+  // AchievementSelector에서 선택된 Grade를 제외한 나머지는 반투명하게 함.
+  const matchFilter = songinfo => {
+    if (songinfo.userRecordData) {
+      const { grade } = songinfo.userRecordData;
+      const matchGrade = selectedGrade.find(selectedGrade => selectedGrade === grade);
+      if (!matchGrade && selectedGrade.length !== 0) {
+        return 'disabled';
+      }
+    }
+  };
+
+  // 수기 입력 전송 프로세스
+  const postScoreProcess = async id => {
+    const postScoreAndRefresh = async () => {
+      await postScore(id, isWriteAllCool, isWriteAllCombo, scoreInputValue);
+      await getUserAchievementDataProcess();
+      setSelectedScoreInput([-1, -1]);
+    };
+
+    // const postFeedbackAnimation = isSuccess => {
+    //   switch (isSuccess) {
+    //     case '[':
+    //       flushSync(() => {
+    //         setIsMsgBoxVisible(false);
+    //         setIsScorePostSuccess(false);
+    //       });
+    //       flushSync(() => {
+    //         setIsMsgBoxVisible(true);
+    //         setIsScorePostSuccess(true);
+    //       });
+    //     case 'rejected':
+    //       flushSync(() => {
+    //         setIsMsgBoxVisible(false);
+    //         setIsScorePostSuccess(false);
+    //       });
+    //       flushSync(() => {
+    //         setIsMsgBoxVisible(true);
+    //         setIsScorePostSuccess(false);
+    //       });
+    //   }
+    // };
+
+    try {
+      await postScoreAndRefresh();
+      // postFeedbackAnimation('succeed');
+      flushSync(() => {
+        setIsMsgBoxVisible(false);
+        setIsScorePostSuccess(false);
+      });
+      flushSync(() => {
+        setIsMsgBoxVisible(true);
+        setIsScorePostSuccess(true);
+      });
+      setMsg('저장이 완료되었습니다');
+    } catch (error) {
+      if (error.response.status === 400) {
+        flushSync(() => {
+          setIsMsgBoxVisible(false);
+          setIsScorePostSuccess(false);
+        });
+        flushSync(() => {
+          setIsMsgBoxVisible(true);
+          setIsScorePostSuccess(false);
+        });
+        setMsg(error.response.data.message);
+      } else {
+        try {
+          await reIssue();
+          await postScoreAndRefresh();
+          flushSync(() => {
+            setIsMsgBoxVisible(false);
+            setIsScorePostSuccess(false);
+          });
+          flushSync(() => {
+            setIsMsgBoxVisible(true);
+            setIsScorePostSuccess(true);
+          });
+          setMsg('저장이 완료되었습니다');
+        } catch (error) {
+          if (error.response.status === 400) {
+            flushSync(() => {
+              setIsMsgBoxVisible(false);
+              setIsScorePostSuccess(false);
+            });
+            flushSync(() => {
+              setIsMsgBoxVisible(true);
+              setIsScorePostSuccess(false);
+            });
+            setMsg(error.response.data.message);
+          } else {
+            refreshTokenExpired();
+            navigate('/');
+            dispatch(setUserDefault());
           }
-        })
-      .then((res) => setList(res.data.data))
-      // .then(console.log(list))
-      .catch((err) => { console.log(err) })
+        }
+      }
     }
-  }, [selectedKey, selectedDifficulty])
+  };
 
-  const detailDifficultyFilter = (detailDifficulty) => {
-    switch(detailDifficulty){
-      case 0:
-      case 1:
-        return '하';
-      case 2:
-      case 3:
-        return '중하';
-      case 4:
-      case 5:
-        return '중상';
-      case 6:
-      case 7:
-        return '상';
-      case 8:
-      case 9:
-        return '최상';
-      default: 
-        // nothing
-    }
-  }
-
-  const returnClass = (songinfo) => {
-    const { allCool, noMiss } = songinfo
-    if (allCool) { return "all-cool" }
-    else if (noMiss) { return "all-combo" }
-    else if (isPlayed(songinfo)) { return "clear" }
-    else { return "no-play" }
-  }
-
-  const matchFilter = (songinfo) => {
-    const {grade} = songinfo
-    const dbRank = ["SPPP","SPP","SP","S","AP","A","B","C","D","E","F"]
-    const gradeIndex = dbRank.indexOf(grade);
-    const selectedRankIndex = dbRank.indexOf(selectedRank);
-
-    if (selectedRankView === "동일" && selectedRank !== grade){return "disabled"} 
-    if (selectedRankView === "초과" && selectedRankIndex <= gradeIndex){return "disabled"}
-    if (selectedRankView === "이상" && selectedRankIndex < gradeIndex){return "disabled"}
-    if (selectedRankView === "이하" && selectedRankIndex > gradeIndex){return "disabled"}
-    if (selectedRankView === "미만" && selectedRankIndex >= gradeIndex){return "disabled"}
-    if (selectedRankView === "해제"){return ""}
-  }
-
-  const isPlayed = (songinfo) => {
-    const { score, percentage, recordId, grade } = songinfo
-    // 미클리어시 percentage, recordId, score는 -1, grade는 ""로 나옴 
-    // point는 60만점으로 기록하니 0으로 떠서 지웠음.
-    if (percentage > 0 && recordId > 0 && score > 0 && grade){ return true }
-    else { return false }
-  }
-  
-  const handleImgError = (e) => {
+  // 이미지가 없을 경우 기본 이미지로 나오도록 함
+  const handleImgError = e => {
     e.target.src = defaultProfile;
-  }
+  };
 
-    return (
-      <>
-        <div className="orderlist-wrapper">
-          <div className="header">
-            <h1 className="theme-pp">{selectedKey.toUpperCase()} </h1>
-            <h1>{selectedDifficulty}</h1>
-          </div>
-          {/* Songs 클래스 네임 변경할것 */}
-          <div className="flex-grow-1">
-          {/* 서열 9부터 0까지 내림차순으로 반환함 */}
-          {
-            levelIndex.map((detailDifficulty, index) => { 
-              const copylist = [...list]
-              // 서열값이 있는지 확인하고 있으면 JSX 출력, 없으면 null 뱉기
-              return list.filter(songlist => songlist.rank === detailDifficulty[0] || songlist.rank === detailDifficulty[1]).length !== 0
-              ? <div className="order-box" key={index}>
-                  <span className="order-grade">{detailDifficultyFilter(detailDifficulty[0])}</span>
-                  <div className='order-list'>
-                  {/* 특정 서열(ex:19.최상 → 19.9과 19.8)에 해당하는 곡명과 이미지들 전부 출력 */}
-                  {/* 오름차순이 켜져있으면 난이도(EZ,NM,HD,SHD) > 이름 순으로 정렬해서 표시하도록 할 것. 내림차순이면 (SHD,HD,NM,EZ)*/}
-                  {
-                    copylist.filter(songlist => songlist.rank === detailDifficulty[0] || songlist.rank === detailDifficulty[1]).sort((a,b)=>{
-                      const x = a.difficulty;
-                      const y = b.difficulty;
-                      //내림차순이면 난이도 정렬 역시 내림차순으로 (SHD → EZ), 오름차순이면 (EZ → SHD)순으로 정렬.
-                      if(state.rankUserSelected.isDescending === true){
-                        // SHD 정렬 먼저
-                        if (x.length < y.length) return 1;
-                        if (x.length > y.length) return -1;
-                        // 그다음 EZ, NM, HD의 뒷 글자(Z, M, D)를 가지고 정렬
-                        if (x.slice(x.length-1, x.length) > y.slice(y.length-1, y.length)) return 1;
-                        if (x.slice(x.length-1, x.length) < y.slice(y.length-1, y.length)) return -1;
-                      } else {
-                        // SHD 정렬 먼저
-                        if (x.length > y.length) return 1;
-                        if (x.length < y.length) return -1;
-                        // 그다음 EZ, NM, HD의 뒷 글자(Z, M, D)를 가지고 정렬
-                        if (x.slice(x.length-1, x.length) < y.slice(y.length-1, y.length)) return 1;
-                        if (x.slice(x.length-1, x.length) > y.slice(y.length-1, y.length)) return -1;
-                      }
-                    }).map((filteredElement, index)=>{
-                      const renamed = filteredElement.name.toLowerCase().replace(/ /g, "").replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/ ]/g, "");
-                      return (
-                        <div className="song-wrapper" key={index}>
-                          <div className="song-infobox">
-                            <div className="imgbox no-drag">
-                              <img  
-                                src={process.env.PUBLIC_URL + '/musicdiskResize/'+ renamed + '.webp'} 
-                                // 아래는 에러 테스트용.
-                                // src={process.env.PUBLIC_URL + '/musicdiskResize/'+ renamed + '.web'} 
-                                alt={filteredElement.name}
-                                onLoad={()=>{console.log("로드완료")}}
-                                onError={handleImgError}
-                                className={`${returnClass(filteredElement)} ${matchFilter(filteredElement)}`}
-                              // style={{border: "2px solid yellow", backgroundColor:"yellow" , borderRadius: "50%"}}
+  // 디스크를 클릭할 경우 모달을 열고 모달창 내부에 리스트 정보를 전송함.
+  const achievementModalOpen = filteredElement => {
+    dispatch(switchModalOpen());
+    dispatch(setModalStep(4));
+    dispatch(setSongInfo(filteredElement));
+    dispatch(
+      setFilteredElementIdx(songList.findIndex(el => el.id === filteredElement.id))
+    );
+  };
+
+  // 곡 리스트와 rankIndex 단일 요소를 넣으면 그 기준에 맞는 곡만 반환
+  const filterByDifficultyIndex = (data, array) => {
+    return data.filter(
+      songlist => songlist.rank === array[0] || songlist.rank === array[1]
+    );
+  };
+
+  // 곡 리스트들을 난이도를 기준으로 정렬함. 내림차순, 오름차순 옵션이 반영됨.
+  const sortByDifficulty = data => {
+    /** 난이도를 숫자화시켜 정렬할 수 있게 만들어줌 */
+    const getDifficultyScore = difficulty => {
+      switch (difficulty) {
+        case 'EZ':
+          return 1;
+        case 'NM':
+          return 2;
+        case 'HD':
+          return 3;
+        case 'SHD':
+          return 4;
+        default:
+          return 0;
+      }
+    };
+    const sorted = data.sort((a, b) => {
+      const x = getDifficultyScore(a.difficulty);
+      const y = getDifficultyScore(b.difficulty);
+      return isDescending ? y - x : x - y;
+    });
+    return sorted;
+  };
+
+  return isLoginTried && userName && userId && userAuth && userAddTime ? (
+    <div className="orderlist-wrapper">
+      <div className="header">
+        <h1 className="theme-pp">{selectedKey.toUpperCase()} </h1>
+        <h1>{selectedLevel}</h1>
+      </div>
+      {/* Songs 클래스 네임 변경할것 */}
+      <div className="flex-grow-1">
+        {rankIndex.map((targetRank, rowIdx) => {
+          return songList.filter(
+            songlist => songlist.rank === targetRank[0] || songlist.rank === targetRank[1]
+          ).length !== 0 ? (
+            <div className="order-box" key={rowIdx}>
+              <span className="order-grade">{rankFilter(targetRank[0])}</span>
+              <div className="order-list">
+                {/* {sortByDifficulty(filterByDifficultyIndex(userAchievementData, targetRank)) */}
+                {sortByDifficulty(filterByDifficultyIndex(songList, targetRank)).map(
+                  (filteredElement, columnIdx) => {
+                    const {
+                      artist,
+                      bestScore,
+                      bpm,
+                      category,
+                      description,
+                      difficulty,
+                      id,
+                      keyType,
+                      level,
+                      name,
+                      rank,
+                      totalNote,
+                      userRecordData,
+                      // userRecordData가 없을 경우에는 기본값으로 빈 객체를 줌
+                    } = filteredElement;
+                    const { recordId, grade, isAllCool, isNoMiss, score, percentage } =
+                      userRecordData;
+                    return (
+                      <div className="song-wrapper" key={columnIdx}>
+                        <div className="song-infobox">
+                          <div className="imgbox no-drag pointer">
+                            {selectedScoreInput[0] === rowIdx &&
+                              selectedScoreInput[1] === columnIdx && (
+                                <div className="score-input-option-wrapper">
+                                  <FontAwesomeIcon
+                                    icon={faXmark}
+                                    className="xmarkBtnCircle"
+                                    onClick={() => {
+                                      setSelectedScoreInput([-1, -1]);
+                                    }}
+                                  ></FontAwesomeIcon>
+                                  <FontAwesomeIcon
+                                    icon={faCheck}
+                                    className="checkBtnCircle"
+                                    onClick={() => {
+                                      postScoreProcess(id);
+                                    }}
+                                  ></FontAwesomeIcon>
+                                  <FontAwesomeIcon
+                                    icon={faStarHalf}
+                                    className={`starHalfBtnCircle ${
+                                      isWriteAllCombo ? null : 'no-checked'
+                                    }`}
+                                    onClick={() => {
+                                      setIsWriteAllCombo(prev => !prev);
+                                    }}
+                                  ></FontAwesomeIcon>
+                                  <FontAwesomeIcon
+                                    icon={faStar}
+                                    className={`starBtnCircle ${
+                                      isWriteAllCool ? null : 'no-checked'
+                                    }`}
+                                    onClick={() => {
+                                      setIsWriteAllCool(prev => !prev);
+                                    }}
+                                  ></FontAwesomeIcon>
+                                </div>
+                              )}
+                            <img
+                              src={
+                                process.env.PUBLIC_URL +
+                                '/musicdiskResize/' +
+                                renamed(name) +
+                                '.webp'
+                              }
+                              alt={name}
+                              onError={handleImgError}
+                              className={`${getPlayStatusClass(
+                                filteredElement
+                              )} ${matchFilter(
+                                filteredElement
+                              )} small-border theme-pp-shadow`}
+                              onClick={() => {
+                                achievementModalOpen(filteredElement);
+                              }}
+                            ></img>
+                            <div
+                              className={`shadowbox ${matchFilter(filteredElement)}`}
+                              onClick={() => {
+                                achievementModalOpen(filteredElement);
+                              }}
+                            ></div>
+                            <span
+                              // className={`level-badge ${difficulty} ${matchFilter(filteredElement)}`}
+                              className={`level-badge ${difficulty}`}
+                              onClick={() => {
+                                achievementModalOpen(filteredElement);
+                              }}
+                            >
+                              {difficulty}
+                            </span>
+                            {/* <div className={`user-score-container ${matchFilter(filteredElement)}`}> */}
+                            <div className={`user-score-container`}>
+                              <img
+                                src={
+                                  process.env.PUBLIC_URL +
+                                  '/gradeImg/' +
+                                  returnGrade(grade) +
+                                  '.png'
+                                }
+                                onClick={() => {
+                                  achievementModalOpen(filteredElement);
+                                }}
+                                className={`${matchFilter(filteredElement)}`}
                               ></img>
-                              <div className="shadowbox"></div>
-                              <span className={`level-badge ${filteredElement.difficulty}`}>{filteredElement.difficulty}</span>
-                              {/* <img src={process.env.PUBLIC_URL + '/rankImg/'+ filteredElement.grade + '.png'} className="testing"></img> */}
-                              <div 
-                                className={`test2 ${isPlayed(filteredElement) ? "" : "hidden"}`}
+                              <p
+                                onClick={() => {
+                                  setSelectedScoreInput([rowIdx, columnIdx]);
+                                }}
+                                // A+ 이미지 간격이 안 맞아서 우측 마진 조금 더 줌.
+                                style={grade === 'AP' ? { marginRight: '5px' } : null}
                               >
-                                <img src={process.env.PUBLIC_URL + '/rankImg/'+ filteredElement.grade + '.png'} className="test3"></img>
-                                {/* <div className="test3"></div> */}
-                                <p className="test4">{Math.round(filteredElement.percentage * 10) / 10}%</p>
-                              </div>
+                                {score ? (Math.floor(score / 100) / 100).toFixed(2) : '-'}
+                              </p>
+                              {selectedScoreInput[0] === rowIdx &&
+                                selectedScoreInput[1] === columnIdx && (
+                                  <input
+                                    type="number"
+                                    name="score"
+                                    step="1000"
+                                    onInput={e => {
+                                      if (e.target.value.length > e.target.maxLength)
+                                        e.target.value = e.target.value.slice(
+                                          0,
+                                          e.target.maxLength
+                                        );
+                                      setScoreInputValue(e.target.value);
+                                    }}
+                                    max={`${bestScore}`}
+                                    min="0"
+                                    maxLength={7}
+                                    defaultValue={`${score}`}
+                                  ></input>
+                                )}
                             </div>
-                            <div className="hoverbox no-drag">
-                              <div className="hoverbox-contents">
-                              {
-                                filteredElement.name.length > 13
-                                ? 
-                                  <div className="hoverbox-title" style={{width:`${filteredElement.name.length*30}px`}}>
-                                    <h5 className="width-50">{filteredElement.name}</h5>
-                                    <h5 className="width-50">{filteredElement.name}</h5>
-                                  </div>
-                                : 
-                                  <div className="hoverbox-title">
-                                    <h5 className="animation-paused">{filteredElement.name}</h5>
-                                  </div>
-                              }
-                              {
-                                // filteredElement.artist.length > 24
-                                // ? <div className="hoverbox-subtitle" style={{width:`${filteredElement.artist.length*20}px`}}>
-                                //     <span className="width-50">{filteredElement.artist}</span>
-                                //     <span className="width-50">{filteredElement.artist}</span>
-                                //   </div>
-                                // : <div className="hoverbox-subtitle">
-                                //     <span className="animation-paused">{filteredElement.artist}</span>
-                                //   </div>
-                              }
-                                <table>
-                                  <tbody>
-                                    <tr>
-                                      <td>SCORE</td>
-                                      <td>{filteredElement.score}</td>
-                                    </tr>
-                                    {/* <tr>
-                                      <td>RATE</td>
-                                      <td>{Math.round(filteredElement.percentage * 10) / 10}</td>
-                                    </tr> */}
-                                    <tr>
-                                      <td>곡 코드</td>
-                                      <td>{filteredElement.musicInfoId}</td>
-                                    </tr>
-                                    <tr>
-                                      <td>곡 랭크</td>
-                                      <td>{filteredElement.grade} </td>
-                                    </tr>
-                                    <tr>
-                                      <td>ALL</td>
-                                      <td>{filteredElement.allCool ? "Y" : "N"}/{filteredElement.noMiss ? "Y" : "N"}</td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-                              </div>
-                            </div>
-                            {
-                              state.achievementUserSelected.songTitleView === true
-                              ? <p className="song-title">{filteredElement.name} </p> 
-                              : null
-                            }
                           </div>
+                          <div className="hoverbox no-drag">
+                            <div className="hoverbox-contents">
+                              {name.length > 13 ? (
+                                <div
+                                  className="hoverbox-title"
+                                  style={{ width: `${name.length * 30}px` }}
+                                >
+                                  <h5 className="width-50">{name}</h5>
+                                  <h5 className="width-50">{name}</h5>
+                                </div>
+                              ) : (
+                                <div className="hoverbox-title">
+                                  <h5 className="animation-paused">{name}</h5>
+                                </div>
+                              )}
+                              <table>
+                                <tbody>
+                                  <tr>
+                                    <td>SCORE</td>
+                                    <td>{score}</td>
+                                  </tr>
+                                  <tr>
+                                    <td>곡 코드</td>
+                                    <td>{id}</td>
+                                  </tr>
+                                  <tr>
+                                    <td>노트 수</td>
+                                    <td>{totalNote} </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                          {songTitleView && <p className="song-title">{name}</p>}
                         </div>
-                        )
-                    })
+                      </div>
+                    );
                   }
-                  </div>
-                </div>
-              : null
-            })
-          }
-          </div>
+                )}
+              </div>
+            </div>
+          ) : null;
+        })}
+      </div>
+      {isMsgBoxVisible && (
+        <div className={`alert-box ${alertboxAnimation}`}>
+          {isScorePostSuccess ? (
+            <svg
+              width="35px"
+              height="35px"
+              viewBox="0 0 133 133"
+              version="1.1"
+              xmlns="http://www.w3.org/2000/svg"
+              // xmlns:xlink="http://www.w3.org/1999/xlink"
+            >
+              <g
+                className="check-group"
+                stroke="none"
+                strokeWidth="1"
+                fill="none"
+                fillRule="evenodd"
+              >
+                <circle
+                  className="filled-circle"
+                  fill="#5cb85c"
+                  cx="66.5"
+                  cy="66.5"
+                  r="54.5"
+                />
+                <circle
+                  className="white-circle"
+                  fill="#FFFFFF"
+                  cx="66.5"
+                  cy="66.5"
+                  r="55.5"
+                />
+                <circle
+                  className="outline"
+                  stroke="#5cb85c"
+                  strokeWidth="4"
+                  cx="66.5"
+                  cy="66.5"
+                  r="54.5"
+                />
+                <polyline
+                  className="check"
+                  stroke="#FFFFFF"
+                  strokeWidth="5.5"
+                  points="41 70 56 85 92 49"
+                />
+              </g>
+            </svg>
+          ) : (
+            <svg
+              width="35px"
+              height="35px"
+              viewBox="0 0 133 133"
+              version="1.1"
+              xmlns="http://www.w3.org/2000/svg"
+              // xmlns:xlink="http://www.w3.org/1999/xlink"
+            >
+              <g
+                className="xmark-group"
+                stroke="none"
+                strokeWidth="1"
+                fill="none"
+                fillRule="evenodd"
+              >
+                <circle
+                  className="filled-circle"
+                  fill="#e53935"
+                  cx="66.5"
+                  cy="66.5"
+                  r="54.5"
+                />
+                <circle
+                  className="white-circle"
+                  fill="#FFFFFF"
+                  cx="66.5"
+                  cy="66.5"
+                  r="55.5"
+                />
+                <circle
+                  className="outline"
+                  stroke="#e53935"
+                  strokeWidth="4"
+                  cx="66.5"
+                  cy="66.5"
+                  r="54.5"
+                />
+                <polyline
+                  className="check"
+                  stroke="#FFFFFF"
+                  strokeWidth="5.5"
+                  points="41 68 92 68"
+                />
+              </g>
+            </svg>
+          )}
+          <span className="alert-box-contents">{msg}</span>
         </div>
-      </>
-    )
-  }
+      )}
+    </div>
+  ) : (
+    <div className="pleaseSelectBox">
+      <img
+        src={process.env.PUBLIC_URL + '/source/pleaseLogin.png'}
+        alt="PleaseSelectAchievement"
+      ></img>
+      <h3>로그인이 필요합니다!</h3>
+      <h5>좋은 말할 때 로그인하십쇼</h5>
+    </div>
+  );
+};
 
-export default AchievementList
+export default AchievementList;

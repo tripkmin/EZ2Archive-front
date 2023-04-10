@@ -1,25 +1,38 @@
-import { createSlice, configureStore } from '@reduxjs/toolkit'
+import {
+  createSlice,
+  configureStore
+} from '@reduxjs/toolkit'
 
 const userinfo = createSlice({
-  name : "userinfo",
-  initialState : {userName : "", userId : "", userAuth: "", userAddTime: "", manageMode: false},
-  reducers : {
-    setUserName(state, action){
+  name: "userinfo",
+  initialState: {
+    isLoginTried: false,
+    userName: "",
+    userId: "",
+    userAuth: "",
+    userAddTime: "",
+    manageMode: false
+  },
+  reducers: {
+    setIsLoginTried(state, action) {
+      state.isLoginTried = action.payload;
+    },
+    setUserName(state, action) {
       state.userName = action.payload;
     },
-    setUserId(state, action){
+    setUserId(state, action) {
       state.userId = action.payload;
     },
-    setUserAuth(state, action){
+    setUserAuth(state, action) {
       state.userAuth = action.payload;
     },
-    setUserAddTime(state, action){
+    setUserAddTime(state, action) {
       state.userAddTime = action.payload;
     },
-    setManageMode(state, action){
+    setManageMode(state, action) {
       state.manageMode = action.payload;
     },
-    setDefault(state, action){
+    setUserDefault(state) {
       state.userName = "";
       state.userId = "";
       state.userAuth = "";
@@ -29,124 +42,188 @@ const userinfo = createSlice({
   }
 })
 
-const memberModal = createSlice({
-  name : "memberModal",
-  initialState : {isModalOpen : false, modalStep : 0 },
-  reducers : {
-    switchModalOpen(state){
-      state.isModalOpen = !state.isModalOpen
+const modal = createSlice({
+  name: "memberModal",
+  initialState: {
+    isModalOpen: false,
+    modalStep: 0,
+    loginTryCount: 0
+  },
+  reducers: {
+    switchModalOpen(state) {
+      state.isModalOpen = !state.isModalOpen;
     },
-    setModalStep(state, action){
-      state.modalStep = action.payload
+    setModalStep(state, action) {
+      state.modalStep = action.payload;
+    },
+    setLoginTryCount(state, action) {
+      state.loginTryCount = action.payload
+    },
+    setModalDefault(state) {
+      state.isModalOpen = false;
+      state.modalStep = 0;
     }
   }
 })
 
+// filterSelected같은 걸로 나중에 바꾸기
 const achievementUserSelected = createSlice({
-  name : "achievementUserSelected",
+  name: "achievementUserSelected",
   // selectedKey는 4k, selectedKeyCaps는 FOUR와 같이 저장됨.
-  initialState : {selectedKey : "", selectedKeyCaps: "", selectedDifficulty : 0, selectedRank : "", selectedRankView : "", songTitleView : true, isDescending : true, },
-  reducers : {
-    setTitleView(state, action){
+  initialState: {
+    selectedKey: "",
+    selectedKeyCaps: "",
+    selectedLevel: 0,
+    selectedGrade: [],
+    songTitleView: true,
+    isDescending: true,
+  },
+  reducers: {
+    setTitleView(state, action) {
       state.songTitleView = action.payload
     },
-    setDescending(state, action){
+    setDescending(state, action) {
       state.isDescending = action.payload
     },
-    setAchievementKey(state, action){
+    setAchievementKey(state, action) {
       state.selectedKey = action.payload;
-      switch(action.payload) {
-        case '4k' : state.selectedKeyCaps = "FOUR"; break;
-        case '5k' : state.selectedKeyCaps = "FIVE"; break;
-        case '6k' : state.selectedKeyCaps = "SIX"; break;
-        case '8k' : state.selectedKeyCaps = "EIGHT"; break;
+      switch (action.payload) {
+        case '4k':
+          state.selectedKeyCaps = "FOUR";
+          break;
+        case '5k':
+          state.selectedKeyCaps = "FIVE";
+          break;
+        case '6k':
+          state.selectedKeyCaps = "SIX";
+          break;
+        case '8k':
+          state.selectedKeyCaps = "EIGHT";
+          break;
         default: // nothing
       }
     },
-    setAchievementDifficulty(state, action){
-      state.selectedDifficulty = action.payload;
+    setAchievementLevel(state, action) {
+      state.selectedLevel = action.payload;
     },
-    setAchievementRank(state, action){
-      state.selectedRank = action.payload;
+    setAchievementRank(state, action) {
+      const index = state.selectedGrade.indexOf(action.payload)
+      if (index !== -1) {
+        state.selectedGrade.splice(index, 1)
+      } else {
+        state.selectedGrade.push(action.payload)
+      }
     },
-    setSelectedRankView(state, action){
-      state.selectedRankView = action.payload;
-    }
-    ,
-    setAchievementClean(state){
+    setAchievementRankDefault(state) {
+      state.selectedGrade = [];
+    },
+    setAchievementClean(state) {
       state.selectedKey = "";
       state.selectedKeyCaps = "";
-      state.selectedDifficulty = 0;
-      state.selectedRank = "";
+      state.selectedLevel = 0;
+      state.selectedGrade = [];
     }
   }
 })
 
-const achievementSelectIndex = createSlice({
-  name : "achievementSelectIndex",
-  initialState : [
-    {
-      key: '4k', 
-      difficulty : Array.from({length: 20}, (_, i) => i + 1), 
-      dbRank : ["SPPP","SPP","SP","S","AP","A","B","C","D","E","F",],
-      convertName : ["S⁺⁺⁺","S⁺⁺","S⁺","S","A⁺","A","B","C","D","E","F",],
-      class: ["", "", "", "", ""]}, 
-    {
-      key: '5k', 
-      difficulty : Array.from({length: 20}, (_, i) => i + 1), 
-      dbRank : ["SPPP","SPP","SP","S","AP","A","B","C","D","E","F",],
-      convertName : ["S⁺⁺⁺","S⁺⁺","S⁺","S","A⁺","A","B","C","D","E","F",],
-      class: ["", "", "", "", ""]}, 
-    {
-      key: '6k', 
-      difficulty : Array.from({length: 20}, (_, i) => i + 1), 
-      dbRank : ["SPPP","SPP","SP","S","AP","A","B","C","D","E","F",],
-      convertName : ["S⁺⁺⁺","S⁺⁺","S⁺","S","A⁺","A","B","C","D","E","F",],
-      class: ["", "", "", "", ""]}, 
-    {
-      key: '8k', 
-      difficulty : Array.from({length: 20}, (_, i) => i + 1), 
-      dbRank : ["SPPP","SPP","SP","S","AP","A","B","C","D","E","F",],
-      convertName : ["S⁺⁺⁺","S⁺⁺","S⁺","S","A⁺","A","B","C","D","E","F",],
-      class: ["", "", "", "", ""]}],
+const achievementSongInfo = createSlice({
+  name: "achievementSongInfo",
+  initialState: {
+    songList: [],
+    songInfo: {},
+    filteredElementIdx: -1
+  },
+  reducers: {
+    setSongList(state, action) {
+      state.songList = action.payload
+    },
+    setSongInfo(state, action) {
+      state.songInfo = action.payload
+    },
+    setFilteredElementIdx(state, action) {
+      state.filteredElementIdx = action.payload
+    },
+    cleanSongList(state) {
+      state.songList = []
+    }
+  }
 })
 
 const rankUserSelected = createSlice({
-  name : "rankUserSelected",
-  initialState : {selectedKey : "", selectedDifficulty : 0, songTitleView : true, isDescending : true},
-  reducers : {
-    setRankTitleView(state, action){
+  name: "rankUserSelected",
+  initialState: {
+    selectedKey: "",
+    selectedKeyCaps: "",
+    selectedLevel: 0,
+    songTitleView: true,
+    isDescending: true
+  },
+  reducers: {
+    setRankKey(state, action) {
+      state.selectedKey = action.payload;
+      switch (action.payload) {
+        case '4k':
+          state.selectedKeyCaps = "FOUR";
+          break;
+        case '5k':
+          state.selectedKeyCaps = "FIVE";
+          break;
+        case '6k':
+          state.selectedKeyCaps = "SIX";
+          break;
+        case '8k':
+          state.selectedKeyCaps = "EIGHT";
+          break;
+        default: // nothing
+      }
+    },
+    setRankLevel(state, action) {
+      state.selectedLevel = action.payload;
+    },
+    setRankTitleView(state, action) {
       state.songTitleView = action.payload
     },
-    setRankDescending(state, action){
+    setRankDescending(state, action) {
       state.isDescending = action.payload
     },
-    setRankKeyAndDifficulty(state, action){
-      state.selectedKey = action.payload.key;
-      state.selectedDifficulty = action.payload.difficulty;
-      // RankOrderSelector에서 특정 키, 난이도 선택했을 때 실행 되도록 함.
-    },
-    setRankCleanKeyAndDifficulty(state){
+    setRankClean(state) {
       state.selectedKey = "";
-      state.selectedDifficulty = 0;
-    }
+      state.selectedLevel = 0;
+    },
+
   }
 })
 
 const selectIndex = createSlice({
-  name : "selectIndex",
-  initialState : [
-    {key: '4k', difficulty : [20, 19, 18, 17, 16], class: ["", "", "", "", ""]}, 
-    {key: '5k', difficulty : [20, 19, 18, 17, 16], class: ["", "", "", "", ""]}, 
-    {key: '6k', difficulty : [20, 19, 18, 17, 16], class: ["", "", "", "", ""]}, 
-    {key: '8k', difficulty : [20, 19, 18, 17, 16], class: ["", "", "", "", ""]}],
-  reducers : {
-    setClass(state, action){
+  name: "selectIndex",
+  initialState: [{
+      key: '4k',
+      level: [20, 19, 18, 17, 16, 15, 14],
+      class: ["", "", "", "", "", "", ""]
+    },
+    {
+      key: '5k',
+      level: [20, 19, 18, 17, 16, 15],
+      class: ["", "", "", "", "", ""]
+    },
+    {
+      key: '6k',
+      level: [20, 19, 18, 17, 16, 15],
+      class: ["", "", "", "", "", ""]
+    },
+    {
+      key: '8k',
+      level: [20, 19, 18, 17, 16, 15],
+      class: ["", "", "", "", "", ""]
+    }
+  ],
+  reducers: {
+    setClass(state, action) {
       state[action.payload.step1].class[action.payload.step2] = "bold"
     },
-    cleanClass(state){
-      for (let i = 0; i < 4; i++){
-        for (let j = 0; j < 5; j++){
+    cleanClass(state) {
+      for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 7; j++) {
           state[i].class[j] = ""
         }
       }
@@ -155,21 +232,54 @@ const selectIndex = createSlice({
 })
 
 export default configureStore({
-  reducer: { 
-    userinfo : userinfo.reducer,
-    memberModal : memberModal.reducer,
-    achievementUserSelected : achievementUserSelected.reducer,
-    achievementSelectIndex : achievementSelectIndex.reducer,
-    rankUserSelected : rankUserSelected.reducer,
-    selectIndex : selectIndex.reducer,
-   }
-}) 
+  reducer: {
+    userinfo: userinfo.reducer,
+    modal: modal.reducer,
+    achievementUserSelected: achievementUserSelected.reducer,
+    achievementSongInfo: achievementSongInfo.reducer,
+    rankUserSelected: rankUserSelected.reducer,
+    selectIndex: selectIndex.reducer,
+  }
+})
 
-export const { setUserName, setUserId, setUserAuth, setUserAddTime, setManageMode, setDefault } = userinfo.actions
-export const { switchModalOpen, setModalStep } = memberModal.actions
-// export const { switchLoginModal } = userLogin.actions
-export const { setTitleView, setDescending, setAchievementKey, setAchievementDifficulty, setAchievementRank, setAchievementClean, setSelectedRankView } = achievementUserSelected.actions
-export const {  } = achievementSelectIndex.actions
-export const { setRankTitleView, setRankKeyAndDifficulty, setRankDescending, setRankCleanKeyAndDifficulty } = rankUserSelected.actions
-export const { setClass, cleanClass } = selectIndex.actions
-
+export const {
+  setIsLoginTried,
+  setUserName,
+  setUserId,
+  setUserAuth,
+  setUserAddTime,
+  setManageMode,
+  setUserDefault
+} = userinfo.actions
+export const {
+  switchModalOpen,
+  setModalStep,
+  setLoginTryCount,
+  setModalDefault
+} = modal.actions
+export const {
+  setTitleView,
+  setDescending,
+  setAchievementKey,
+  setAchievementLevel,
+  setAchievementRank,
+  setAchievementRankDefault,
+  setAchievementClean
+} = achievementUserSelected.actions
+export const {
+  setSongList,
+  cleanSongList,
+  setFilteredElementIdx,
+  setSongInfo
+} = achievementSongInfo.actions
+export const {
+  setRankKey,
+  setRankLevel,
+  setRankTitleView,
+  setRankDescending,
+  setRankClean
+} = rankUserSelected.actions
+export const {
+  setClass,
+  cleanClass
+} = selectIndex.actions

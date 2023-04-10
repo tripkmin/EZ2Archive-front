@@ -1,145 +1,317 @@
 /*eslint-disable*/
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { switchModalOpen, setModalStep, setUserDefault, setIsLoginTried } from '../store';
+import { AT } from '../services/temp';
+import { getMyInfo, logout, reIssue, refreshTokenExpired } from '../utills/axios';
+import { useLayoutEffect } from 'react';
 
-import axios from "axios"
-import { useEffect, useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { useNavigate } from "react-router-dom"
-import { switchModalOpen, setModalStep, setUserName, setUserId, setUserAuth, setUserAddTime, setDefault } from "../store"
-import { API_URL } from "../services/temp";
+function Navbar() {
+  const navigate = useNavigate();
+  const state = useSelector(state => state);
+  const dispatch = useDispatch();
+  const { userName, userId, userAuth, userAddTime } = state.userinfo;
+  const isDevelopmentEnv = process.env.REACT_APP_NODE_ENV === 'development';
 
-function Navbar(){
-  const navigate = useNavigate()
-  const state = useSelector((state) => state)
-  const dispatch = useDispatch()
-
-  useEffect(()=>{
-    const AT = localStorage.getItem("accessToken");
-    const setUserInfo = (res) => {
-      dispatch(setUserName(res.data.data.name))
-      dispatch(setUserId(res.data.data.userId))
-      dispatch(setUserAuth(res.data.data.authority))
-      dispatch(setUserAddTime(res.data.data.addTime))
-    }
-    if (AT) {
-        axios
-          .get(`${API_URL}/members/myInfo` , {
-            headers: {
-              Authorization: `Bearer ${AT}`
-            }
-          })
-        .then((res) => {
-          setUserInfo(res)
-          // window.location.reload();
-        })
-        // .catch((error) => {
-        //   if (error.response.status >= 400 && error.repsonse.status < 500) {
-        //     axios
-        //       .post(`${API_URL}/reIssue`, {}, {
-        //         withCredentials: true
-        //       })
-        //     .then((res) => {
-        //       setUserInfo(res)
-        //       // window.location.reload();
-        //     })
-        //   } else {
-        //     console.error(error);
-        //   }
-        // });
-    }
-  }, [])
-
-  const logout = () => {
-    axios
-      .post(`${API_URL}/logout`, {}, {
-        withCredentials: true
-      })
-      .then((res) => {
-        localStorage.removeItem("accessToken");
-        window.location.reload(); 
-      })
-      .catch((error) => {
-        if (error.response.status >= 400 && error.response.status < 500) {
-          console.log(error.response.data.message)
-        } else if (error.response.status === 500){
-          console.log("서버 오류입니다. 관리자에게 문의하십시오.")
+  useLayoutEffect(() => {
+    const myInfoProcess = async () => {
+      try {
+        await getMyInfo();
+      } catch (error) {
+        try {
+          await reIssue();
+          await getMyInfo();
+        } catch (error) {
+          refreshTokenExpired();
+          navigate('/');
+          setUserDefault();
         }
-        console.log(error)
-      });
+      }
+    };
+
+    const loginCheck = async () => {
+      if (AT) {
+        await myInfoProcess();
+      } else {
+        dispatch(setUserDefault());
+      }
+      dispatch(setIsLoginTried(true));
+    };
+
+    loginCheck();
+  }, [AT]);
+
+  const logoutProcess = async () => {
+    try {
+      logout();
+      localStorage.removeItem('accessToken');
+      dispatch(setUserDefault());
+      navigate('/');
+    } catch (error) {
+      if (error.response.status >= 400 && error.response.status < 500) {
+        console.log(error.response.data.message);
+      } else if (error.response.status === 500) {
+        console.log('서버 오류입니다. 관리자에게 문의하십시오.');
+      }
+      console.log(error);
+    }
   };
 
-  const verifyAndNavigate = (page) => {
-    // if (){}
-  }
+  const checkLoginUser = link => {
+    if (userName && userId && userAuth && userAddTime) {
+      navigate(link);
+    } else {
+      dispatch(switchModalOpen());
+      dispatch(setModalStep(1));
+    }
+  };
 
-  return (
-    <header>
-      <nav className="nav-wrapper theme-pp-shadow">
-        <div className="container">
-          <div className="nav">
-            <img className="logo" src={process.env.PUBLIC_URL + '/navbar/ez2archive_logo.svg'} alt="logo" onClick={()=>{ navigate('/') }}></img>
-            <div className="category-box">
-              <span className="category-link" onClick={()=>{ navigate('/achievement') }}>성과표</span>
-              <span className="category-link" onClick={()=>{ navigate('/rank') }}>서열표</span>
-              <span className="category-link" onClick={()=>{ navigate('/tier') }}>티어표</span>
-              <span className="category-link" onClick={()=>{ alert('준비 중입니다') }}>안내</span>
-            </div>
-            <img className="pp-navbar-pattern" src={process.env.PUBLIC_URL + '/navbar/Asset 1.svg'} alt="logo" onClick={()=>{ navigate('/') }}></img>
-            <div>
-              {
-                state.userinfo.userName !== ""
-                ? <span className="category-link">{state.userinfo.userName}님</span>
-                : <span className="category-link" onClick={()=>{ dispatch(switchModalOpen()); dispatch(setModalStep(0)) }}>로그인</span>
-              }
-              {
-                state.userinfo.userName !== ""
-                ? <span className="category-link" onClick={logout}>로그아웃</span>
-                : <span className="category-link" onClick={()=>{ dispatch(switchModalOpen()); dispatch(setModalStep(1)) }}>회원가입</span>
-              }
-              {
-                state.userinfo.userAuth == "ADMIN"
-                ? <span className="category-link" onClick={()=>{ navigate('/manage')}}>관리</span>
-                : null
-              }
+  {
+    return isDevelopmentEnv ? (
+      <header>
+        <nav className="nav-wrapper theme-pp-shadow">
+          <div className="container">
+            <div className="nav">
+              <img
+                className="logo"
+                src={process.env.PUBLIC_URL + '/navbar/ez2archive_logo.svg'}
+                alt="logo"
+                onClick={() => {
+                  navigate('/');
+                }}
+              ></img>
+              <div className="category-box">
+                <span
+                  className="category-link"
+                  onClick={() => {
+                    checkLoginUser('/achievement');
+                  }}
+                >
+                  성과표
+                </span>
+                <span
+                  className="category-link"
+                  onClick={() => {
+                    navigate('/rank');
+                  }}
+                >
+                  서열표
+                </span>
+                <span
+                  className="category-link"
+                  onClick={() => {
+                    navigate('/tier');
+                  }}
+                >
+                  티어표
+                </span>
+                <span
+                  className="category-link"
+                  onClick={() => {
+                    alert('언제쯤 얘 만들까');
+                  }}
+                >
+                  NEW 서열표
+                </span>
+                <span
+                  className="category-link"
+                  onClick={() => {
+                    alert('얘는 또 언제 만듬');
+                  }}
+                >
+                  안내
+                </span>
+              </div>
+              <img
+                className="pp-navbar-pattern"
+                src={process.env.PUBLIC_URL + '/navbar/Asset 1.svg'}
+                alt="logo"
+                onClick={() => {
+                  navigate('/');
+                }}
+              ></img>
+              <div>
+                {state.userinfo.userName !== '' ? (
+                  <span className="category-link">{state.userinfo.userName}님</span>
+                ) : (
+                  <span
+                    className="category-link"
+                    onClick={() => {
+                      dispatch(switchModalOpen());
+                      dispatch(setModalStep(1));
+                    }}
+                  >
+                    로그인
+                  </span>
+                )}
+                {state.userinfo.userName !== '' ? (
+                  <span className="category-link" onClick={logoutProcess}>
+                    로그아웃
+                  </span>
+                ) : (
+                  <span
+                    className="category-link"
+                    onClick={() => {
+                      dispatch(switchModalOpen());
+                      dispatch(setModalStep(2));
+                    }}
+                  >
+                    회원가입
+                  </span>
+                )}
+                {state.userinfo.userAuth == 'ADMIN' ? (
+                  <span
+                    className="category-link"
+                    onClick={() => {
+                      navigate('/manage');
+                    }}
+                  >
+                    관리
+                  </span>
+                ) : null}
+              </div>
             </div>
           </div>
-        </div>
-      </nav>
-      <div className="nav-blocker"></div>
-    </header>
-    // <header>
-    //   <nav className="nav-wrapper theme-pp-shadow">
-    //     <div className="container">
-    //       <div className="nav">
-    //         <img className="logo" src={process.env.PUBLIC_URL + '/navbar/ez2archive_logo.svg'} alt="logo" onClick={()=>{ navigate('/') }}></img>
-    //         {/* <div className="category-box">
-    //           <span className="category-link" onClick={()=>{ navigate('/achievement') }}>성과표</span>
-    //           <span className="category-link" onClick={()=>{ navigate('/rank') }}>서열표</span>
-    //           <span className="category-link" onClick={()=>{ navigate('/tier') }}>티어표</span>
-    //           <span className="category-link" onClick={()=>{ alert('준비 중입니다') }}>안내</span>
-    //         </div> */}
-    //         <img className="pp-navbar-pattern" src={process.env.PUBLIC_URL + '/navbar/Asset 1.svg'} alt="logo" onClick={()=>{ navigate('/') }}></img>
-    //         {/* <div>
-    //           {
-    //             state.userinfo.userName !== ""
-    //             ? <span className="category-link">{state.userinfo.userName}님</span>
-    //             : <span className="category-link" onClick={()=>{ dispatch(switchModalOpen()); dispatch(setModalStep(0)) }}>로그인</span>
-    //           }
-    //           {
-    //             state.userinfo.userName !== ""
-    //             ? <span className="category-link" onClick={logout}>로그아웃</span>
-    //             : <span className="category-link" onClick={()=>{ dispatch(switchModalOpen()); dispatch(setModalStep(1)) }}>회원가입</span>
-    //           }
-    //           {
-    //             state.userinfo.userAuth == "ADMIN"
-    //             ? <span className="category-link" onClick={()=>{ navigate('/manage')}}>관리</span>
-    //             : null
-    //           }
-    //         </div> */}
-    //       </div>
-    //     </div>
-    //   </nav>
-    // </header>
-  )
+        </nav>
+        <div className="nav-blocker"></div>
+      </header>
+    ) : (
+      <header>
+        <nav className="nav-wrapper theme-pp-shadow">
+          <div className="container">
+            <div className="nav">
+              <img
+                className="logo"
+                src={process.env.PUBLIC_URL + '/navbar/ez2archive_logo.svg'}
+                alt="logo"
+                onClick={() => {
+                  navigate('/');
+                }}
+              ></img>
+              <img
+                className="pp-navbar-pattern"
+                src={process.env.PUBLIC_URL + '/navbar/Asset 1.svg'}
+                alt="logo"
+                onClick={() => {
+                  navigate('/');
+                }}
+              ></img>
+            </div>
+          </div>
+        </nav>
+        <div className="nav-blocker"></div>
+      </header>
+    );
+  }
+  // return (
+  //   <header>
+  //     <nav className="nav-wrapper theme-pp-shadow">
+  //       <div className="container">
+  //         <div className="nav">
+  //           <img
+  //             className="logo"
+  //             src={process.env.PUBLIC_URL + '/navbar/ez2archive_logo.svg'}
+  //             alt="logo"
+  //             onClick={() => {
+  //               navigate('/');
+  //             }}
+  //           ></img>
+  //           <div className="category-box">
+  //             <span
+  //               className="category-link"
+  //               onClick={() => {
+  //                 checkLoginUser('/achievement');
+  //               }}
+  //             >
+  //               성과표
+  //             </span>
+  //             <span
+  //               className="category-link"
+  //               onClick={() => {
+  //                 navigate('/rank');
+  //               }}
+  //             >
+  //               서열표
+  //             </span>
+  //             <span
+  //               className="category-link"
+  //               onClick={() => {
+  //                 navigate('/tier');
+  //               }}
+  //             >
+  //               티어표
+  //             </span>
+  //             <span
+  //               className="category-link"
+  //               onClick={() => {
+  //                 alert('언제쯤 얘 만들까');
+  //               }}
+  //             >
+  //               NEW 서열표
+  //             </span>
+  //             <span
+  //               className="category-link"
+  //               onClick={() => {
+  //                 alert('얘는 또 언제 만듬');
+  //               }}
+  //             >
+  //               안내
+  //             </span>
+  //           </div>
+  //           <img
+  //             className="pp-navbar-pattern"
+  //             src={process.env.PUBLIC_URL + '/navbar/Asset 1.svg'}
+  //             alt="logo"
+  //             onClick={() => {
+  //               navigate('/');
+  //             }}
+  //           ></img>
+  //           <div>
+  //             {state.userinfo.userName !== '' ? (
+  //               <span className="category-link">{state.userinfo.userName}님</span>
+  //             ) : (
+  //               <span
+  //                 className="category-link"
+  //                 onClick={() => {
+  //                   dispatch(switchModalOpen());
+  //                   dispatch(setModalStep(1));
+  //                 }}
+  //               >
+  //                 로그인
+  //               </span>
+  //             )}
+  //             {state.userinfo.userName !== '' ? (
+  //               <span className="category-link" onClick={logoutProcess}>
+  //                 로그아웃
+  //               </span>
+  //             ) : (
+  //               <span
+  //                 className="category-link"
+  //                 onClick={() => {
+  //                   dispatch(switchModalOpen());
+  //                   dispatch(setModalStep(2));
+  //                 }}
+  //               >
+  //                 회원가입
+  //               </span>
+  //             )}
+  //             {state.userinfo.userAuth == 'ADMIN' ? (
+  //               <span
+  //                 className="category-link"
+  //                 onClick={() => {
+  //                   navigate('/manage');
+  //                 }}
+  //               >
+  //                 관리
+  //               </span>
+  //             ) : null}
+  //           </div>
+  //         </div>
+  //       </div>
+  //     </nav>
+  //     <div className="nav-blocker"></div>
+  //   </header>
+  // );
 }
 
-export default Navbar
+export default Navbar;
