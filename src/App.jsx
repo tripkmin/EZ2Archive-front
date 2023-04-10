@@ -21,7 +21,6 @@ import AchievementList from './routes/AchievementList';
 import { useNavigate } from 'react-router-dom';
 
 function App() {
-  console.log(process.env.REACT_APP_NODE_ENV);
   const isDevelopmentEnv = process.env.REACT_APP_NODE_ENV === 'development';
   {
     return isDevelopmentEnv ? (

@@ -1,3 +1,5 @@
+/*eslint-disable*/
+
 import axios from "axios"
 import store from "../store";
 import {
@@ -6,12 +8,10 @@ import {
   setUserAuth,
   setUserAddTime
 } from "../store";
-import {} from "../store";
-import {} from "../store";
-import {} from "../store";
-// import { API_URL, AT } from "../services/temp"
+import {
+  API_URL,
+} from "../services/temp"
 
-const API_URL = "https://api.blueshell.cyou/v1"
 // const AT = localStorage.getItem("accessToken")
 // 왜 AT는 작동하지 않고 localStorage.getItem("accessToken")는 작동하는거지?
 
@@ -234,4 +234,5 @@ export const getUserAchievementData = async (selectedKeyCaps, selectedLevel) => 
 
 export const refreshTokenExpired = () => {
   alert('로그인이 만료되어 로그아웃 됩니다.')
+  localStorage.removeItem('accessToken')
 }
