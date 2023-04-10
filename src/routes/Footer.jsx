@@ -30,7 +30,11 @@ const Footer = () => {
             <p>
               Special Thanks to{' '}
               <strong>
-                <a href="https://twitter.com/suisou610" target="_blank">
+                <a
+                  href="https://twitter.com/suisou610"
+                  target="_blank"
+                  className="text-underline"
+                >
                   수조
                 </a>
               </strong>

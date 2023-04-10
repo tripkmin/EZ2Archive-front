@@ -423,6 +423,7 @@ const AchievementList = () => {
                               }}
                             ></div>
                             <span
+                              // className={`level-badge ${difficulty} ${matchFilter(filteredElement)}`}
                               className={`level-badge ${difficulty}`}
                               onClick={() => {
                                 achievementModalOpen(filteredElement);
@@ -430,7 +431,8 @@ const AchievementList = () => {
                             >
                               {difficulty}
                             </span>
-                            <div className="user-score-container">
+                            {/* <div className={`user-score-container ${matchFilter(filteredElement)}`}> */}
+                            <div className={`user-score-container`}>
                               <img
                                 src={
                                   process.env.PUBLIC_URL +
@@ -441,6 +443,7 @@ const AchievementList = () => {
                                 onClick={() => {
                                   achievementModalOpen(filteredElement);
                                 }}
+                                className={`${matchFilter(filteredElement)}`}
                               ></img>
                               <p
                                 onClick={() => {

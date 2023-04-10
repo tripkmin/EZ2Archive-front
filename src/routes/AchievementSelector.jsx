@@ -2,7 +2,7 @@
 
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   setTitleView,
   setDescending,
@@ -15,7 +15,6 @@ import {
   switchModalOpen,
   setModalStep,
 } from '../store';
-import { flushSync } from 'react-dom';
 
 const AchievementSelector = () => {
   const state = useSelector(state => state);
@@ -112,7 +111,6 @@ const AchievementSelector = () => {
       if (numsArray.length !== 0) {
         const sum = numsArray.reduce((a, b) => a + b, 0);
         const avgRate = parseFloat((sum / numsArray.length).toFixed(toFixedNums));
-        // toFixed는 string 형식으로 반환하므로 parseFloat로 감싸줌.
         return avgRate;
       } else {
         return 0;
@@ -139,14 +137,14 @@ const AchievementSelector = () => {
   }, [songList]);
 
   useEffect(() => {
-    if (userName && userId && userAuth && userAddTime) {
-      setIsLogined(true);
-    } else {
-      setIsLogined(false);
-    }
+    // myInfo 요청으로 store.js에 유저 정보가 기록되있는지 참조함.
+    userName && userId && userAuth && userAddTime
+      ? setIsLogined(true)
+      : setIsLogined(false);
   }, [userName, userId, userAuth, userAddTime]);
 
   useEffect(() => {
+    // 유효한 키와 레벨을 선택해야 로컬 스토리지에 마지막 선택 키/난이도 정보를 기록하도록 설정하고 페이지를 이동하게 함.
     const isValidKey = ['4k', '5k', '6k', '8k'].includes(selectedKey);
     const isValidLevel = parseInt(selectedLevel) >= 1 && parseInt(selectedLevel) <= 20;
 
@@ -159,29 +157,23 @@ const AchievementSelector = () => {
     }
   }, [selectedKey, selectedLevel]);
 
-  // useEffect(() => {
-  //   if (isLogined) {
-  //     localStorage.setItem(
-  //       'lastAchievementSelected',
-  //       JSON.stringify({ key: selectedKey, level: selectedLevel })
-  //     );
-  //     navigate(`/achievement/${selectedKey}/${selectedLevel}`);
-  //   }
-  // }, [selectedKey, selectedLevel]);
-
   useEffect(() => {
+    // 로그인 하지 않은 상태에서 achievement에 접근하고 로그인에 성공했다면 마지막 키/난이도 정보를 조회할 수 있도록 함.
     const lastSelected = JSON.parse(localStorage.getItem('lastAchievementSelected'));
-    const [lastRankSelectedKey, lastRankSelectedLevel] = [
+    const [lastAchievementSelectedKey, lastAchievementSelectedLevel] = [
       lastSelected?.key,
       lastSelected?.level,
     ];
 
-    if (lastRankSelectedKey && lastRankSelectedLevel && isLogined) {
-      navigate(`/achievement/${lastRankSelectedKey}/${lastRankSelectedLevel}`);
+    if (lastAchievementSelectedKey && lastAchievementSelectedLevel && isLogined) {
+      navigate(
+        `/achievement/${lastAchievementSelectedKey}/${lastAchievementSelectedLevel}`
+      );
     }
   }, [isLogined]);
 
   useEffect(() => {
+    // achievement를 벗어날 때 유저의 선택 정보를 지움.
     return () => {
       dispatch(setAchievementClean());
       dispatch(cleanSongList());
@@ -201,11 +193,7 @@ const AchievementSelector = () => {
   };
 
   const verifyUser = () => {
-    if (userName && userId && userAuth && userAddTime) {
-      return true;
-    } else {
-      return false;
-    }
+    return userName && userId && userAuth && userAddTime ? true : false;
   };
 
   useEffect(() => {
@@ -229,64 +217,6 @@ const AchievementSelector = () => {
       clearTimeout(timer);
     };
   }, [selectedLevel]);
-
-  // useEffect(() => {
-  //   flushSync(() => {
-  //     setKeySelectedAnimation(true);
-  //   });
-  //   const timer = setTimeout(() => {
-  //     setKeySelectedAnimation(false);
-  //   }, 500);
-
-  //   return () => {
-  //     clearTimeout(timer);
-  //   };
-  // }, [selectedKey]);
-
-  // useEffect(() => {
-  //   console.log('true 실행 전');
-  //   setKeySelectedAnimation(true);
-  //   const timerId = setTimeout(() => {
-  //     setKeySelectedAnimation(false);
-  //     console.log('timer 종료');
-  //   }, 500);
-
-  //   return () => {
-  //     flushSync(() => {
-  //       setKeySelectedAnimation(false);
-  //     });
-  //     console.log('clearTimeout 실행 전');
-  //     clearTimeout(timerId);
-  //   };
-  // }, [selectedKey]);
-
-  // useEffect(() => {
-  //   flushSync(() => {
-  //     setKeySelectedAnimation(true);
-  //   });
-  //   // setKeySelectedAnimation(true);
-  //   const timerId = setTimeout(() => {
-  //     setKeySelectedAnimation(false);
-  //   }, 500);
-
-  //   return () => {
-  //     clearTimeout(timerId);
-  //     flushSync(() => {
-  //       setKeySelectedAnimation(false);
-  //     });
-  //   };
-  // }, [selectedKey]);
-
-  /* 
-  클릭 시 시나리오
-  클릭한 곳에서는 무조건 현 상태와 반대가 되도록 한다. 
-  클릭한 상태에서는 이 사람이 클릭했다는 변수가 true가 되도록 한다
-  클릭한 곳의 위치 변수 역시 담는다. 
-  그 상태로 다른 요소를 지나갈 시 toggle 된다.
-  다른 요소를 지나가서 한 번 들어왔다면 스치는 중이라는 변수에 집어넣는다
-  만약 그 요소를 클릭한 상태로 지나갔다면 이제 그 변수에서 뺀다.
-  
-  */
 
   return (
     <>

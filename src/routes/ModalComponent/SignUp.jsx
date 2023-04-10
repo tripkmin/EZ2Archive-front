@@ -112,28 +112,6 @@ const SignUp = props => {
     }
   });
 
-  /** 모달창 닫으면 인풋 내용 초기화 되도록 함 */
-  // const closeAndInputClean = useCallback(() => {
-  //   dispatch(switchModalOpen());
-  //   setSignId('');
-  //   setSignPassword('');
-  //   setSignPasswordCheck('');
-  //   setSignNickname('');
-  //   setSignEmail('');
-  //   setIdOnly(false);
-  //   setIdValid(false);
-  //   setPasswordValid(false);
-  //   setPasswordSame(false);
-  //   setNicknameValid(false);
-  //   setEmailOnly(false);
-  //   setEmailValid(false);
-  //   setAgree(false);
-  //   setIsIdChecked(false);
-  //   setIsEmailChecked(false);
-  //   setNotAllow(true);
-  //   dispatch(setModalStep(0));
-  // });
-
   // 유효한 인풋 검증
   useEffect(() => {
     const idRegex = /^[a-zA-Z0-9]*$/;

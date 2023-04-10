@@ -21,69 +21,131 @@ import AchievementList from './routes/AchievementList';
 import { useNavigate } from 'react-router-dom';
 
 function App() {
-  const navigate = useNavigate();
-
-  return (
-    <>
-      <Navbar />
-      <Modal />
-      <div className="main-wrapper">
-        {/* 라우트 영역 */}
-        <Routes>
-          <Route path="/" element={<Main />}></Route>
-          <Route
-            path="/achievement"
-            element={
-              <>
-                <AchievementSelector />
-                <Outlet />
-              </>
-            }
-          >
-            <Route index element={<PleaseSelectAchievement />}></Route>
-            <Route path=":urlKey/:urlLevel" element={<AchievementList />}></Route>
-          </Route>
-          <Route
-            path="/tier"
-            element={
-              <>
-                <MyTier></MyTier>
-                <PleaseWaiting></PleaseWaiting>
-              </>
-            }
-          ></Route>
-          <Route
-            path="/rank"
-            element={
-              <>
-                <RankOrderSelector />
-                <Outlet />
-              </>
-            }
-          >
-            <Route index element={<PleaseSelectRank />}></Route>
-            {/* <Route
-              path=":urlKey/:urlLevel"
+  console.log(process.env.REACT_APP_NODE_ENV);
+  const isDevelopmentEnv = process.env.REACT_APP_NODE_ENV === 'development';
+  {
+    return isDevelopmentEnv ? (
+      <>
+        <Navbar />
+        <Modal />
+        <div className="main-wrapper">
+          {/* 라우트 영역 */}
+          <Routes>
+            <Route path="/" element={<Main />}></Route>
+            <Route
+              path="/achievement"
               element={
-                ['4k', '5k', '6k', '8k'].includes(urlKey) &&
-                parseInt(urlLevel) >= 14 &&
-                parseInt(urlLevel) <= 20 ? (
-                  <RankOrderList />
-                ) : (
-                  <NotFound /> 
-                )
+                <>
+                  <AchievementSelector />
+                  <Outlet />
+                </>
               }
-            ></Route> */}
-            <Route path=":urlKey/:urlLevel" element={<RankOrderList />}></Route>
-          </Route>
-          <Route path="/manage" element={<Manage />}></Route>
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </div>
-      <Footer />
-      <CustomizeBtn />
-    </>
-  );
+            >
+              <Route index element={<PleaseSelectAchievement />}></Route>
+              <Route path=":urlKey/:urlLevel" element={<AchievementList />}></Route>
+            </Route>
+            <Route
+              path="/tier"
+              element={
+                <>
+                  <MyTier></MyTier>
+                  <PleaseWaiting></PleaseWaiting>
+                </>
+              }
+            ></Route>
+            <Route
+              path="/rank"
+              element={
+                <>
+                  <RankOrderSelector />
+                  <Outlet />
+                </>
+              }
+            >
+              <Route index element={<PleaseSelectRank />}></Route>
+              <Route path=":urlKey/:urlLevel" element={<RankOrderList />}></Route>
+            </Route>
+            <Route path="/manage" element={<Manage />}></Route>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
+        <Footer />
+        <CustomizeBtn />
+      </>
+    ) : (
+      <>
+        <Navbar />
+        <div className="main-wrapper">
+          {/* 라우트 영역 */}
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <>
+                  <RankOrderSelector />
+                  <Outlet />
+                </>
+              }
+            >
+              <Route index element={<PleaseSelectRank />}></Route>
+              <Route path=":urlKey/:urlLevel" element={<RankOrderList />}></Route>
+            </Route>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+  // return (
+  //   <>
+  //     <Navbar />
+  //     <Modal />
+  //     <div className="main-wrapper">
+  //       {/* 라우트 영역 */}
+  //       <Routes>
+  //         <Route path="/" element={<Main />}></Route>
+  //         <Route
+  //           path="/achievement"
+  //           element={
+  //             <>
+  //               <AchievementSelector />
+  //               <Outlet />
+  //             </>
+  //           }
+  //         >
+  //           <Route index element={<PleaseSelectAchievement />}></Route>
+  //           <Route path=":urlKey/:urlLevel" element={<AchievementList />}></Route>
+  //         </Route>
+  //         <Route
+  //           path="/tier"
+  //           element={
+  //             <>
+  //               <MyTier></MyTier>
+  //               <PleaseWaiting></PleaseWaiting>
+  //             </>
+  //           }
+  //         ></Route>
+  //         <Route
+  //           path="/rank"
+  //           element={
+  //             <>
+  //               <RankOrderSelector />
+  //               <Outlet />
+  //             </>
+  //           }
+  //         >
+  //           <Route index element={<PleaseSelectRank />}></Route>
+  //           <Route path=":urlKey/:urlLevel" element={<RankOrderList />}></Route>
+  //         </Route>
+  //         <Route path="/manage" element={<Manage />}></Route>
+  //         <Route path="*" element={<NotFound />} />
+  //       </Routes>
+  //     </div>
+  //     <Footer />
+  //     <CustomizeBtn />
+  //   </>
+  // );
 }
 
 export default App;

@@ -2,10 +2,7 @@ name: CI
 on:
   push:
     branches:
-      - 'main'
-  pull_request:
-    branches:
-      - 'main'
+      - 'develop'
 
 jobs:
   deployment:
@@ -24,21 +21,21 @@ jobs:
         run: npm install
 
       - name: Build
-        run: npm run build
+        run: npm run build:dev
 
       - name: Copy files to server
         uses: appleboy/scp-action@v0.1.3
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.KEY }}
+          host: ${{ secrets.HOSTDEV }}
+          username: ${{ secrets.USERNAMEDEV }}
+          key: ${{ secrets.KEYDEV }}
           source: 'build/'
           target: '/home/ec2-user/front/'
 
       - name: Deploy
         uses: appleboy/ssh-action@v0.1.7
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.KEY }}
+          host: ${{ secrets.HOSTDEV }}
+          username: ${{ secrets.USERNAMEDEV }}
+          key: ${{ secrets.KEYDEV }}
           script: /home/ec2-user/front/release.sh

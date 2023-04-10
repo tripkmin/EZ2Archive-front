@@ -1,22 +1,15 @@
 /*eslint-disable*/
 
-import { useEffect } from 'react'
-import { setRankClean } from '../../store'
-import { useDispatch, useSelector } from 'react-redux'
+import { useEffect } from 'react';
+import { setRankClean } from '../../store';
+import { useDispatch } from 'react-redux';
 
 const PleaseSelectRank = () => {
-  // const state = useSelector(state => state)
-  const dispatch = useDispatch()
-  // const {
-  //   selectedKey,
-  //   selectedKeyCaps,
-  //   selectedLevel,
-  //   songTitleView,
-  //   isDescending,
-  // } = state.rankUserSelected
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    dispatch(setRankClean())
-  }, [])
+    dispatch(setRankClean());
+  }, []);
 
   return (
     <div className="pleaseSelectBox">
@@ -27,7 +20,7 @@ const PleaseSelectRank = () => {
       <h3>키와 난이도를 선택해주세요!</h3>
       <h5>설마 누가 8키를 하겠어</h5>
     </div>
-  )
-}
+  );
+};
 
-export default PleaseSelectRank
+export default PleaseSelectRank;

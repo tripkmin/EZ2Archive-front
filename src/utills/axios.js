@@ -59,9 +59,6 @@ export const getMyInfo = async () => {
   }
 }
 
-// export const setMyInfo = async () => {
-//   try 
-// }
 export const reIssue = async () => {
   try {
     // 액세스 토큰이 만료되었을 경우 갖고있는 리프레시 토큰을 통해 액세스 토큰 재발급 요청
@@ -71,15 +68,10 @@ export const reIssue = async () => {
     localStorage.setItem("accessToken", newAccessToken.data.data.accessToken)
   } catch (error) {
     throw error
-    // 리프레시 토큰 만료시에는 ?코드 발생. 500은 리프레시 토큰이 없을 경우 발생.
-    // 일단 에러가 뜨는 경우에는 로그아웃을 하는 걸로 하고, 나중에 보충하는 걸로.
-    // localStorage.removeItem("accessToken")
-    // alert('로그인이 필요합니다 or 리프레시 토큰이 만료되어 재로그인이 필요합니다')
   }
 }
 
 // 회원가입 관련 요청들
-
 export const idCheck = async (id) => {
   try {
     const response = await axios.get(`${API_URL}/idCheck?userId=${id}`)
@@ -153,20 +145,6 @@ export const getMemo = async (id) => {
   }
 }
 
-// export const postMemo = async (id, tempMemo) => {
-//   try {
-//     axios.post(`${API_URL}/musicInfo/${id}/memo/save`, {
-//       content: tempMemo
-//     }, {
-//       headers: {
-//         Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-//       },
-//     })
-//   } catch (error) {
-//     throw error
-//   }
-// }
-
 export const postMemo = async (id, tempMemo) => {
   try {
     const response = await axios.post(`${API_URL}/musicInfo/${id}/memo/save`, {
@@ -181,7 +159,6 @@ export const postMemo = async (id, tempMemo) => {
     throw error
   }
 }
-
 
 export const deleteMemo = async (id) => {
   try {

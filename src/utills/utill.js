@@ -114,23 +114,6 @@ export const returnGrade = (grade) => {
   }
 }
 
-// export const 보여지는퍼센트뒷쪽영빼기 = (퍼센트) => {
-//   const 스텝1 = parseFloat(퍼센트).toFixed(2)
-//   const 스텝1분리 = (num) => 스텝1.split(".")[num]
-
-//   if (!퍼센트) {
-//     return "-"
-//   } else if (스텝1분리(1) ? .charAt(스텝1분리(1).length - 1) === "0") {
-//     if (스텝1분리(1) ? .charAt(스텝1분리(1).length - 2) === "0") {
-//       return 스텝1분리(0)
-//     } else {
-//       return 스텝1분리(0) + "." + 스텝1분리(1)[0]
-//     }
-//   } else {
-//     return 스텝1
-//   }
-// }
-
 export const formatPercent = (percent) => {
   const num = parseFloat(percent);
 

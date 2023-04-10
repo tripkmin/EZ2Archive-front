@@ -36,23 +36,41 @@ const RankOrderSelector = () => {
     lastSelected?.key,
     lastSelected?.level,
   ];
+  const isDevelopmentEnv = process.env.REACT_APP_NODE_ENV === 'development';
 
   useEffect(() => {
-    if (lastRankSelectedKey && lastRankSelectedLevel) {
-      navigate(`/rank/${lastRankSelectedKey}/${lastRankSelectedLevel}`);
+    if (isDevelopmentEnv) {
+      lastRankSelectedKey && lastRankSelectedLevel
+        ? navigate(`/rank/${lastRankSelectedKey}/${lastRankSelectedLevel}`)
+        : null;
+    } else {
+      lastRankSelectedKey && lastRankSelectedLevel
+        ? navigate(`/${lastRankSelectedKey}/${lastRankSelectedLevel}`)
+        : null;
     }
   }, []);
 
   useEffect(() => {
+    // 유효한 키와 레벨을 선택해야 로컬 스토리지에 마지막 선택 키/난이도 정보를 기록하도록 설정하고 페이지를 이동하게 함.
     const isValidKey = ['4k', '5k', '6k', '8k'].includes(selectedKey);
     const isValidLevel = parseInt(selectedLevel) >= 14 && parseInt(selectedLevel) <= 20;
 
-    if (isValidKey && isValidLevel) {
-      localStorage.setItem(
-        'lastRankSelected',
-        JSON.stringify({ key: selectedKey, level: selectedLevel })
-      );
-      navigate(`/rank/${selectedKey}/${selectedLevel}`);
+    if (isDevelopmentEnv) {
+      if (isValidKey && isValidLevel) {
+        localStorage.setItem(
+          'lastRankSelected',
+          JSON.stringify({ key: selectedKey, level: selectedLevel })
+        );
+        navigate(`/rank/${selectedKey}/${selectedLevel}`);
+      }
+    } else {
+      if (isValidKey && isValidLevel) {
+        localStorage.setItem(
+          'lastRankSelected',
+          JSON.stringify({ key: selectedKey, level: selectedLevel })
+        );
+        navigate(`/${selectedKey}/${selectedLevel}`);
+      }
     }
   }, [selectedKey, selectedLevel]);
 
