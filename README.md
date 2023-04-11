@@ -1,5 +1,7 @@
-개발서버 : https://blueshell.cyou
-운영서버 : https://ez2archive.kr
+### 개발서버 : https://blueshell.cyou
+### 운영서버 : https://ez2archive.kr
+
+기술 : HTML, CSS, JavaScript, React
 
 <h3> 구현 기능 </h3>
 - 계정
