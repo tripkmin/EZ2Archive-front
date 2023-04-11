@@ -1,70 +1,44 @@
-# Getting Started with Create React App
+개발서버 : https://blueshell.cyou
+운영서버 : https://ez2archive.kr
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<h3> 구현 기능 </h3>
+- 계정
 
-## Available Scripts
+  - 로그인 / 로그아웃
+    : JWT 토큰 방식을 사용한 로그인 구현
+    : 액세스 토큰은 로컬 스토리지, 리프레시 토큰은 httpOnly Cookie에 저장
+  - 회원가입
+  - reCaptcha
 
-In the project directory, you can run:
+- 성과표(Achievement)
+  : 로그인한 사용자에 한해 서비스 제공
 
-### `npm start`
+  - 리스트
+    - 키와 난이도를 선택하면 그에 해당하는 곡의 리스트가 나열됨
+  - 빠른 수기입력
+    - 리스트 페이지에서 빠르게 성과 입력을 할 수 있도록 이미지 좌측 하단을 클릭 시 점수 수기입력창으로 전환
+    - 수기 입력창에서의 아이콘은 각각 취소/전송/올콤보/올쿨에 해당
+    - 0점에서 (1100000 + 노트 수)점 사이의 값을 입력 후 전송 시 서버에 점수 전달. 그렇지 않을 경우 서버 전달 전에 프론트 선에서 막음.
+    - 수기 점수 입력이 완료되면 점수와 옵션(클리어/올콤보/올쿨)에 맞는 정보로 실시간 전환됨.
+    - 수기 점수 입력의 성공/실패에 따라 우측 하단 애니메이션이 다르게 표시됨.
+  - 등급 필터 기능
+    : 선택한 등급에 해당하는 곡만 보여지도록 함
+  - 타이틀 표시 기능
+  - 내림차순 기능
+  - 필터 숨기기 기능
+  - 해당 키/난이도의 전체 성과 overall 기능
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+  - 성과표 모달창
+    : 성과표 페이지에서 디스크를 클릭 시 이동
+    - 메모 입력 및 삭제
+      - 255자 이내로 메모 가능
+    - 성과 입력
+      - 빠른 수기입력과 마찬가지로 점수와 옵션을 기입 후 전송
+      - 성과가 입력되면 바깥 컴포넌트와 모달 내 컴포넌트(등급 정보, 차트 등)에 바로 반영됨.
+    - 성과 삭제
+      - 우측 X 버튼 클릭 시 삭제
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- 서열표
+  : 비로그인 사용자도 조회 가능
+  - 리스트
+    : 키와 난이도를 선택하면 그에 해당하는 곡의 리스트가 나열됨
