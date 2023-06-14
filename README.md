@@ -1,4 +1,3 @@
-### 개발서버 : https://blueshell.cyou
 ### 운영서버 : https://ez2archive.kr
 
 기술 : HTML, CSS, JavaScript, React
